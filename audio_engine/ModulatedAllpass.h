@@ -57,7 +57,7 @@ namespace CloudSeed
 		}
 
 
-		__forceinline double* GetOutput()
+		double* GetOutput()
 		{
 			return output;
 		}
@@ -134,7 +134,7 @@ namespace CloudSeed
 			}
 		}
 
-		__forceinline double Get(int delay)
+		double Get(int delay)
 		{
 			int idx = index - delay;
 			if (idx < 0)

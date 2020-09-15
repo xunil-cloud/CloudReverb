@@ -1,4 +1,4 @@
-
+/*
 #ifndef DEFAULT_INCLUDE
 #define DEFAULT_INCLUDE
 
@@ -15,3 +15,4 @@ typedef unsigned long long ulong;
 #endif
 
 #endif
+*/

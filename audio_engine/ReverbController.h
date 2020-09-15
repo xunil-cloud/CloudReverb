@@ -153,7 +153,7 @@ namespace CloudSeed
 			channelR.ClearBuffers();
 		}
 
-		void Process(double** input, double** output, int bufferSize)
+		void Process( const float** input, float** output, int bufferSize)
 		{
 			auto len = bufferSize;
 			auto cm = GetScaledParameter(Parameter::InputMix) * 0.5;
