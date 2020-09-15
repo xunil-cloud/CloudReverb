@@ -2,7 +2,7 @@
 #include "Default.h"
 #include "ReverbController.h"
 #include "FastSin.h"
-#include "AudioLib\ValueTables.h"
+#include "AudioLib/ValueTables.h"
 
 using namespace CloudSeed;
 bool isInitialized = false;

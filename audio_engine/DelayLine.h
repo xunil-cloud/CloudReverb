@@ -1,10 +1,10 @@
 #ifndef DELAYLINE
 #define DELAYLINE
 
-#include "AudioLib\Lp1.h"
+#include "AudioLib/Lp1.h"
 #include "ModulatedDelay.h"
 #include "AllpassDiffuser.h"
-#include "AudioLib\Biquad.h"
+#include "AudioLib/Biquad.h"
 
 using namespace AudioLib;
 

@@ -15,7 +15,7 @@
 
 #include <cmath>
 #include "ReverbChannel.h"
-#include "AudioLib\ShaRandom.h"
+#include "AudioLib/ShaRandom.h"
 #include "Utils.h"
 
 using namespace std;
