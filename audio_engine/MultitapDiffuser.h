@@ -18,23 +18,23 @@ namespace CloudSeed
 		static const int MaxTaps = 50;
 
 	private:
-		double* buffer;
-		double* output;
+		float* buffer;
+		float* output;
 		int len;
 
 		int index;
-		vector<double> tapGains;
+		vector<float> tapGains;
 		vector<int> tapPosition;
-		vector<double> seedValues;
+		vector<float> seedValues;
 		int seed;
-		double crossSeed;
+		float crossSeed;
 		int count;
-		double length;
-		double gain;
-		double decay;
+		float length;
+		float gain;
+		float decay;
 
 		bool isDirty;
-		vector<double> tapGainsTemp;
+		vector<float> tapGainsTemp;
 		vector<int> tapPositionTemp;
 		int countTemp;
 
@@ -42,8 +42,8 @@ namespace CloudSeed
 		MultitapDiffuser(int delayBufferSize)
 		{
 			len = delayBufferSize;
-			buffer = new double[delayBufferSize];
-			output = new double[delayBufferSize];
+			buffer = new float[delayBufferSize];
+			output = new float[delayBufferSize];
 			index = 0;
 			count = 1;
 			length = 1;
@@ -66,13 +66,13 @@ namespace CloudSeed
 			UpdateSeeds();
 		}
 
-		void SetCrossSeed(double crossSeed)
+		void SetCrossSeed(float crossSeed)
 		{
 			this->crossSeed = crossSeed;
 			UpdateSeeds();
 		}
 
-		double* GetOutput()
+		float* GetOutput()
 		{
 			return output;
 		}
@@ -89,19 +89,19 @@ namespace CloudSeed
 			Update();
 		}
 
-		void SetTapDecay(double tapDecay)
+		void SetTapDecay(float tapDecay)
 		{
 			decay = tapDecay;
 			Update();
 		}
 
-		void SetTapGain(double tapGain)
+		void SetTapGain(float tapGain)
 		{
 			gain = tapGain;
 			Update();
 		}
 
-		void Process(double* input, int sampleCount)
+		void Process(const float* input, int sampleCount)
 		{
 			// prevents race condition when parameters are updated from Gui
 			if (isDirty)
@@ -113,7 +113,7 @@ namespace CloudSeed
 			}
 
 			int* const tapPos = &tapPositionTemp[0];
-			double* const tapGain = &tapGainsTemp[0];
+			float* const tapGain = &tapGainsTemp[0];
 			const int cnt = countTemp;
 
 			for (int i = 0; i < sampleCount; i++)
@@ -142,7 +142,7 @@ namespace CloudSeed
 	private:
 		void Update()
 		{
-			vector<double> newTapGains;
+			vector<float> newTapGains;
 			vector<int> newTapPosition;
 
 			int s = 0;
@@ -155,12 +155,12 @@ namespace CloudSeed
 				length = count;
 
 			// used to adjust the volume of the overall output as it grows when we add more taps
-			double tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
+			float tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
 
 			newTapGains.resize(count);
 			newTapPosition.resize(count);
 
-			vector<double> tapData(count, 0.0);
+			vector<float> tapData(count, 0.0);
 
 			auto sumLengths = 0.0;
 			for (size_t i = 0; i < count; i++)
@@ -178,12 +178,12 @@ namespace CloudSeed
 				newTapPosition[i] = newTapPosition[i - 1] + (int)(tapData[i] * scaleLength);
 			}
 
-			double sumGains = 0.0;
-			double lastTapPos = newTapPosition[count - 1];
+			float sumGains = 0.0;
+			float lastTapPos = newTapPosition[count - 1];
 			for (int i = 0; i < count; i++)
 			{
 				// when decay set to 0, there is no decay, when set to 1, the gain at the last sample is 0.01 = -40dB
-				auto g = std::pow(10, -decay * 2 * newTapPosition[i] / (double)(lastTapPos + 1));
+				auto g = std::pow(10, -decay * 2 * newTapPosition[i] / (float)(lastTapPos + 1));
 
 				auto tap = (2 * rand() - 1) * tapCountFactor;
 				newTapGains[i] = tap * g * gain;

@@ -18,11 +18,11 @@ namespace CloudSeed
 		Biquad lowShelf;
 		Biquad highShelf;
 		AudioLib::Lp1 lowPass;
-		double* tempBuffer;
-		double* mixedBuffer;
-		double* filterOutputBuffer;
+		float* tempBuffer;
+		float* mixedBuffer;
+		float* filterOutputBuffer;
 		int bufferSize;
-		double feedback;
+		float feedback;
 		int samplerate;
 
 	public:
@@ -41,9 +41,9 @@ namespace CloudSeed
 			, highShelf(AudioLib::Biquad::FilterType::HighShelf, samplerate)
 		{
 			this->bufferSize = bufferSize;
-			tempBuffer = new double[bufferSize];
-			mixedBuffer = new double[bufferSize];
-			filterOutputBuffer = new double[bufferSize];
+			tempBuffer = new float[bufferSize];
+			mixedBuffer = new float[bufferSize];
+			filterOutputBuffer = new float[bufferSize];
 
 			lowShelf.Slope = 1.0;
 			lowShelf.SetGainDb(-20);
@@ -83,7 +83,7 @@ namespace CloudSeed
 			highShelf.SetSamplerate(samplerate);
 		}
 
-		void SetDiffuserSeed(int seed, double crossSeed)
+		void SetDiffuserSeed(int seed, float crossSeed)
 		{
 			diffuser.SetSeed(seed);
 			diffuser.SetCrossSeed(crossSeed);
@@ -94,7 +94,7 @@ namespace CloudSeed
 			delay.SampleDelay = delaySamples;
 		}
 
-		void SetFeedback(double feedb)
+		void SetFeedback(float feedb)
 		{
 			feedback = feedb;
 		}
@@ -104,7 +104,7 @@ namespace CloudSeed
 			diffuser.SetDelay(delaySamples);
 		}
 
-		void SetDiffuserFeedback(double feedb)
+		void SetDiffuserFeedback(float feedb)
 		{
 			diffuser.SetFeedback(feedb);
 		}
@@ -114,52 +114,52 @@ namespace CloudSeed
 			diffuser.Stages = stages;
 		}
 
-		void SetLowShelfGain(double gain)
+		void SetLowShelfGain(float gain)
 		{
 			lowShelf.SetGain(gain);
 			lowShelf.Update();
 		}
 
-		void SetLowShelfFrequency(double frequency)
+		void SetLowShelfFrequency(float frequency)
 		{
 			lowShelf.Frequency = frequency;
 			lowShelf.Update();
 		}
 
-		void SetHighShelfGain(double gain)
+		void SetHighShelfGain(float gain)
 		{
 			highShelf.SetGain(gain);
 			highShelf.Update();
 		}
 
-		void SetHighShelfFrequency(double frequency)
+		void SetHighShelfFrequency(float frequency)
 		{
 			highShelf.Frequency = frequency;
 			highShelf.Update();
 		}
 
-		void SetCutoffFrequency(double frequency)
+		void SetCutoffFrequency(float frequency)
 		{
 			lowPass.SetCutoffHz(frequency);
 		}
 
-		void SetLineModAmount(double amount)
+		void SetLineModAmount(float amount)
 		{
 			delay.ModAmount = amount;
 		}
 
-		void SetLineModRate(double rate)
+		void SetLineModRate(float rate)
 		{
 			delay.ModRate = rate;
 		}
 
-		void SetDiffuserModAmount(double amount)
+		void SetDiffuserModAmount(float amount)
 		{
 			diffuser.SetModulationEnabled(amount > 0.0);
 			diffuser.SetModAmount(amount);
 		}
 
-		void SetDiffuserModRate(double rate)
+		void SetDiffuserModRate(float rate)
 		{
 			diffuser.SetModRate(rate);
 		}
@@ -170,7 +170,7 @@ namespace CloudSeed
 		}
 
 
-		double* GetOutput()
+		float* GetOutput()
 		{
 			if (LateStageTap)
 			{
@@ -185,7 +185,7 @@ namespace CloudSeed
 			}
 		}
 
-		void Process(double* input, int sampleCount)
+		void Process(const float* input, int sampleCount)
 		{
 			for (int i = 0; i < sampleCount; i++)
 				mixedBuffer[i] = input[i] + filterOutputBuffer[i] * feedback;

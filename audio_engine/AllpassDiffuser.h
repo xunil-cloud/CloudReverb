@@ -19,17 +19,17 @@ namespace CloudSeed
 
 		vector<ModulatedAllpass*> filters;
 		int delay;
-		double modRate;
-		vector<double> seedValues;
+		float modRate;
+		vector<float> seedValues;
 		int seed;
-		double crossSeed;
+		float crossSeed;
 		
 	public:
 		int Stages;
 
 		AllpassDiffuser(int samplerate, int delayBufferLengthMillis)
 		{
-			auto delayBufferSize = samplerate * ((double)delayBufferLengthMillis / 1000.0);
+			auto delayBufferSize = samplerate * ((float)delayBufferLengthMillis / 1000.0);
 			for (int i = 0; i < MaxStageCount; i++)
 			{
 				filters.push_back(new ModulatedAllpass((int)delayBufferSize, 100));
@@ -66,7 +66,7 @@ namespace CloudSeed
 			UpdateSeeds();
 		}
 
-		void SetCrossSeed(double crossSeed)
+		void SetCrossSeed(float crossSeed)
 		{
 			this->crossSeed = crossSeed;
 			UpdateSeeds();
@@ -90,7 +90,7 @@ namespace CloudSeed
 				filter->InterpolationEnabled = enabled;
 		}
 
-		double* GetOutput()
+		float* GetOutput()
 		{
 			return filters[Stages - 1]->GetOutput();
 		}
@@ -102,13 +102,13 @@ namespace CloudSeed
 			Update();
 		}
 
-		void SetFeedback(double feedback)
+		void SetFeedback(float feedback)
 		{
 			for (auto filter : filters)
 				filter->Feedback = feedback;
 		}
 
-		void SetModAmount(double amount)
+		void SetModAmount(float amount)
 		{
 			for (int i = 0; i < filters.size(); i++)
 			{
@@ -116,7 +116,7 @@ namespace CloudSeed
 			}
 		}
 
-		void SetModRate(double rate)
+		void SetModRate(float rate)
 		{
 			modRate = rate;
 
@@ -124,7 +124,7 @@ namespace CloudSeed
 				filters[i]->ModRate = rate * (0.85 + 0.3 * seedValues[MaxStageCount * 2 + i]) / samplerate;
 		}
 
-		void Process(double* input, int sampleCount)
+		void Process(const float* input, int sampleCount)
 		{
 			ModulatedAllpass** filterPtr = &filters[0];
 

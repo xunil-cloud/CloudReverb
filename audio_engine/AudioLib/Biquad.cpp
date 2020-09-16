@@ -9,7 +9,7 @@ namespace AudioLib
 		ClearBuffers();
 	}
 
-	Biquad::Biquad(FilterType filterType, double samplerate)
+	Biquad::Biquad(FilterType filterType, float samplerate)
 	{
 		Type = filterType;
 		SetSamplerate(samplerate);
@@ -26,33 +26,33 @@ namespace AudioLib
 	}
 
 
-	double Biquad::GetSamplerate() 
+	float Biquad::GetSamplerate() 
 	{
 		return samplerate;
 	}
 
-	void Biquad::SetSamplerate(double value)
+	void Biquad::SetSamplerate(float value)
 	{
 		samplerate = value; 
 		Update();
 	}
 
-	double Biquad::GetGainDb() 
+	float Biquad::GetGainDb() 
 	{
 		return std::log10(gain) * 20;
 	}
 
-	void Biquad::SetGainDb(double value) 
+	void Biquad::SetGainDb(float value) 
 	{
 		SetGain(std::pow(10, value / 20));
 	}
 
-	double Biquad::GetGain() 
+	float Biquad::GetGain() 
 	{
 		return gain;
 	}
 
-	void Biquad::SetGain(double value) 
+	void Biquad::SetGain(float value) 
 	{
 		if (value == 0)
 			value = 0.001; // -60dB
@@ -60,37 +60,37 @@ namespace AudioLib
 		gain = value;
 	}
 
-	double Biquad::GetQ()
+	float Biquad::GetQ()
 	{
 		return _q;
 	}
 
-	void Biquad::SetQ(double value) 
+	void Biquad::SetQ(float value) 
 	{
 		if (value == 0)
 			value = 1e-12;
 		_q = value;
 	}
 
-	vector<double> Biquad::GetA() 
+	vector<float> Biquad::GetA() 
 	{
-		return vector<double>({ 1, a1, a2 });
+		return vector<float>({ 1, a1, a2 });
 	}
 
-	vector<double> Biquad::GetB()
+	vector<float> Biquad::GetB()
 	{
-		return vector<double>({ b0, b1, b2 });
+		return vector<float>({ b0, b1, b2 });
 	}
 
 
 	void Biquad::Update()
 	{
-		double omega = 2 * M_PI * Frequency / samplerate;
-		double sinOmega = std::sin(omega);
-		double cosOmega = std::cos(omega);
+		float omega = 2 * M_PI * Frequency / samplerate;
+		float sinOmega = std::sin(omega);
+		float cosOmega = std::cos(omega);
 
-		double sqrtGain = 0.0;
-		double alpha = 0.0;
+		float sqrtGain = 0.0;
+		float alpha = 0.0;
 
 		if (Type == FilterType::LowShelf || Type == FilterType::HighShelf)
 		{
@@ -162,7 +162,7 @@ namespace AudioLib
 			break;
 		}
 
-		double g = 1 / a0;
+		float g = 1 / a0;
 
 		b0 = b0 * g;
 		b1 = b1 * g;
@@ -171,9 +171,9 @@ namespace AudioLib
 		a2 = a2 * g;
 	}
 
-	double Biquad::GetResponse(double freq)
+	float Biquad::GetResponse(float freq)
 	{
-		double phi = std::pow((std::sin(2 * M_PI * freq / (2.0 * samplerate))), 2);
+		float phi = std::pow((std::sin(2 * M_PI * freq / (2.0 * samplerate))), 2);
 		return (std::pow(b0 + b1 + b2, 2.0) - 4.0 * (b0 * b1 + 4.0 * b0 * b2 + b1 * b2) * phi + 16.0 * b0 * b2 * phi * phi) / (std::pow(1.0 + a1 + a2, 2.0) - 4.0 * (a1 + 4.0 * a2 + a1 * a2) * phi + 16.0 * a2 * phi * phi);
 	}
 

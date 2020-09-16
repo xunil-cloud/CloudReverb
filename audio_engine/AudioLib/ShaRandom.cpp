@@ -7,7 +7,7 @@ namespace AudioLib
 {
 	using namespace std;
 
-	vector<double> ShaRandom::Generate(long long seed, int count)
+	vector<float> ShaRandom::Generate(long long seed, int count)
 	{
 		vector<unsigned char> byteList;
 		auto iterations = count * sizeof(unsigned int) / (256 / 8) + 1;
@@ -22,26 +22,26 @@ namespace AudioLib
 		}
 
 		auto intArray = (unsigned int*)(&byteList[0]);
-		vector<double> output;
+		vector<float> output;
 
 		for (int i = 0; i < count; i++)
 		{
 			unsigned int val = intArray[i];
-			double doubleVal = val / (double)UINT_MAX;
+			float doubleVal = val / (float)UINT_MAX;
 			output.push_back(doubleVal);
 		}
 
 		return output;
 	}
 
-	vector<double> ShaRandom::Generate(long long seed, int count, double crossSeed)
+	vector<float> ShaRandom::Generate(long long seed, int count, float crossSeed)
 	{
 		auto seedA = seed;
 		auto seedB = ~seed;
 		auto seriesA = Generate(seedA, count);
 		auto seriesB = Generate(seedB, count);
 
-		vector<double> output;
+		vector<float> output;
 		for (int i = 0; i < count; i++)
 			output.push_back(seriesA[i] * (1 - crossSeed) + seriesB[i] * crossSeed);
 

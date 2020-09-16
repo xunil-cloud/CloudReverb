@@ -13,8 +13,8 @@ namespace CloudSeed
 
 		const int ModulationUpdateRate = 8;
 
-		double* delayBuffer;
-		double* output;
+		float* delayBuffer;
+		float* output;
 		int bufferSize;
 		int writeIndex;
 		int readIndexA;
@@ -22,25 +22,25 @@ namespace CloudSeed
 		int samplesProcessed;
 		int delayBufferSizeSamples;
 
-		double modPhase;
-		double gainA;
-		double gainB;
+		float modPhase;
+		float gainA;
+		float gainB;
 
 	public:
 		int SampleDelay;
 		
-		double ModAmount;
-		double ModRate;
+		float ModAmount;
+		float ModRate;
 
 		ModulatedDelay(int bufferSize, int delayBufferSizeSamples, int sampleDelay)
 		{
 			this->delayBufferSizeSamples = delayBufferSizeSamples;
 			this->bufferSize = bufferSize;
-			this->delayBuffer = new double[delayBufferSizeSamples];
-			this->output = new double[bufferSize];
+			this->delayBuffer = new float[delayBufferSizeSamples];
+			this->output = new float[bufferSize];
 			this->SampleDelay = sampleDelay;
 			writeIndex = 0;
-			modPhase = 0.01 + 0.98 * (std::rand() / (double)RAND_MAX);
+			modPhase = 0.01 + 0.98 * (std::rand() / (float)RAND_MAX);
 			ModRate = 0.0;
 			ModAmount = 0.0;
 			Update();
@@ -52,12 +52,12 @@ namespace CloudSeed
 			delete output;
 		}
 
-		double* GetOutput()
+		float* GetOutput()
 		{
 			return output;
 		}
 
-		void Process(double* input, int sampleCount)
+		void Process(const float* input, int sampleCount)
 		{
 			for (int i = 0; i < sampleCount; i++)
 			{

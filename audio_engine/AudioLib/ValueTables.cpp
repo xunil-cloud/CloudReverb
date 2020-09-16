@@ -4,25 +4,25 @@
 
 namespace AudioLib
 {
-	double ValueTables::Sqrt[TableSize];
-	double ValueTables::Sqrt3[TableSize];
-	double ValueTables::Pow1_5[TableSize];
-	double ValueTables::Pow2[TableSize];
-	double ValueTables::Pow3[TableSize];
-	double ValueTables::Pow4[TableSize];
-	double ValueTables::x2Pow3[TableSize];
+	float ValueTables::Sqrt[TableSize];
+	float ValueTables::Sqrt3[TableSize];
+	float ValueTables::Pow1_5[TableSize];
+	float ValueTables::Pow2[TableSize];
+	float ValueTables::Pow3[TableSize];
+	float ValueTables::Pow4[TableSize];
+	float ValueTables::x2Pow3[TableSize];
 
-	// octave response. value double every step (2,3,4,5 or 6 steps)
-	double ValueTables::Response2Oct[TableSize];
-	double ValueTables::Response3Oct[TableSize];
-	double ValueTables::Response4Oct[TableSize];
-	double ValueTables::Response5Oct[TableSize];
-	double ValueTables::Response6Oct[TableSize];
+	// octave response. value float every step (2,3,4,5 or 6 steps)
+	float ValueTables::Response2Oct[TableSize];
+	float ValueTables::Response3Oct[TableSize];
+	float ValueTables::Response4Oct[TableSize];
+	float ValueTables::Response5Oct[TableSize];
+	float ValueTables::Response6Oct[TableSize];
 
 	// decade response, value multiplies by 10 every step
-	double ValueTables::Response2Dec[TableSize];
-	double ValueTables::Response3Dec[TableSize];
-	double ValueTables::Response4Dec[TableSize];
+	float ValueTables::Response2Dec[TableSize];
+	float ValueTables::Response3Dec[TableSize];
+	float ValueTables::Response4Dec[TableSize];
 
 	void ValueTables::Init()
 	{
@@ -30,7 +30,7 @@ namespace AudioLib
 
 		for (int i = 0; i <= 4000; i++)
 		{
-			double x = i / 4000.0;
+			float x = i / 4000.0;
 
 			Sqrt[i] = std::sqrt(x);
 			Sqrt3[i] = std::pow(x, 1.0 / 3.0);
@@ -73,7 +73,7 @@ namespace AudioLib
 		Response4Dec[0] = 0;
 	}
 
-	double ValueTables::Get(double index, double* table)
+	float ValueTables::Get(float index, float* table)
 	{
 		if (table == nullptr)
 			return index;

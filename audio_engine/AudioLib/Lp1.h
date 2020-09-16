@@ -11,30 +11,30 @@ namespace AudioLib
 	class Lp1
 	{
 	public:
-		double Output;
+		float Output;
 
 	public:
-		Lp1(double fs)
+		Lp1(float fs)
 		{
 			this->fs = fs;
 		}
 
-		double GetSamplerate()
+		float GetSamplerate()
 		{
 			return fs;
 		}
 
-		void SetSamplerate(double samplerate)
+		void SetSamplerate(float samplerate)
 		{
 			fs = samplerate;
 		}
 
-		double GetCutoffHz()
+		float GetCutoffHz()
 		{
 			return cutoffHz;
 		}
 
-		void SetCutoffHz(double hz)
+		void SetCutoffHz(float hz)
 		{
 			cutoffHz = hz;
 			Update();
@@ -54,7 +54,7 @@ namespace AudioLib
 			b0 = 1 - alpha;
 		}
 
-		double Process(double input)
+		float Process(float input)
 		{
 			if (input == 0 && Output < 0.000000000001)
 			{
@@ -67,7 +67,7 @@ namespace AudioLib
 			return Output;
 		}
 
-		void Process(double* input, double* output, int len)
+		void Process(const float* input, float* output, int len)
 		{
 			for (int i = 0; i < len; i++)
 				output[i] = Process(input[i]);
@@ -75,9 +75,9 @@ namespace AudioLib
 
 
 	private:
-		double fs;
-		double b0, a1;
-		double cutoffHz;
+		float fs;
+		float b0, a1;
+		float cutoffHz;
 	};
 }
 
