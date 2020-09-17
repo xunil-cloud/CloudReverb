@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include "AudioLib/MathDefs.h"
-#include "FastSin.h"
 
 namespace CloudSeed
 {

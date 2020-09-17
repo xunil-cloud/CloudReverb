@@ -3,11 +3,10 @@
 #define REVERBCONTROLLER
 
 #include <vector>
-#include "Default.h"
 #include "Parameter.h"
 #include "ReverbChannel.h"
 
-#include "ReverbController.h"
+
 #include "AudioLib/ValueTables.h"
 #include "AllpassDiffuser.h"
 #include "MultitapDiffuser.h"
@@ -18,7 +17,7 @@ namespace CloudSeed
 	class ReverbController
 	{
 	private:
-		static const int bufferSize = 4096; // just make it huge by default...
+		static const int bufferSize = 2048; // just make it huge by default...
 		int samplerate;
 
 		ReverbChannel channelL;

@@ -1,7 +1,7 @@
 #ifndef MODULATEDALLPASS
 #define MODULATEDALLPASS
 
-#include "ModulatedAllpass.h"
+
 #include "FastSin.h"
 #include "Utils.h"
 

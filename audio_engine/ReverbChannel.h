@@ -14,7 +14,7 @@
 #include "AllpassDiffuser.h"
 
 #include <cmath>
-#include "ReverbChannel.h"
+
 #include "AudioLib/ShaRandom.h"
 #include "Utils.h"
 
