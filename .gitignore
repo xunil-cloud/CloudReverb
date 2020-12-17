@@ -45,4 +45,5 @@ CTestTestfile.cmake
 _deps
 
 # build folder
-build/*
+build
+cmake-build-debug
