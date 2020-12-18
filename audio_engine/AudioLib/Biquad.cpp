@@ -74,12 +74,12 @@ namespace AudioLib
 
 	vector<double> Biquad::GetA() 
 	{
-		return vector<double>({ 1, a1, a2 });
+		return { 1, a1, a2 };
 	}
 
 	vector<double> Biquad::GetB()
 	{
-		return vector<double>({ b0, b1, b2 });
+		return { b0, b1, b2 };
 	}
 
 
