@@ -15,7 +15,8 @@ cmake_minimum_required(VERSION 3.15)
 # directories, and the current project version. This is a standard CMake command.
 
 project(CloudReverb VERSION 0.0.1)
-
+set(CMAKE_CXX_STANDARD_14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
 # included JUCE directly in your source tree (perhaps as a submodule), you'll need to tell CMake to
@@ -105,5 +106,9 @@ target_compile_definitions(CloudReverb
 target_link_libraries(CloudReverb PRIVATE
     # AudioPluginData           # If we'd created a binary data target, we'd link to it here
     juce::juce_audio_utils
-    audio_engine)
+    audio_engine
+PUBLIC
+	juce::juce_recommended_config_flags
+    juce::juce_recommended_lto_flags
+    juce::juce_recommended_warning_flags)
 
