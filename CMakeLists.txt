@@ -88,6 +88,8 @@ target_compile_definitions(CloudReverb
     JUCE_REPORT_APP_USAGE=0
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
+add_compile_definitions(_USE_MATH_DEFINES)
+
 # If your target needs extra binary assets, you can add them here. The first argument is the name of
 # a new static library target that will include all the binary resources. There is an optional
 # `NAMESPACE` argument that can specify the namespace of the generated binary data class. Finally,
