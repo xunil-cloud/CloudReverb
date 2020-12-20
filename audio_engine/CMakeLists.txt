@@ -19,3 +19,4 @@ set(audio_engine_source_files 	AllpassDiffuser.h
 								AudioLib/ValueTables.cpp)
 
 add_library(audio_engine ${audio_engine_source_files})
+add_compile_definitions(_USE_MATH_DEFINES)
