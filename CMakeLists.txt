@@ -22,6 +22,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # included JUCE directly in your source tree (perhaps as a submodule), you'll need to tell CMake to
 # include that subdirectory as part of the build.
 
+add_compile_definitions(_USE_MATH_DEFINES)
+
 # find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
 # or
 add_subdirectory(JUCE)                    # If you've put JUCE in a subdirectory called JUCE
@@ -88,7 +90,6 @@ target_compile_definitions(CloudReverb
     JUCE_REPORT_APP_USAGE=0
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
-add_compile_definitions(_USE_MATH_DEFINES)
 
 # If your target needs extra binary assets, you can add them here. The first argument is the name of
 # a new static library target that will include all the binary resources. There is an optional
