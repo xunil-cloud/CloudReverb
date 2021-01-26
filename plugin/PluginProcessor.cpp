@@ -12,7 +12,15 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), reverb(44100)
+                       ), reverb(44100),treeState(*this, nullptr, juce::Identifier("CloudReverb"),
+						{
+							std::make_unique<juce::AudioParameterFloat>(
+								"gain",  // parameterID
+								"Gain",  // parameter name
+								0.0f,    // minimum value
+								1.0f,    // maximum value
+								0.5f)    // default value
+						}) 
 {
     AudioLib::ValueTables::Init();
 	CloudSeed::FastSin::Init();
@@ -66,6 +74,293 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     reverb.SetParameter(Parameter::CutoffEnabled, 1.0);
     reverb.SetParameter(Parameter::LateStageTap, 1.0);
     reverb.SetParameter(Parameter::Interpolation, 0.0);
+	
+
+    addParameter(InputMix = new juce::AudioParameterFloat(
+                     "InputMix", "InputMix",
+                     juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f));
+    addParameter(PreDelay = new juce::AudioParameterInt("PreDelay", "PreDelay", 0,
+                                                        1000, 0));  // ms
+    addParameter(
+        HighPass = new juce::AudioParameterFloat(
+            "HighPass", "HighPass",
+            juce::NormalisableRange<float>(
+                20.0f, 1000.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(16, value) - 1) / 15 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 15 + 1) /
+                           std::log(16);
+                }),
+            20.0f));
+    addParameter(
+        LowPass = new juce::AudioParameterFloat(
+            "LowPass", "LowPass",
+            juce::NormalisableRange<float>(
+                400.0f, 20000.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(16, value) - 1) / 15 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 15 + 1) /
+                           std::log(16);
+                }),
+            20000.0f));
+    addParameter(
+        TapCount = new juce::AudioParameterInt("TapCount", "TapCount", 1, 50, 1));
+    addParameter(TapLength = new juce::AudioParameterInt("TapLength", "TapLength",
+                                                         0, 500, 1));
+    addParameter(
+        TapGain = new juce::AudioParameterFloat(
+            "TapGain", "TapGain",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(TapDecay = new juce::AudioParameterFloat(
+                     "TapDecay", "TapDecay",
+                     juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f));
+    addParameter(DiffusionEnabled = new juce::AudioParameterBool(
+                     "DiffusionEnabled", "DiffusionEnabled", false));
+    addParameter(DiffusionStages = new juce::AudioParameterInt(
+                     "DiffusionStages", "DiffusionStages", 1, 8, 1));
+    addParameter(DiffusionDelay = new juce::AudioParameterInt(
+                     "DiffusionDelay", "DiffusionDelay", 10, 100, 10));  // ms
+    addParameter(DiffusionFeedback = new juce::AudioParameterFloat(
+                     "DiffusionFeedback", "DiffusionFeedback",
+                     juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f));
+    addParameter(LineCount = new juce::AudioParameterInt("LineCount", "LineCount",
+                                                         1, 12, 1));
+    addParameter(
+        LineDelay = new juce::AudioParameterFloat(
+            "LineDelay", "LineDelay",
+            juce::NormalisableRange<float>(
+                20.0f, 1000.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            20.0f));
+    addParameter(LineDecay = new juce::AudioParameterFloat(
+                     "LineDecay", "LineDecay",
+                     juce::NormalisableRange<float>(
+                         0.05f, 60.0f,
+                         [](float start, float end, float value) {
+                             return start + (std::pow(1000, value) - 1) / 999 *
+                                                (end - start);
+                         },
+                         [](float start, float end, float value) {
+                             return std::log((value - start) / (end - start) * 999 +
+                                             1) /
+                                    std::log(1000);
+                         }),
+                     1.0f));
+    addParameter(LateDiffusionEnabled = new juce::AudioParameterBool(
+                     "LateDiffusionEnabled", "LateDiffusionEnabled", false));
+    addParameter(LateDiffusionStages = new juce::AudioParameterInt(
+                     "LateDiffusionStages", "LateDiffusionStages", 1, 8, 1));
+    addParameter(LateDiffusionDelay = new juce::AudioParameterInt(
+                     "LateDiffusionDelay", "LateDiffusionDelay", 10, 100, 10));
+    addParameter(LateDiffusionFeedback = new juce::AudioParameterFloat(
+                     "LateDiffusionFeedback", "LateDiffusionFeedback",
+                     juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f));
+    addParameter(
+        PostLowShelfGain = new juce::AudioParameterFloat(
+            "PostLowShelfGain", "PostLowShelfGain",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(
+        PostLowShelfFrequency = new juce::AudioParameterFloat(
+            "PostLowShelfFrequency", "PostLowShelfFrequency",
+            juce::NormalisableRange<float>(
+                20.0f, 1000.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(16, value) - 1) / 15 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 15 + 1) /
+                           std::log(16);
+                }),
+            1000.0f));
+    addParameter(
+        PostHighShelfGain = new juce::AudioParameterFloat(
+            "PostHighShelfGain", "PostHighShelfGain",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(
+        PostHighShelfFrequency = new juce::AudioParameterFloat(
+            "PostHighShelfFrequency", "PostHighShelfFrequency",
+            juce::NormalisableRange<float>(
+                400.0f, 20000.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(16, value) - 1) / 15 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 15 + 1) /
+                           std::log(16);
+                }),
+            20000.0f));
+    addParameter(
+        PostCutoffFrequency = new juce::AudioParameterFloat(
+            "PostCutoffFrequency", "PostCutoffFrequency",
+            juce::NormalisableRange<float>(
+                400.0f, 20000.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(16, value) - 1) / 15 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 15 + 1) /
+                           std::log(16);
+                }),
+            20000.0f));
+    addParameter(EarlyDiffusionModAmount = new juce::AudioParameterFloat(
+                     "EarlyDiffusionModAmount", "EarlyDiffusionModAmount",
+                     juce::NormalisableRange<float>(0.0f, 2.5f), 0.5f));
+    addParameter(
+        EarlyDiffusionModRate = new juce::AudioParameterFloat(
+            "EarlyDiffusionModRate", "EarlyDiffusionModRate",
+            juce::NormalisableRange<float>(
+                0.0f, 5.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(LineModAmount = new juce::AudioParameterFloat(
+                     "LineModAmount", "LineModAmount",
+                     juce::NormalisableRange<float>(0.0f, 2.5f), 0.5f));
+    addParameter(
+        LineModRate = new juce::AudioParameterFloat(
+            "LineModRate", "LineModRate",
+            juce::NormalisableRange<float>(
+                0.0f, 5.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(LateDiffusionModAmount = new juce::AudioParameterFloat(
+                     "LateDiffusionModAmount", "LateDiffusionModAmount",
+                     juce::NormalisableRange<float>(0.0f, 2.5f), 0.5f));
+    addParameter(
+        LateDiffusionModRate = new juce::AudioParameterFloat(
+            "LateDiffusionModRate", "LateDiffusionModRate",
+            juce::NormalisableRange<float>(
+                0.0f, 5.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(TapSeed = new juce::AudioParameterInt("TapSeed", "TapSeed", 1,
+                                                       1000000, 1));
+    addParameter(DiffusionSeed = new juce::AudioParameterInt(
+                     "DiffusionSeed", "DiffusionSeed", 1, 1000000, 1));
+    addParameter(DelaySeed = new juce::AudioParameterInt("DelaySeed", "DelaySeed",
+                                                         1, 1000000, 1));
+    addParameter(PostDiffusionSeed = new juce::AudioParameterInt(
+                     "PostDiffusionSeed", "PostDiffusionSeed", 1, 1000000, 1));
+    addParameter(CrossSeed = new juce::AudioParameterFloat(
+                     "CrossSeed", "CrossSeed",
+                     juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f));
+    addParameter(DryOut = new juce::AudioParameterFloat(
+                     "DryOut", "DryOut",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(PredelayOut = new juce::AudioParameterFloat(
+                     "PredelayOut", "PredelayOut",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(EarlyOut = new juce::AudioParameterFloat(
+                     "EarlyOut", "EarlyOut",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(MainOut = new juce::AudioParameterFloat(
+                     "MainOut", "MainOut",
+            juce::NormalisableRange<float>(
+                0.0f, 1.0f,
+                [](float start, float end, float value) {
+                    return start + (std::pow(100, value) - 1) / 99 * (end - start);
+                },
+                [](float start, float end, float value) {
+                    return std::log((value - start) / (end - start) * 99 + 1) /
+                           std::log(100);
+                }),
+            0.5f));
+    addParameter(HiPassEnabled = new juce::AudioParameterBool(
+                     "HiPassEnabled", "HiPassEnabled", false));
+    addParameter(LowPassEnabled = new juce::AudioParameterBool(
+                     "LowPassEnabled", "LowPassEnabled", false));
+    addParameter(LowShelfEnabled = new juce::AudioParameterBool(
+                     "LowShelfEnabled", "LowShelfEnabled", false));
+    addParameter(HighShelfEnabled = new juce::AudioParameterBool(
+                     "HighShelfEnabled", "HighShelfEnabled", false));
+    addParameter(CutoffEnabled = new juce::AudioParameterBool(
+                     "CutoffEnabled", "CutoffEnabled", false));
+    addParameter(LateStageTap = new juce::AudioParameterFloat(
+                     "LateStageTap", "LateStageTap",
+                     juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f));
+    addParameter(Interpolation = new juce::AudioParameterBool(
+                     "Interpolation", "Interpolation", false));
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
