@@ -47,3 +47,6 @@ _deps
 # build folder
 build
 cmake-build-debug
+cmake-build-release
+.cache
+.idea
