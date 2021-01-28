@@ -145,6 +145,12 @@ namespace CloudSeed
 			channelL.SetParameter(param, scaled);
 			channelR.SetParameter(param, scaled);
 		}
+		void updateParameter(Parameter param, double scaled_value, float normalized_value)
+		{
+			parameters[(int)param] = normalized_value;
+			channelL.SetParameter(param, scaled_value);
+			channelR.SetParameter(param, scaled_value);
+		}
 
 		void ClearBuffers()
 		{

@@ -328,6 +328,8 @@ namespace CloudSeed
 				for (auto line : lines)
 					line->SetInterpolationEnabled(value >= 0.5);
 				break;
+			default: 
+				break;
 			}
 		}
 

@@ -2,10 +2,13 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include <unordered_map>
+
 #include "../audio_engine/ReverbController.h"
+#include "../concurrentqueue/concurrentqueue.h"
 
 //==============================================================================
-class AudioPluginAudioProcessor : public juce::AudioProcessor {
+class AudioPluginAudioProcessor : public juce::AudioProcessor, private juce::AudioProcessorValueTreeState::Listener {
 public:
     //==============================================================================
     AudioPluginAudioProcessor();
@@ -14,6 +17,7 @@ public:
     //==============================================================================
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
 
@@ -42,61 +46,19 @@ public:
     void getStateInformation(juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState treeState;
+
+    std::unordered_map<juce::String, Parameter> map;
+    struct Message {
+        float newNormalisedValue;
+        float newScaledValue;
+        Parameter param;
+    };
+
 private:
     CloudSeed::ReverbController reverb;
 
-    juce::AudioProcessorValueTreeState treeState;
-
-    // Input
-    juce::AudioParameterFloat* InputMix;
-    juce::AudioParameterInt* PreDelay;
-    juce::AudioParameterFloat* HighPass;
-    juce::AudioParameterFloat* LowPass;
-
-    // Early
-    juce::AudioParameterInt* TapCount;
-    juce::AudioParameterInt* TapLength;
-    juce::AudioParameterFloat* TapGain;
-    juce::AudioParameterFloat* TapDecay;
-
-    juce::AudioParameterBool* DiffusionEnabled;
-    juce::AudioParameterInt* DiffusionStages;
-    juce::AudioParameterInt* DiffusionDelay;
-    juce::AudioParameterFloat* DiffusionFeedback;
-    juce::AudioParameterInt* LineCount;
-    juce::AudioParameterFloat* LineDelay;
-    juce::AudioParameterFloat* LineDecay;
-    juce::AudioParameterBool* LateDiffusionEnabled;
-    juce::AudioParameterInt* LateDiffusionStages;
-    juce::AudioParameterInt* LateDiffusionDelay;
-    juce::AudioParameterFloat* LateDiffusionFeedback;
-    juce::AudioParameterFloat* PostLowShelfGain;
-    juce::AudioParameterFloat* PostLowShelfFrequency;
-    juce::AudioParameterFloat* PostHighShelfGain;
-    juce::AudioParameterFloat* PostHighShelfFrequency;
-    juce::AudioParameterFloat* PostCutoffFrequency;
-    juce::AudioParameterFloat* EarlyDiffusionModAmount;
-    juce::AudioParameterFloat* EarlyDiffusionModRate;
-    juce::AudioParameterFloat* LineModAmount;
-    juce::AudioParameterFloat* LineModRate;
-    juce::AudioParameterFloat* LateDiffusionModAmount;
-    juce::AudioParameterFloat* LateDiffusionModRate;
-    juce::AudioParameterInt* TapSeed;
-    juce::AudioParameterInt* DiffusionSeed;
-    juce::AudioParameterInt* DelaySeed;
-    juce::AudioParameterInt* PostDiffusionSeed;
-    juce::AudioParameterFloat* CrossSeed;
-    juce::AudioParameterFloat* DryOut;
-    juce::AudioParameterFloat* PredelayOut;
-    juce::AudioParameterFloat* EarlyOut;
-    juce::AudioParameterFloat* MainOut;
-    juce::AudioParameterBool* HiPassEnabled;
-    juce::AudioParameterBool* LowPassEnabled;
-    juce::AudioParameterBool* LowShelfEnabled;
-    juce::AudioParameterBool* HighShelfEnabled;
-    juce::AudioParameterBool* CutoffEnabled;
-    juce::AudioParameterFloat* LateStageTap;
-    juce::AudioParameterBool* Interpolation;
+    moodycamel::ConcurrentQueue<Message> queue;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessor)
