@@ -16,59 +16,11 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 #endif
                          ),
       treeState(*this, nullptr, juce::Identifier("CloudReverb"), createParameterLayout()),
-      reverb(44100) {
+      reverb(48000) {
     AudioLib::ValueTables::Init();
     CloudSeed::FastSin::Init();
     reverb.ClearBuffers();  // clear buffers before we start do dsp stuff.
 
-    // https://github.com/ValdemarOrn/CloudSeed/blob/master/Factory%20Programs/Hyperplane.json
-
-    reverb.SetParameter(Parameter::InputMix, 0.1549999862909317);
-    reverb.SetParameter(Parameter::PreDelay, 0.0);
-    reverb.SetParameter(Parameter::HighPass, 0.57999998331069946);
-    reverb.SetParameter(Parameter::LowPass, 0.9100000262260437);
-    reverb.SetParameter(Parameter::TapCount, 0.41499990224838257);
-    reverb.SetParameter(Parameter::TapLength, 0.43999996781349182);
-    reverb.SetParameter(Parameter::TapGain, 1.0);
-    reverb.SetParameter(Parameter::TapDecay, 1.0);
-    reverb.SetParameter(Parameter::DiffusionEnabled, 1.0);
-    reverb.SetParameter(Parameter::DiffusionStages, 0.4285714328289032);
-    reverb.SetParameter(Parameter::DiffusionDelay, 0.27500024437904358);
-    reverb.SetParameter(Parameter::DiffusionFeedback, 0.660000205039978);
-    reverb.SetParameter(Parameter::LineCount, 0.72727274894714355);
-    reverb.SetParameter(Parameter::LineDelay, 0.22500017285346985);
-    reverb.SetParameter(Parameter::LineDecay, 0.794999897480011);
-    reverb.SetParameter(Parameter::LateDiffusionEnabled, 1.0);
-    reverb.SetParameter(Parameter::LateDiffusionStages, 1.0);
-    reverb.SetParameter(Parameter::LateDiffusionDelay, 0.22999951243400574);
-    reverb.SetParameter(Parameter::LateDiffusionFeedback, 0.59499990940093994);
-    reverb.SetParameter(Parameter::PostLowShelfGain, 0.95999979972839355);
-    reverb.SetParameter(Parameter::PostLowShelfFrequency, 0.23999994993209839);
-    reverb.SetParameter(Parameter::PostHighShelfGain, 0.97500002384185791);
-    reverb.SetParameter(Parameter::PostHighShelfFrequency, 0.78499996662139893);
-    reverb.SetParameter(Parameter::PostCutoffFrequency, 0.87999981641769409);
-    reverb.SetParameter(Parameter::EarlyDiffusionModAmount, 0.13499999046325684);
-    reverb.SetParameter(Parameter::EarlyDiffusionModRate, 0.29000008106231689);
-    reverb.SetParameter(Parameter::LineModAmount, 0.53999996185302734);
-    reverb.SetParameter(Parameter::LineModRate, 0.44999989867210388);
-    reverb.SetParameter(Parameter::LateDiffusionModAmount, 0.15999998152256012);
-    reverb.SetParameter(Parameter::LateDiffusionModRate, 0.56000012159347534);
-    reverb.SetParameter(Parameter::TapSeed, 0.00048499999684281647);
-    reverb.SetParameter(Parameter::DiffusionSeed, 0.00020799999765586108);
-    reverb.SetParameter(Parameter::DelaySeed, 0.00034699999378062785);
-    reverb.SetParameter(Parameter::PostDiffusionSeed, 0.00037200000951997936);
-    reverb.SetParameter(Parameter::CrossSeed, 0.800000011920929);
-    reverb.SetParameter(Parameter::DryOut, 0.86500018835067749);
-    reverb.SetParameter(Parameter::PredelayOut, 0.0);
-    reverb.SetParameter(Parameter::EarlyOut, 0.8200000524520874);
-    reverb.SetParameter(Parameter::MainOut, 0.79500007629394531);
-    reverb.SetParameter(Parameter::HiPassEnabled, 1.0);
-    reverb.SetParameter(Parameter::LowPassEnabled, 1.0);
-    reverb.SetParameter(Parameter::LowShelfEnabled, 1.0);
-    reverb.SetParameter(Parameter::HighShelfEnabled, 1.0);
-    reverb.SetParameter(Parameter::CutoffEnabled, 1.0);
-    reverb.SetParameter(Parameter::LateStageTap, 1.0);
-    reverb.SetParameter(Parameter::Interpolation, 0.0);
     for (auto param : getParameters()) {
         auto paramWithID = dynamic_cast<juce::AudioProcessorParameterWithID*>(param);
         treeState.addParameterListener(paramWithID->paramID, this);
@@ -120,6 +72,54 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     map.insert({"CutoffEnabled", Parameter::CutoffEnabled});
     map.insert({"LateStageTap", Parameter::LateStageTap});
     map.insert({"Interpolation", Parameter::Interpolation});
+
+    // https://github.com/ValdemarOrn/CloudSeed/blob/master/Factory%20Programs/Chorus%20Delay.json
+    treeState.getParameter("InputMix")->setValueNotifyingHost(0.0);
+    treeState.getParameter("PreDelay")->setValueNotifyingHost(0.070000000298023224);
+    treeState.getParameter("HighPass")->setValueNotifyingHost(0.0);
+    treeState.getParameter("LowPass")->setValueNotifyingHost(0.29000008106231689);
+    treeState.getParameter("TapCount")->setValueNotifyingHost(0.36499997973442078);
+    treeState.getParameter("TapLength")->setValueNotifyingHost(1.0);
+    treeState.getParameter("TapGain")->setValueNotifyingHost(1.0);
+    treeState.getParameter("TapDecay")->setValueNotifyingHost(0.86500012874603271);
+    treeState.getParameter("DiffusionEnabled")->setValueNotifyingHost(1.0);
+    treeState.getParameter("DiffusionStages")->setValueNotifyingHost(0.4285714328289032);
+    treeState.getParameter("DiffusionDelay")->setValueNotifyingHost(0.43500006198883057);
+    treeState.getParameter("DiffusionFeedback")->setValueNotifyingHost(0.725000262260437);
+    treeState.getParameter("LineCount")->setValueNotifyingHost(1.0);
+    treeState.getParameter("LineDelay")->setValueNotifyingHost(0.68499988317489624);
+    treeState.getParameter("LineDecay")->setValueNotifyingHost(0.68000012636184692);
+    treeState.getParameter("LateDiffusionEnabled")->setValueNotifyingHost(1.0);
+    treeState.getParameter("LateDiffusionStages")->setValueNotifyingHost(0.28571429848670959);
+    treeState.getParameter("LateDiffusionDelay")->setValueNotifyingHost(0.54499995708465576);
+    treeState.getParameter("LateDiffusionFeedback")->setValueNotifyingHost(0.65999996662139893);
+    treeState.getParameter("PostLowShelfGain")->setValueNotifyingHost(0.5199999213218689);
+    treeState.getParameter("PostLowShelfFrequency")->setValueNotifyingHost(0.31499990820884705);
+    treeState.getParameter("PostHighShelfGain")->setValueNotifyingHost(0.83500003814697266);
+    treeState.getParameter("PostHighShelfFrequency")->setValueNotifyingHost(0.73000013828277588);
+    treeState.getParameter("PostCutoffFrequency")->setValueNotifyingHost(0.73499983549118042);
+    treeState.getParameter("EarlyDiffusionModAmount")->setValueNotifyingHost(0.50000005960464478);
+    treeState.getParameter("EarlyDiffusionModRate")->setValueNotifyingHost(0.42500010132789612);
+    treeState.getParameter("LineModAmount")->setValueNotifyingHost(0.59000003337860107);
+    treeState.getParameter("LineModRate")->setValueNotifyingHost(0.46999993920326233);
+    treeState.getParameter("LateDiffusionModAmount")->setValueNotifyingHost(0.619999885559082);
+    treeState.getParameter("LateDiffusionModRate")->setValueNotifyingHost(0.42500019073486328);
+    treeState.getParameter("TapSeed")->setValueNotifyingHost(0.0011500000255182385);
+    treeState.getParameter("DiffusionSeed")->setValueNotifyingHost(0.00018899999849963933);
+    treeState.getParameter("DelaySeed")->setValueNotifyingHost(0.00033700000494718552);
+    treeState.getParameter("PostDiffusionSeed")->setValueNotifyingHost(0.00050099997315555811);
+    treeState.getParameter("CrossSeed")->setValueNotifyingHost(0.0);
+    treeState.getParameter("DryOut")->setValueNotifyingHost(0.94499987363815308);
+    treeState.getParameter("PredelayOut")->setValueNotifyingHost(0.0);
+    treeState.getParameter("EarlyOut")->setValueNotifyingHost(0.77999997138977051);
+    treeState.getParameter("MainOut")->setValueNotifyingHost(0.74500006437301636);
+    treeState.getParameter("HiPassEnabled")->setValueNotifyingHost(0.0);
+    treeState.getParameter("LowPassEnabled")->setValueNotifyingHost(0.0);
+    treeState.getParameter("LowShelfEnabled")->setValueNotifyingHost(0.0);
+    treeState.getParameter("HighShelfEnabled")->setValueNotifyingHost(0.0);
+    treeState.getParameter("CutoffEnabled")->setValueNotifyingHost(1.0);
+    treeState.getParameter("LateStageTap")->setValueNotifyingHost(1.0);
+    treeState.getParameter("Interpolation")->setValueNotifyingHost(0.);
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {
@@ -185,7 +185,7 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     juce::ignoreUnused(samplesPerBlock);
-	reverb.SetSamplerate(sampleRate);
+    reverb.SetSamplerate(sampleRate);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {
@@ -588,7 +588,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     group->addChild(std::move(CutoffEnabled));
     group->addChild(std::move(LateStageTap));
     group->addChild(std::move(Interpolation));
-	
+
     params.push_back(std::move(group));
     return {params.begin(), params.end()};
 }
