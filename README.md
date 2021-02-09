@@ -1,27 +1,28 @@
 # CloudReverb
 
 This is an audio plugin for algorithmic reverb. The algorithm is borrowed from [CloudSeed VST](https://github.com/ValdemarOrn/CloudSeed) 
-by Valdemar Erlingsson. I try to rewrite the plugin with JUCE, so it can be also run on Linux and MacOS. For now, the GUI hasn't be functional, 
-I temporarily set the plugin preset to [Hyperplane](https://github.com/ValdemarOrn/CloudSeed/blob/master/Factory%20Programs/Hyperplane.json). 
-(You can change it from the [source code](https://github.com/xunil-cloud/CloudReverb/blob/master/plugin/PluginProcessor.cpp#L23), though.)
+by Valdemar Erlingsson. I try to rewrite the plugin with JUCE, so it can be also run on Linux and MacOS.
 
+For now, there is no graphical user interface for plugin. Though, You can now control the plugin parameters from the plugin host or DAW. I might add gui (maybe using [foleys_gui_magic](https://github.com/ffAudio/foleys_gui_magic)) in the future.
+
+Since I write this plugin on Linux, the plugin is mainly tested on Linux. It should run on MacOS and Windows, but need more test. If you find any issue, feel free to create new issue.
 
 ## How to Build
-##### 1. clone the repository and change directory into project folder
 
-`git clone --recursive https://github.com/xunil-cloud/CloudReverb.git`
+### Linux
 
-`cd CloudReverb`
+clone the repository:
 
-##### 2. run cmake command and build the project
+```sh
+git clone --recursive https://github.com/xunil-cloud/CloudReverb.git
+```
 
-`cmake -Bbuild`
-
-(default is debug build, apppend `-DCMAKE_BUILD_TYPE=Release` flag if you want a release build.)
-
-`cd build`
-
-`make`
+run cmake command and build the project:
+```sh
+cd CloudReverb
+cmake -Bbuild -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
 
 ## Credit
 
