@@ -59,7 +59,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: all-artifacts
-        path: ${{runner.workspace}}/build/Xampler_artefacts/
+        path: ${{runner.workspace}}/build/CloudReverb_artefacts/
 
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v2
