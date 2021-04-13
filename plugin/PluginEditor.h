@@ -18,6 +18,7 @@ private:
     AudioPluginAudioProcessor& processorRef;
     juce::Slider slider;
     juce::SliderParameterAttachment attachment;
+    juce::TextButton reset_button;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };
