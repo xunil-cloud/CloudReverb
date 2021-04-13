@@ -78,7 +78,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     treeState.getParameter("PreDelay")->setValueNotifyingHost(0.070000000298023224);
     treeState.getParameter("HighPass")->setValueNotifyingHost(0.0);
     treeState.getParameter("LowPass")->setValueNotifyingHost(0.29000008106231689);
-    treeState.getParameter("TapCount")->setValueNotifyingHost(0.36499997973442078);
+    treeState.getParameter("TapCount")->setValueNotifyingHost(0.35);
     treeState.getParameter("TapLength")->setValueNotifyingHost(1.0);
     treeState.getParameter("TapGain")->setValueNotifyingHost(1.0);
     treeState.getParameter("TapDecay")->setValueNotifyingHost(0.86500012874603271);
@@ -104,10 +104,10 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     treeState.getParameter("LineModRate")->setValueNotifyingHost(0.46999993920326233);
     treeState.getParameter("LateDiffusionModAmount")->setValueNotifyingHost(0.619999885559082);
     treeState.getParameter("LateDiffusionModRate")->setValueNotifyingHost(0.42500019073486328);
-    treeState.getParameter("TapSeed")->setValueNotifyingHost(0.0011500000255182385);
-    treeState.getParameter("DiffusionSeed")->setValueNotifyingHost(0.00018899999849963933);
-    treeState.getParameter("DelaySeed")->setValueNotifyingHost(0.00033700000494718552);
-    treeState.getParameter("PostDiffusionSeed")->setValueNotifyingHost(0.00050099997315555811);
+    treeState.getParameter("TapSeed")->setValueNotifyingHost(0.001149);
+    treeState.getParameter("DiffusionSeed")->setValueNotifyingHost(0.000188);
+    treeState.getParameter("DelaySeed")->setValueNotifyingHost(0.000336);
+    treeState.getParameter("PostDiffusionSeed")->setValueNotifyingHost(0.000499);
     treeState.getParameter("CrossSeed")->setValueNotifyingHost(0.0);
     treeState.getParameter("DryOut")->setValueNotifyingHost(0.94499987363815308);
     treeState.getParameter("PredelayOut")->setValueNotifyingHost(0.0);
@@ -258,6 +258,7 @@ void AudioPluginAudioProcessor::setStateInformation(const void* data, int sizeIn
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    std::cout << xmlState->toString();
 
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(treeState.state.getType()))
@@ -606,4 +607,5 @@ void AudioPluginAudioProcessor::parameterChanged(const juce::String& parameterID
     if (param_enum == map.end())
         return;
     queue.enqueue({normalised_value, newValue, param_enum->second});
+    std::cout << parameterID << ": " << newValue << std::endl;
 }
