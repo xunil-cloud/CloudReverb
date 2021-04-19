@@ -64,12 +64,14 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         auto name = param->getName(20);
 
         auto slider = new juce::Slider();
+        slider->setLookAndFeel(&myLookAndFeel);
         slider->setSliderStyle(juce::Slider::SliderStyle::Rotary);
         slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
         slider->setPopupDisplayEnabled(true, true, this, -1);
 
         auto label = new juce::Label("label", param->getName(50));
         label->setJustificationType(juce::Justification::centredTop);
+        // label->setFont(juce::Font(19));
 
         auto id = dynamic_cast<juce::AudioProcessorParameterWithID*>(param)->paramID;
         sliders.insert({id, slider});
@@ -101,11 +103,8 @@ void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g) {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     g.setColour(juce::Colour(100, 100, 100));
-    g.drawRect(40 - 10, 40 - 20, 160 + 20, 220 + 30, 2);
-    // g.drawRect(40, 40, 160, 220, 2);
-    g.setColour(juce::Colours::yellow);
-    g.fillEllipse(120, 35, 15, 8);
-    g.fillEllipse(120, 145, 12, 8);
+    g.drawRect(40, 40, 11*16, 220);
+    g.drawRect(280+16, 40, 25*16, 220);
 }
 
 void AudioPluginAudioProcessorEditor::resized() {
@@ -123,8 +122,9 @@ void AudioPluginAudioProcessorEditor::resized() {
                        juce::GridItem(labels["PreDelay"]), juce::GridItem(labels["LowPass"])};
     input_sec.templateColumns = {Track(Fr(1)), Track(Fr(1))};
     input_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
-    input_sec.alignItems = juce::Grid::AlignItems::end;
-    input_sec.performLayout(juce::Rectangle<int>(40, 40, 160, 220));
+    // input_sec.alignItems = juce::Grid::AlignItems::end;
+    input_sec.columnGap = Px(48);
+    input_sec.performLayout(juce::Rectangle<int>(40, 40, 11*16, 220));
     // setColour(juce::Slider::ColourIds::textBoxBackgroundColourId, juce::Colour(50, 50, 50));
     // setColour(juce::TooltipWindow, juce::Colours::red);
     early_sec.items = {juce::GridItem(sliders["TapCount"]), juce::GridItem(sliders["TapLength"]), juce::GridItem(sliders["DiffusionDelay"]), juce::GridItem(sliders["DiffusionFeedback"]),
@@ -133,6 +133,7 @@ void AudioPluginAudioProcessorEditor::resized() {
                        juce::GridItem(labels["TapDecay"]), juce::GridItem(labels["TapGain"]), juce::GridItem(labels["EarlyDiffusionModAmount"]), juce::GridItem(labels["EarlyDiffusionModRate"])};
     early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)),Track(Fr(1)),Track(Fr(1))};
     early_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
-    early_sec.alignItems = juce::Grid::AlignItems::end;
-    early_sec.performLayout(juce::Rectangle<int>(250, 40, 320, 220));
+    // early_sec.alignItems = juce::Grid::AlignItems::end;
+    early_sec.columnGap = Px(48);
+    early_sec.performLayout(juce::Rectangle<int>(280+16, 40, 25*16, 220));
 }

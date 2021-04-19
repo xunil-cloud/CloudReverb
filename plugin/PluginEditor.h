@@ -1,6 +1,8 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "MyLookAndFeel.h"
+
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor {
@@ -16,6 +18,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
+    MyLookAndFeel myLookAndFeel;
     juce::TextButton reset_button;
     juce::TextButton reset_button_;
     std::unordered_map<juce::String, juce::Slider*> sliders;
