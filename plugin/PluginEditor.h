@@ -1,8 +1,7 @@
 #pragma once
 
-#include "PluginProcessor.h"
 #include "MyLookAndFeel.h"
-
+#include "PluginProcessor.h"
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor {
@@ -20,11 +19,11 @@ private:
     AudioPluginAudioProcessor& processorRef;
     MyLookAndFeel myLookAndFeel;
     juce::TextButton reset_button;
-    juce::TextButton reset_button_;
     std::unordered_map<juce::String, juce::Slider*> sliders;
     std::unordered_map<juce::String, juce::Label*> labels;
     juce::Grid input_sec;
     juce::Grid early_sec;
+    juce::Grid late_sec;
     std::vector<juce::SliderParameterAttachment*> attachments;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)

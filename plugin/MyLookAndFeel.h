@@ -15,11 +15,11 @@ public:
         auto rw = radius * 2.0f;
         auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
-        g.setColour(juce::Colours::red);
+        g.setColour(juce::Colour(210, 30, 20));
         g.fillEllipse(rx, ry, rw, rw);
 
         g.setColour(juce::Colours::black);
-        g.drawEllipse(rx, ry, rw, rw, 1.0f);
+        // g.drawEllipse(rx, ry, rw, rw, 1.0f);
 
         juce::Path p;
         auto pointerLength = radius * 0.33f;

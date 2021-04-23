@@ -1,5 +1,7 @@
 #include "PluginEditor.h"
 
+#include <array>
+
 #include "PluginProcessor.h"
 
 //==============================================================================
@@ -59,19 +61,23 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         state.getParameter("LateStageTap")->setValueNotifyingHost(1.0);
         state.getParameter("Interpolation")->setValueNotifyingHost(0.);
     };
+    auto param_groups = this->processorRef.getParameterTree().getSubgroups(false);
+    auto params = param_groups.getFirst()->getParameters(false);
 
-    for (auto param : this->processorRef.getParameters()) {
+    for (auto param : params) {
         auto name = param->getName(20);
 
         auto slider = new juce::Slider();
         slider->setLookAndFeel(&myLookAndFeel);
-        slider->setSliderStyle(juce::Slider::SliderStyle::Rotary);
+        slider->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        slider->setMouseDragSensitivity(300);
+        // slider->setVelocityBasedMode(true);
+        // slider->setSliderStyle(juce::Slider::SliderStyle::Rotary);
         slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
         slider->setPopupDisplayEnabled(true, true, this, -1);
 
         auto label = new juce::Label("label", param->getName(50));
         label->setJustificationType(juce::Justification::centredTop);
-        // label->setFont(juce::Font(19));
 
         auto id = dynamic_cast<juce::AudioProcessorParameterWithID*>(param)->paramID;
         sliders.insert({id, slider});
@@ -81,9 +87,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         addAndMakeVisible(slider);
         addAndMakeVisible(label);
     }
-    setSize(800, 600);
+    setSize(1552, 600);
     addAndMakeVisible(reset_button);
-    addAndMakeVisible(reset_button_);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() {
@@ -102,9 +107,13 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() {
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g) {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillAll(juce::Colour(87, 118, 167));
     g.setColour(juce::Colour(100, 100, 100));
-    g.drawRect(40, 40, 11*16, 12*16);
-    g.drawRect(280+16, 40, 25*16, 12*16);
+    // g.drawRect(40, 40, 11 * 16, 12 * 16);
+    // g.drawRect(280 + 16, 40, 25 * 16, 12 * 16);
+    for (auto s : sliders) {
+        // g.drawRect(s.second->getBounds());
+    }
 }
 
 void AudioPluginAudioProcessorEditor::resized() {
@@ -116,26 +125,62 @@ void AudioPluginAudioProcessorEditor::resized() {
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
-    input_sec.items = {juce::GridItem(sliders["InputMix"]), juce::GridItem(sliders["HighPass"]),
-//                       juce::GridItem(labels["InputMix"]), juce::GridItem(labels["HighPass"]),
-                       juce::GridItem(sliders["PreDelay"]), juce::GridItem(sliders["LowPass"])};
- //                      juce::GridItem(labels["PreDelay"]), juce::GridItem(labels["LowPass"])};
+
+    std::array<juce::Slider*, 4> input_ui = {sliders["InputMix"], sliders["HighPass"], sliders["PreDelay"], sliders["LowPass"]};
+    for (auto i : input_ui) {
+        input_sec.items.add(juce::GridItem(i));
+    }
     input_sec.templateColumns = {Track(Fr(1)), Track(Fr(1))};
     input_sec.templateRows = {Track(Fr(1)), Track(Fr(1))};
-    // input_sec.alignItems = juce::Grid::AlignItems::end;
     input_sec.columnGap = Px(48);
     input_sec.rowGap = Px(64);
-    input_sec.performLayout(juce::Rectangle<int>(40, 40, 11*16, 12*16));
-    // setColour(juce::Slider::ColourIds::textBoxBackgroundColourId, juce::Colour(50, 50, 50));
-    // setColour(juce::TooltipWindow, juce::Colours::red);
-    early_sec.items = {juce::GridItem(sliders["TapCount"]), juce::GridItem(sliders["TapLength"]), juce::GridItem(sliders["DiffusionDelay"]), juce::GridItem(sliders["DiffusionFeedback"]),
-                       // juce::GridItem(labels["TapCount"]), juce::GridItem(labels["TapLength"]), juce::GridItem(labels["DiffusionDelay"]), juce::GridItem(labels["DiffusionFeedback"]),
-                       juce::GridItem(sliders["TapDecay"]), juce::GridItem(sliders["TapGain"]), juce::GridItem(sliders["EarlyDiffusionModAmount"]), juce::GridItem(sliders["EarlyDiffusionModRate"])};
-                       // juce::GridItem(labels["TapDecay"]), juce::GridItem(labels["TapGain"]), juce::GridItem(labels["EarlyDiffusionModAmount"]), juce::GridItem(labels["EarlyDiffusionModRate"])};
-    early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)),Track(Fr(1)),Track(Fr(1))};
-    early_sec.templateRows = {Track(Fr(1)),  Track(Fr(1))};
-    // early_sec.alignItems = juce::Grid::AlignItems::end;
+    input_sec.performLayout(juce::Rectangle<int>(40, 40, 11 * 16, 12 * 16));
+
+    std::array<juce::Slider*, 8> early_ui =
+        {sliders["TapCount"], sliders["TapLength"], sliders["DiffusionDelay"], sliders["DiffusionFeedback"],
+         sliders["TapDecay"], sliders["TapGain"], sliders["EarlyDiffusionModAmount"], sliders["EarlyDiffusionModRate"]};
+    for (auto i : early_ui) {
+        early_sec.items.add(juce::GridItem(i));
+    }
+    early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
+    early_sec.templateRows = {Track(Fr(1)), Track(Fr(1))};
     early_sec.columnGap = Px(48);
     early_sec.rowGap = Px(64);
-    early_sec.performLayout(juce::Rectangle<int>(280+16, 40, 25*16, 12*16));
+    early_sec.performLayout(juce::Rectangle<int>(296, 40, 25 * 16, 12 * 16));
+
+    std::array<juce::Slider*, 13> late_ui = {
+        sliders["LineDelay"],
+        sliders["LineDecay"],
+        sliders["LineModAmount"],
+        sliders["LineModRate"],
+        sliders["LateDiffusionDelay"],
+        sliders["LateDiffusionFeedback"],
+        sliders["LateDiffusionModAmount"],
+        sliders["LateDiffusionModRate"],
+        sliders["PostLowShelfFrequency"],
+        sliders["PostLowShelfGain"],
+        sliders["PostHighShelfFrequency"],
+        sliders["PostHighShelfGain"],
+        sliders["PostCutoffFrequency"]};
+    for (auto i : late_ui) {
+        late_sec.items.add(juce::GridItem(i));
+    }
+    late_sec.autoColumns = Track(Fr(1));
+    late_sec.templateRows = {Track(Fr(1)), Track(Fr(1))};
+    late_sec.autoFlow = juce::Grid::AutoFlow::column;
+    late_sec.columnGap = Px(48);
+    late_sec.rowGap = Px(64);
+    late_sec.performLayout(juce::Rectangle<int>(296 + 25 * 16 + 5 * 16, 40, (7 * 4 + 6 * 3) * 16, 12 * 16));
+    for (auto i : labels) {
+        auto slider = sliders[i.first];
+        auto label = i.second;
+        auto fontSize = 20;
+        label->setFont(juce::Font(fontSize));
+        label->setColour(juce::Label::ColourIds::textColourId, juce::Colour(20, 20, 20));
+        label->setMinimumHorizontalScale(1);
+        auto width = label->getFont().getStringWidthFloat(label->getText()) + label->getBorderSize().getLeftAndRight() + 1;
+        auto height = fontSize + label->getBorderSize().getTopAndBottom() + 1;
+        label->setSize(width, height);
+        label->setCentrePosition(slider->getPosition().x + slider->getWidth() / 2.0, slider->getPosition().y + slider->getHeight() + label->getHeight() / 2 + 1);
+    }
 }
