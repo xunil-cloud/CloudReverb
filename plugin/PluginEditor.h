@@ -1,8 +1,13 @@
 #pragma once
 
+#include "DiffusionBlock.h"
+#include "LateDiffusionBlock.h"
+#include "InputBlock.h"
+#include "TapBlock.h"
+#include "DelayBlock.h"
+#include "Mixer.h"
+#include "EqBlock.h"
 #include "PluginProcessor.h"
-#include "MyLookAndFeel.h"
-
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor {
@@ -20,12 +25,22 @@ private:
     AudioPluginAudioProcessor& processorRef;
     MyLookAndFeel myLookAndFeel;
     juce::TextButton reset_button;
-    juce::TextButton reset_button_;
     std::unordered_map<juce::String, juce::Slider*> sliders;
     std::unordered_map<juce::String, juce::Label*> labels;
     juce::Grid input_sec;
     juce::Grid early_sec;
     std::vector<juce::SliderParameterAttachment*> attachments;
+    InputBlock input;
+    TapBlock tap;
+    DelayBlock delay;
+    Mixer mixer;
+    EqBlock eq;
+    //Block tap;
+    //Block delayLine;
+    DiffusionBlock diffusion1;
+    LateDiffusionBlock diffusion2;
+    //InputBlock input;
+    //juce::AudioProcessorValueTreeState::ButtonAttachment a;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };

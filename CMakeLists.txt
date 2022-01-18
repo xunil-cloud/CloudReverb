@@ -74,6 +74,15 @@ juce_add_plugin(CloudReverb
 # that will be built into the target. This is a standard CMake command.
 
 target_sources(CloudReverb PRIVATE
+            plugin/ReverbSlider.cpp
+	    plugin/DiffusionBlock.cpp
+	    plugin/LateDiffusionBlock.cpp
+	    plugin/InputBlock.cpp
+	    plugin/TapBlock.cpp
+	    plugin/DelayBlock.cpp
+	    plugin/EqBlock.cpp
+	    plugin/Mixer.cpp
+	    plugin/Block.cpp
 	    plugin/PluginEditor.cpp
 	    plugin/PluginProcessor.cpp)
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer

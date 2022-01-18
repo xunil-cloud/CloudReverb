@@ -1,3 +1,5 @@
+#pragma once
+
 #include "PluginProcessor.h"
 
 class MyLookAndFeel : public juce::LookAndFeel_V4 {
@@ -7,7 +9,7 @@ public:
     }
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                           const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider&) override {
-        auto radius = (float)juce::jmin(width / 2, height / 2) - 4.0f;
+        auto radius = (float)juce::jmin(width / 2, height / 2) - 5.0f;
         auto centreX = (float)x + (float)width * 0.5f;
         auto centreY = (float)y + (float)height * 0.5f;
         auto rx = centreX - radius;
@@ -19,7 +21,8 @@ public:
         g.fillEllipse(rx, ry, rw, rw);
 
         g.setColour(juce::Colours::black);
-        g.drawEllipse(rx, ry, rw, rw, 1.0f);
+        // g.drawEllipse(rx, ry, rw, rw, 1.0f);
+        //	g.drawRect(x,y,width,height);
 
         juce::Path p;
         auto pointerLength = radius * 0.33f;
@@ -29,5 +32,17 @@ public:
 
         g.setColour(juce::Colours::yellow);
         g.fillPath(p);
+    }
+    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                          bool hover, bool is_down) override {
+        if (button.getToggleState())
+            g.setColour(juce::Colours::yellowgreen);
+        else
+            g.setColour(juce::Colours::grey);
+        auto size = std::min(button.getWidth(), button.getHeight());
+        auto x = button.getX();
+        auto y = button.getY();
+	auto padding = 5;
+        g.fillEllipse(5, 5, size-10, size-10);
     }
 };

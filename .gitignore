@@ -53,3 +53,5 @@ cmake-build-release
 
 # carla project file
 *.carxp
+
+ignores

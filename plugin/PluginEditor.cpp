@@ -4,12 +4,10 @@
 
 //==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor(&p), processorRef(p) {
-    // juce::ignoreUnused(processorRef);
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    // setResizable(true, true);
+    : AudioProcessorEditor(&p), processorRef(p),input("Input", this->processorRef.treeState),tap("Tap", this->processorRef.treeState),delay("Delay Lines", this->processorRef.treeState), mixer("mixer", this->processorRef.treeState),eq("Shelf EQ", this->processorRef.treeState),diffusion1("Early Diffusion", this->processorRef.treeState), diffusion2("Late Diffusion", this->processorRef.treeState)
+{
     reset_button.setButtonText("reset");
+
     reset_button.onClick = [this]() {
         auto& state = this->processorRef.treeState;
         state.getParameter("InputMix")->setValueNotifyingHost(0.0);
@@ -60,58 +58,42 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         state.getParameter("Interpolation")->setValueNotifyingHost(0.);
     };
 
-    for (auto param : this->processorRef.getParameters()) {
-        auto name = param->getName(20);
+    setSize(1500, 600);
 
-        auto slider = new juce::Slider();
-        slider->setLookAndFeel(&myLookAndFeel);
-        slider->setSliderStyle(juce::Slider::SliderStyle::Rotary);
-        slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-        slider->setPopupDisplayEnabled(true, true, this, -1);
+    input.setBounds(5, 5, 200, 250);
+    tap.setBounds(250, 5, 200, 250);
+    delay.setBounds(500, 5, 200, 250);
+    eq.setBounds(750, 5, 280, 250);
+    diffusion1.setBounds(5, 300, 500, 150);
+    diffusion2.setBounds(550, 300, 500, 150);
+    mixer.setBounds(1100, 300, 200, 250);
 
-        auto label = new juce::Label("label", param->getName(50));
-        label->setJustificationType(juce::Justification::centredTop);
-        // label->setFont(juce::Font(19));
-
-        auto id = dynamic_cast<juce::AudioProcessorParameterWithID*>(param)->paramID;
-        sliders.insert({id, slider});
-        labels.insert({id, label});
-        attachments.push_back(new juce::SliderParameterAttachment(*dynamic_cast<juce::RangedAudioParameter*>(param), *slider));
-
-        addAndMakeVisible(slider);
-        addAndMakeVisible(label);
-    }
-    setSize(800, 600);
     addAndMakeVisible(reset_button);
-    addAndMakeVisible(reset_button_);
+    addAndMakeVisible(input);
+    addAndMakeVisible(tap);
+    addAndMakeVisible(delay);
+    addAndMakeVisible(diffusion1);
+    addAndMakeVisible(diffusion2);
+    addAndMakeVisible(mixer);
+    addAndMakeVisible(eq);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() {
-    for (auto i : attachments) {
-        delete i;
-    }
-    for (auto i : sliders) {
-        delete i.second;
-    }
-    for (auto i : labels) {
-        delete i.second;
-    }
+    return;
 }
 
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g) {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-    g.setColour(juce::Colour(100, 100, 100));
-    g.drawRect(40, 40, 11*16, 220);
-    g.drawRect(280+16, 40, 25*16, 220);
 }
 
 void AudioPluginAudioProcessorEditor::resized() {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     //
-    reset_button.setBounds(400, 300, 70, 70);
+    reset_button.setBounds(1350, 500, 50, 50);
+    return;
 
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
@@ -124,16 +106,16 @@ void AudioPluginAudioProcessorEditor::resized() {
     input_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
     // input_sec.alignItems = juce::Grid::AlignItems::end;
     input_sec.columnGap = Px(48);
-    input_sec.performLayout(juce::Rectangle<int>(40, 40, 11*16, 220));
+    input_sec.performLayout(juce::Rectangle<int>(40, 40, 11 * 16, 220));
     // setColour(juce::Slider::ColourIds::textBoxBackgroundColourId, juce::Colour(50, 50, 50));
     // setColour(juce::TooltipWindow, juce::Colours::red);
     early_sec.items = {juce::GridItem(sliders["TapCount"]), juce::GridItem(sliders["TapLength"]), juce::GridItem(sliders["DiffusionDelay"]), juce::GridItem(sliders["DiffusionFeedback"]),
                        juce::GridItem(labels["TapCount"]), juce::GridItem(labels["TapLength"]), juce::GridItem(labels["DiffusionDelay"]), juce::GridItem(labels["DiffusionFeedback"]),
                        juce::GridItem(sliders["TapDecay"]), juce::GridItem(sliders["TapGain"]), juce::GridItem(sliders["EarlyDiffusionModAmount"]), juce::GridItem(sliders["EarlyDiffusionModRate"]),
                        juce::GridItem(labels["TapDecay"]), juce::GridItem(labels["TapGain"]), juce::GridItem(labels["EarlyDiffusionModAmount"]), juce::GridItem(labels["EarlyDiffusionModRate"])};
-    early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)),Track(Fr(1)),Track(Fr(1))};
+    early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
     early_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
     // early_sec.alignItems = juce::Grid::AlignItems::end;
     early_sec.columnGap = Px(48);
-    early_sec.performLayout(juce::Rectangle<int>(280+16, 40, 25*16, 220));
+    early_sec.performLayout(juce::Rectangle<int>(280 + 16, 40, 25 * 16, 220));
 }
