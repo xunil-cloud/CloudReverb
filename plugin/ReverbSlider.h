@@ -4,9 +4,16 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include "MyLookAndFeel.h"
 
-class ReverbSlider : public juce::Slider {public: enum class Type {Circle, Line};
-    ReverbSlider(const juce::String& name, const ReverbSlider::Type type);
-    ~ReverbSlider() override {setLookAndFeel (nullptr);}
+class ReverbSlider : public juce::Slider
+{
+public:
+    enum class Type
+    {
+        Circle,
+        Line
+    };
+    ReverbSlider(const juce::String &name, const ReverbSlider::Type type);
+    ~ReverbSlider() override { setLookAndFeel(nullptr); }
 
 private:
     juce::String name;

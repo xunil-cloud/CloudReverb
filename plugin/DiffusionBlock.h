@@ -10,16 +10,18 @@
 #include "Block.h"
 #define DIFFUSION_STAGES "DiffusionStages"
 
-class DiffusionBlock : public Block {
+class DiffusionBlock : public Block
+{
 public:
-    DiffusionBlock(const juce::String&, const juce::AudioProcessorValueTreeState&);
-   ~DiffusionBlock()override{button.setLookAndFeel(nullptr);} 
-    //void paint(juce::Graphics&) override;
+    DiffusionBlock(const juce::String &, const juce::AudioProcessorValueTreeState &);
+    ~DiffusionBlock() override { button.setLookAndFeel(nullptr); }
+    // void paint(juce::Graphics&) override;
     void resized() override;
 
 private:
-    const std::vector<juce::String> parameterNames{"DiffusionStages","delay", "feedback", "mod amt.","mod rate" };
-    juce::ToggleButton button; 
+    const std::vector<juce::String> parameterNames{"DiffusionStages", "delay", "feedback",
+                                                   "mod amt.", "mod rate"};
+    juce::ToggleButton button;
     std::unique_ptr<juce::ButtonParameterAttachment> button_attachment;
     MyLookAndFeel look;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DiffusionBlock)

@@ -3,13 +3,17 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor(&p), processorRef(p),input("Input", this->processorRef.treeState),tap("Tap", this->processorRef.treeState),delay("Delay Lines", this->processorRef.treeState), mixer("mixer", this->processorRef.treeState),eq("Shelf EQ", this->processorRef.treeState),diffusion1("Early Diffusion", this->processorRef.treeState), diffusion2("Late Diffusion", this->processorRef.treeState)
+AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor &p)
+    : AudioProcessorEditor(&p), processorRef(p), input("Input", this->processorRef.treeState),
+      tap("Tap", this->processorRef.treeState), delay("Delay Lines", this->processorRef.treeState),
+      mixer("mixer", this->processorRef.treeState), eq("Shelf EQ", this->processorRef.treeState),
+      diffusion1("Early Diffusion", this->processorRef.treeState),
+      diffusion2("Late Diffusion", this->processorRef.treeState)
 {
     reset_button.setButtonText("reset");
 
     reset_button.onClick = [this]() {
-        auto& state = this->processorRef.treeState;
+        auto &state = this->processorRef.treeState;
         state.getParameter("InputMix")->setValueNotifyingHost(0.0);
         state.getParameter("PreDelay")->setValueNotifyingHost(0.070000000298023224);
         state.getParameter("HighPass")->setValueNotifyingHost(0.0);
@@ -78,17 +82,17 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     addAndMakeVisible(eq);
 }
 
-AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() {
-    return;
-}
+AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() { return; }
 
 //==============================================================================
-void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g) {
+void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
+{
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
-void AudioPluginAudioProcessorEditor::resized() {
+void AudioPluginAudioProcessorEditor::resized()
+{
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     //
@@ -99,9 +103,9 @@ void AudioPluginAudioProcessorEditor::resized() {
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
     input_sec.items = {juce::GridItem(sliders["InputMix"]), juce::GridItem(sliders["HighPass"]),
-                       juce::GridItem(labels["InputMix"]), juce::GridItem(labels["HighPass"]),
+                       juce::GridItem(labels["InputMix"]),  juce::GridItem(labels["HighPass"]),
                        juce::GridItem(sliders["PreDelay"]), juce::GridItem(sliders["LowPass"]),
-                       juce::GridItem(labels["PreDelay"]), juce::GridItem(labels["LowPass"])};
+                       juce::GridItem(labels["PreDelay"]),  juce::GridItem(labels["LowPass"])};
     input_sec.templateColumns = {Track(Fr(1)), Track(Fr(1))};
     input_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
     // input_sec.alignItems = juce::Grid::AlignItems::end;
@@ -109,10 +113,22 @@ void AudioPluginAudioProcessorEditor::resized() {
     input_sec.performLayout(juce::Rectangle<int>(40, 40, 11 * 16, 220));
     // setColour(juce::Slider::ColourIds::textBoxBackgroundColourId, juce::Colour(50, 50, 50));
     // setColour(juce::TooltipWindow, juce::Colours::red);
-    early_sec.items = {juce::GridItem(sliders["TapCount"]), juce::GridItem(sliders["TapLength"]), juce::GridItem(sliders["DiffusionDelay"]), juce::GridItem(sliders["DiffusionFeedback"]),
-                       juce::GridItem(labels["TapCount"]), juce::GridItem(labels["TapLength"]), juce::GridItem(labels["DiffusionDelay"]), juce::GridItem(labels["DiffusionFeedback"]),
-                       juce::GridItem(sliders["TapDecay"]), juce::GridItem(sliders["TapGain"]), juce::GridItem(sliders["EarlyDiffusionModAmount"]), juce::GridItem(sliders["EarlyDiffusionModRate"]),
-                       juce::GridItem(labels["TapDecay"]), juce::GridItem(labels["TapGain"]), juce::GridItem(labels["EarlyDiffusionModAmount"]), juce::GridItem(labels["EarlyDiffusionModRate"])};
+    early_sec.items = {juce::GridItem(sliders["TapCount"]),
+                       juce::GridItem(sliders["TapLength"]),
+                       juce::GridItem(sliders["DiffusionDelay"]),
+                       juce::GridItem(sliders["DiffusionFeedback"]),
+                       juce::GridItem(labels["TapCount"]),
+                       juce::GridItem(labels["TapLength"]),
+                       juce::GridItem(labels["DiffusionDelay"]),
+                       juce::GridItem(labels["DiffusionFeedback"]),
+                       juce::GridItem(sliders["TapDecay"]),
+                       juce::GridItem(sliders["TapGain"]),
+                       juce::GridItem(sliders["EarlyDiffusionModAmount"]),
+                       juce::GridItem(sliders["EarlyDiffusionModRate"]),
+                       juce::GridItem(labels["TapDecay"]),
+                       juce::GridItem(labels["TapGain"]),
+                       juce::GridItem(labels["EarlyDiffusionModAmount"]),
+                       juce::GridItem(labels["EarlyDiffusionModRate"])};
     early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
     early_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
     // early_sec.alignItems = juce::Grid::AlignItems::end;

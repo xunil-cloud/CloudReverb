@@ -2,13 +2,14 @@
 
 #include "PluginProcessor.h"
 
-class MyLookAndFeel : public juce::LookAndFeel_V4 {
+class MyLookAndFeel : public juce::LookAndFeel_V4
+{
 public:
-    MyLookAndFeel() {
-        setColour(juce::Slider::thumbColourId, juce::Colours::red);
-    }
-    void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
-                          const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider&) override {
+    MyLookAndFeel() { setColour(juce::Slider::thumbColourId, juce::Colours::red); }
+    void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos,
+                          const float rotaryStartAngle, const float rotaryEndAngle,
+                          juce::Slider &) override
+    {
         auto radius = (float)juce::jmin(width / 2, height / 2) - 5.0f;
         auto centreX = (float)x + (float)width * 0.5f;
         auto centreY = (float)y + (float)height * 0.5f;
@@ -33,8 +34,9 @@ public:
         g.setColour(juce::Colours::yellow);
         g.fillPath(p);
     }
-    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
-                          bool hover, bool is_down) override {
+    void drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
+                          bool is_down) override
+    {
         if (button.getToggleState())
             g.setColour(juce::Colours::yellowgreen);
         else
@@ -42,7 +44,7 @@ public:
         auto size = std::min(button.getWidth(), button.getHeight());
         auto x = button.getX();
         auto y = button.getY();
-	auto padding = 5;
-        g.fillEllipse(5, 5, size-10, size-10);
+        auto padding = 5;
+        g.fillEllipse(5, 5, size - 10, size - 10);
     }
 };

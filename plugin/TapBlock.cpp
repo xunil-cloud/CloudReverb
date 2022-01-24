@@ -1,6 +1,8 @@
 #include "TapBlock.h"
 
-TapBlock::TapBlock(const juce::String& name, const juce::AudioProcessorValueTreeState& state) : Block(name) {
+TapBlock::TapBlock(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
+    : Block(name)
+{
     using type = ReverbSlider::Type;
     addParameter("count", state.getParameter("TapCount"), type::Circle);
     addParameter("length", state.getParameter("TapLength"), type::Circle);
@@ -8,11 +10,13 @@ TapBlock::TapBlock(const juce::String& name, const juce::AudioProcessorValueTree
     addParameter("decay", state.getParameter("TapDecay"), type::Circle);
     // button.setToggleState();
     // auto param = state.getParameter("DiffusionEnabled");
-    // button_attachment = std::make_unique<juce::ButtonParameterAttachment>(*dynamic_cast<juce::RangedAudioParameter*>(param), button);
-    // addAndMakeVisible(button);
+    // button_attachment =
+    // std::make_unique<juce::ButtonParameterAttachment>(*dynamic_cast<juce::RangedAudioParameter*>(param),
+    // button); addAndMakeVisible(button);
 }
 
-void TapBlock::resized() {
+void TapBlock::resized()
+{
     // button.setBounds(2, 2, 30, 30);
     auto main = getLocalBounds();
     main.removeFromTop(50);
@@ -38,28 +42,31 @@ void TapBlock::resized() {
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
     juce::Grid grid;
-    for (auto& i : sliders) {
+    for (auto &i : sliders)
+    {
         auto slider = i.get();
-        grid.items.add(juce::GridItem(*slider).withSize(size,size));
+        grid.items.add(juce::GridItem(*slider).withSize(size, size));
     }
     /*
     grid.items = {juce::GridItem(sliders["InputMix"]), juce::GridItem(sliders["HighPass"]),
                        juce::GridItem(labels["InputMix"]), juce::GridItem(labels["HighPass"]),
                        juce::GridItem(sliders["PreDelay"]), juce::GridItem(sliders["LowPass"]),
                        juce::GridItem(labels["PreDelay"]), juce::GridItem(labels["LowPass"])};
-		       */
+                       */
     grid.templateColumns = {Track(Fr(1)), Track(Fr(1))};
     grid.templateRows = {Track(Fr(1)), Track(Fr(1))};
 
-    //grid.alignContent = juce::Grid::AlignContent::start;
+    // grid.alignContent = juce::Grid::AlignContent::start;
     grid.alignItems = juce::Grid::AlignItems::start;
     grid.justifyItems = juce::Grid::JustifyItems::center;
-    //grid.columnGap = Px(24);
-    //grid.rowGap = Px(24);
+    // grid.columnGap = Px(24);
+    // grid.rowGap = Px(24);
     grid.performLayout(main);
-    for (size_t i = 0; i < sliders.size(); i++) {
-        auto& slider = sliders[i];
-        auto& label = labels[i];
-        label->setCentrePosition(slider->getBounds().getCentreX(), slider->getBounds().getBottom() + 8);
+    for (size_t i = 0; i < sliders.size(); i++)
+    {
+        auto &slider = sliders[i];
+        auto &label = labels[i];
+        label->setCentrePosition(slider->getBounds().getCentreX(),
+                                 slider->getBounds().getBottom() + 8);
     }
 }

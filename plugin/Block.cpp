@@ -1,8 +1,8 @@
 #include "Block.h"
 
-Block::Block(const juce::String& name) : name(std::move(name)) {
-}
-void Block::paint(juce::Graphics& g) {
+Block::Block(const juce::String &name) : name(std::move(name)) {}
+void Block::paint(juce::Graphics &g)
+{
     g.drawRect(this->getLocalBounds(), 2);
     g.setFont(juce::Font(24));
     g.drawText(name, 0, 0, getWidth(), 50, juce::Justification::centred);
@@ -24,25 +24,30 @@ void Block::resized() {
     for (auto i : params_id) {
         auto slider = sliders[i].get();
         auto label = labels[i].get();
-        label->setCentrePosition(slider->getBounds().getCentreX(), slider->getBounds().getBottom() + 8);
+        label->setCentrePosition(slider->getBounds().getCentreX(), slider->getBounds().getBottom() +
+8);
     }
 }
 */
-void Block::addParameter(const juce::String& name, juce::RangedAudioParameter* param, ReverbSlider::Type type) {
+void Block::addParameter(const juce::String &name, juce::RangedAudioParameter *param,
+                         ReverbSlider::Type type)
+{
     auto const fontSize = 16;
 
     std::unique_ptr<ReverbSlider> slider = std::make_unique<ReverbSlider>(name, type);
     // sliders.insert({name, std::move(slider)});
     slider->setPopupDisplayEnabled(true, true, this);
 
-    auto attachment = std::make_unique<juce::SliderParameterAttachment>(*dynamic_cast<juce::RangedAudioParameter*>(param), *slider.get());
+    auto attachment = std::make_unique<juce::SliderParameterAttachment>(
+        *dynamic_cast<juce::RangedAudioParameter *>(param), *slider.get());
     attachments.push_back(std::move(attachment));
 
     auto label = std::make_unique<juce::Label>(param->paramID, name);
     label->setFont(juce::Font(fontSize));
     // label->setColour(juce::Label::ColourIds::textColourId, juce::Colour(0xffd4be98));
     label->setMinimumHorizontalScale(1);
-    auto const width = label->getFont().getStringWidthFloat(label->getText()) + label->getBorderSize().getLeftAndRight() + 1;
+    auto const width = label->getFont().getStringWidthFloat(label->getText()) +
+                       label->getBorderSize().getLeftAndRight() + 1;
     auto const height = fontSize + label->getBorderSize().getTopAndBottom() + 1;
     label->setSize(width, height);
     label->setJustificationType(juce::Justification::centred);
