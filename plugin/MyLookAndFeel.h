@@ -5,7 +5,12 @@
 class MyLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    MyLookAndFeel() { setColour(juce::Slider::thumbColourId, juce::Colours::red); }
+    MyLookAndFeel()
+    {
+        // setColour(juce::Slider::thumbColourId, {255, 0, 153});
+        // setColour(juce::ResizableWindow::backgroundColourId, {234, 234, 234});
+    }
+
     void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos,
                           const float rotaryStartAngle, const float rotaryEndAngle,
                           juce::Slider &) override
@@ -18,12 +23,12 @@ public:
         auto rw = radius * 2.0f;
         auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
-        g.setColour(juce::Colours::red);
+        g.setColour(findColour(juce::Slider::thumbColourId));
         g.fillEllipse(rx, ry, rw, rw);
 
         g.setColour(juce::Colours::black);
         // g.drawEllipse(rx, ry, rw, rw, 1.0f);
-        //	g.drawRect(x,y,width,height);
+        // g.drawRect(x,y,width,height);
 
         juce::Path p;
         auto pointerLength = radius * 0.33f;
@@ -31,20 +36,21 @@ public:
         p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
         p.applyTransform(juce::AffineTransform::rotation(angle).translated(centreX, centreY));
 
-        g.setColour(juce::Colours::yellow);
+        g.setColour(juce::Colours::black);
+        g.setColour(findColour(juce::Slider::trackColourId));
         g.fillPath(p);
     }
     void drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
                           bool is_down) override
     {
         if (button.getToggleState())
-            g.setColour(juce::Colours::yellowgreen);
+            g.setColour(juce::Colour(66, 200, 158));
         else
             g.setColour(juce::Colours::grey);
         auto size = std::min(button.getWidth(), button.getHeight());
         auto x = button.getX();
         auto y = button.getY();
-        auto padding = 5;
-        g.fillEllipse(5, 5, size - 10, size - 10);
+        auto padding = 2;
+        g.fillEllipse(2, 2, size - 4, size - 4);
     }
 };

@@ -21,11 +21,14 @@ public:
     void addParameter(const juce::String &, juce::RangedAudioParameter *param,
                       const ReverbSlider::Type type);
 
-    // protected:
+protected:
+    void layout();
     // const std::vector<juce::String> params_id{"InputMix"};
     const juce::String name;
     // std::unordered_map<juce::String, std::unique_ptr<juce::Slider>> sliders;
+
     std::vector<std::unique_ptr<ReverbSlider>> sliders;
+
     std::vector<std::unique_ptr<juce::Label>> labels;
     std::vector<std::unique_ptr<juce::SliderParameterAttachment>> attachments;
     // std::unordered_map<juce::String, std::unique_ptr<juce::Label>> labels;
@@ -33,5 +36,6 @@ public:
     // attachments;
     //  NOTE: maybe we only need vector to store objects?
 private:
+    juce::FlexBox flex = juce::FlexBox();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Block)
 };

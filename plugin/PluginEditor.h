@@ -8,6 +8,7 @@
 #include "Mixer.h"
 #include "EqBlock.h"
 #include "PluginProcessor.h"
+#include <memory>
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor
@@ -42,6 +43,9 @@ private:
     LateDiffusionBlock diffusion2;
     // InputBlock input;
     // juce::AudioProcessorValueTreeState::ButtonAttachment a;
+
+    std::unique_ptr<juce::ComponentBoundsConstrainer> limit;
+    juce::Grid grid;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };

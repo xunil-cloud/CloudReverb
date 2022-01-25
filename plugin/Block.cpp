@@ -1,10 +1,16 @@
 #include "Block.h"
 
-Block::Block(const juce::String &name) : name(std::move(name)) {}
+Block::Block(const juce::String &name) : name(std::move(name))
+{
+    using Fl = juce::FlexBox;
+    flex.justifyContent = Fl::JustifyContent::spaceBetween;
+    flex.alignContent = Fl::AlignContent::center;
+    flex.items = juce::Array<juce::FlexItem>();
+}
 void Block::paint(juce::Graphics &g)
 {
-    g.drawRect(this->getLocalBounds(), 2);
     g.setFont(juce::Font(24));
+    g.setColour(juce::Colour(0xffd4be98));
     g.drawText(name, 0, 0, getWidth(), 50, juce::Justification::centred);
 }
 /*
@@ -44,7 +50,9 @@ void Block::addParameter(const juce::String &name, juce::RangedAudioParameter *p
 
     auto label = std::make_unique<juce::Label>(param->paramID, name);
     label->setFont(juce::Font(fontSize));
-    // label->setColour(juce::Label::ColourIds::textColourId, juce::Colour(0xffd4be98));
+    label->setColour(juce::Label::ColourIds::textColourId, juce::Colour(0xffd4be98));
+    // label->setColour(juce::Label::ColourIds::backgroundColourId,
+    // juce::Colour(juce::Colours::antiquewhite));
     label->setMinimumHorizontalScale(1);
     auto const width = label->getFont().getStringWidthFloat(label->getText()) +
                        label->getBorderSize().getLeftAndRight() + 1;
@@ -56,4 +64,33 @@ void Block::addParameter(const juce::String &name, juce::RangedAudioParameter *p
     addAndMakeVisible(label.get());
     sliders.push_back(std::move(slider));
     labels.push_back(std::move(label));
+}
+
+void Block::layout()
+{
+    auto main = getLocalBounds();
+    main.removeFromTop(getHeight() / 7.0);
+    // auto size = std::min(getWidth() / 4.0 * 0.3, getHeight() * 0.3);
+    auto size = getHeight() * 0.3;
+
+    flex.items.clearQuick();
+    for (auto &i : sliders)
+    {
+        auto slider = i.get();
+        flex.items.add(juce::FlexItem(size, size, *slider));
+    }
+    auto bound = main.withSizeKeepingCentre(main.getWidth() * 0.8, main.getHeight() * 0.8);
+    flex.performLayout(bound);
+
+    for (size_t i = 0; i < sliders.size(); i++)
+    {
+        auto &slider = sliders[i];
+        auto &label = labels[i];
+        label->setFont(juce::Font("Roboto", 20, juce::Font::plain));
+        // label->setFont(juce::Font("Open Sans Condensed", 20, juce::Font::plain));
+        label->setSize(bound.getWidth() / 4.0, (bound.getHeight() - slider->getHeight()) / 2.0);
+        label->setCentrePosition(slider->getBounds().getCentreX(),
+                                 getHeight() - label->getHeight() * 0.5);
+        label->setTopLeftPosition(label->getX(), bound.getBottom() - 1.2 * label->getHeight());
+    }
 }

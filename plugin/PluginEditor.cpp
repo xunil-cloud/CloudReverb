@@ -62,15 +62,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         state.getParameter("Interpolation")->setValueNotifyingHost(0.);
     };
 
+    setResizable(true, true);
     setSize(1500, 600);
 
-    input.setBounds(5, 5, 200, 250);
-    tap.setBounds(250, 5, 200, 250);
-    delay.setBounds(500, 5, 200, 250);
-    eq.setBounds(750, 5, 280, 250);
-    diffusion1.setBounds(5, 300, 500, 150);
-    diffusion2.setBounds(550, 300, 500, 150);
-    mixer.setBounds(1100, 300, 200, 250);
+    limit = std::make_unique<juce::ComponentBoundsConstrainer>();
+    limit->setMinimumSize(1100, 450);
+    setConstrainer(limit.get());
 
     addAndMakeVisible(reset_button);
     addAndMakeVisible(input);
@@ -80,58 +77,40 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     addAndMakeVisible(diffusion2);
     addAndMakeVisible(mixer);
     addAndMakeVisible(eq);
+    setLookAndFeel(&myLookAndFeel);
 }
 
-AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() { return; }
+AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
+{
+    setLookAndFeel(nullptr);
+    return;
+}
 
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.setColour(juce::Colour(33, 80, 100));
+    g.fillRect(getWidth() / 2, 0, 2, getHeight() / 5 * 3);
+    g.fillRect(0, getHeight() / 5 * 3 / 2, getWidth(), 2);
+    g.fillRect(0, getHeight() / 5 * 3, getWidth(), 2);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-    //
-    reset_button.setBounds(1350, 500, 50, 50);
-    return;
+    reset_button.setBounds(getWidth() - 70, getHeight() - 70, 50, 50);
+    auto up = getLocalBounds().removeFromTop(getHeight() * 3 / 5);
+    auto down = getLocalBounds().removeFromBottom(getHeight() * 2 / 5);
 
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
-    input_sec.items = {juce::GridItem(sliders["InputMix"]), juce::GridItem(sliders["HighPass"]),
-                       juce::GridItem(labels["InputMix"]),  juce::GridItem(labels["HighPass"]),
-                       juce::GridItem(sliders["PreDelay"]), juce::GridItem(sliders["LowPass"]),
-                       juce::GridItem(labels["PreDelay"]),  juce::GridItem(labels["LowPass"])};
-    input_sec.templateColumns = {Track(Fr(1)), Track(Fr(1))};
-    input_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
-    // input_sec.alignItems = juce::Grid::AlignItems::end;
-    input_sec.columnGap = Px(48);
-    input_sec.performLayout(juce::Rectangle<int>(40, 40, 11 * 16, 220));
-    // setColour(juce::Slider::ColourIds::textBoxBackgroundColourId, juce::Colour(50, 50, 50));
-    // setColour(juce::TooltipWindow, juce::Colours::red);
-    early_sec.items = {juce::GridItem(sliders["TapCount"]),
-                       juce::GridItem(sliders["TapLength"]),
-                       juce::GridItem(sliders["DiffusionDelay"]),
-                       juce::GridItem(sliders["DiffusionFeedback"]),
-                       juce::GridItem(labels["TapCount"]),
-                       juce::GridItem(labels["TapLength"]),
-                       juce::GridItem(labels["DiffusionDelay"]),
-                       juce::GridItem(labels["DiffusionFeedback"]),
-                       juce::GridItem(sliders["TapDecay"]),
-                       juce::GridItem(sliders["TapGain"]),
-                       juce::GridItem(sliders["EarlyDiffusionModAmount"]),
-                       juce::GridItem(sliders["EarlyDiffusionModRate"]),
-                       juce::GridItem(labels["TapDecay"]),
-                       juce::GridItem(labels["TapGain"]),
-                       juce::GridItem(labels["EarlyDiffusionModAmount"]),
-                       juce::GridItem(labels["EarlyDiffusionModRate"])};
-    early_sec.templateColumns = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
-    early_sec.templateRows = {Track(Fr(1)), Track(Px(30)), Track(Fr(1)), Track(Px(30))};
-    // early_sec.alignItems = juce::Grid::AlignItems::end;
-    early_sec.columnGap = Px(48);
-    early_sec.performLayout(juce::Rectangle<int>(280 + 16, 40, 25 * 16, 220));
+    grid.templateColumns = {Track(Fr(1)), Track(Fr(1))};
+    grid.templateRows = {Track(Fr(1)), Track(Fr(1))};
+    grid.items = {juce::GridItem(tap), juce::GridItem(diffusion1), juce::GridItem(delay),
+                  juce::GridItem(diffusion2)};
+    grid.performLayout(up);
+    eq.setBounds(down.removeFromTop(tap.getHeight()));
+    // eq.setBounds(down.removeFromTop(down.getHeight() / 2));
 }
