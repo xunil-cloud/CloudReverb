@@ -10,6 +10,7 @@ LateDiffusionBlock::LateDiffusionBlock(const juce::String &name,
     addParameter("feedback", state.getParameter("LateDiffusionFeedback"), type::Circle);
     addParameter("mod amt.", state.getParameter("LateDiffusionModAmount"), type::Circle);
     addParameter("mod rate", state.getParameter("LateDiffusionModRate"), type::Circle);
+    setupSeed("seed", state.getParameter("PostDiffusionSeed"));
     // button.setToggleState();
     auto param = state.getParameter("LateDiffusionEnabled");
     button_attachment = std::make_unique<juce::ButtonParameterAttachment>(

@@ -13,11 +13,32 @@ InputBlock::InputBlock(const juce::String &name, const juce::AudioProcessorValue
     // button_attachment =
     // std::make_unique<juce::ButtonParameterAttachment>(*dynamic_cast<juce::RangedAudioParameter*>(param),
     // button); addAndMakeVisible(button);
+    auto param = state.getParameter("LowPassEnabled");
+    LowButton_attachment = std::make_unique<juce::ButtonParameterAttachment>(
+        *dynamic_cast<juce::RangedAudioParameter *>(param), lowButton);
+    // lowButton.setLookAndFeel(&look);
+    addAndMakeVisible(lowButton);
+    auto param_ = state.getParameter("HiPassEnabled");
+    HighButton_attachment = std::make_unique<juce::ButtonParameterAttachment>(
+        *dynamic_cast<juce::RangedAudioParameter *>(param_), HighButton);
+    // lowButton.setLookAndFeel(&look);
+    addAndMakeVisible(HighButton);
 }
 
 void InputBlock::resized()
 {
     // button.setBounds(2, 2, 30, 30);
+    layout();
+    auto x1 = sliders[2]->getX() + sliders[2]->getWidth() / 2.0;
+    auto x2 = sliders[3]->getX() + sliders[3]->getWidth() / 2.0;
+    auto y1 = sliders[2]->getY() - 20;
+    auto y2 = sliders[3]->getY() - 20;
+    auto buttonSize = 23;
+    lowButton.setSize(buttonSize, buttonSize);
+    lowButton.setCentrePosition(x2, y2);
+    HighButton.setSize(buttonSize, buttonSize);
+    HighButton.setCentrePosition(x1, y1);
+    return;
     auto main = getLocalBounds();
     main.removeFromTop(50);
     auto size = 50;

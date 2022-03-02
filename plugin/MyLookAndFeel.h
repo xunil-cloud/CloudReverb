@@ -24,6 +24,7 @@ public:
         auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
         g.setColour(findColour(juce::Slider::thumbColourId));
+        g.setColour(juce::Colour(0xff225ebd));
         g.fillEllipse(rx, ry, rw, rw);
 
         g.setColour(juce::Colours::black);
@@ -44,7 +45,8 @@ public:
                           bool is_down) override
     {
         if (button.getToggleState())
-            g.setColour(juce::Colour(66, 200, 158));
+            // g.setColour(juce::Colour(66, 200, 158));
+            g.setColour(juce::Colour(0xffbd8122));
         else
             g.setColour(juce::Colours::grey);
         auto size = std::min(button.getWidth(), button.getHeight());

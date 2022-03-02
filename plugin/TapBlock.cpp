@@ -8,6 +8,7 @@ TapBlock::TapBlock(const juce::String &name, const juce::AudioProcessorValueTree
     addParameter("length", state.getParameter("TapLength"), type::Circle);
     addParameter("gain", state.getParameter("TapGain"), type::Circle);
     addParameter("decay", state.getParameter("TapDecay"), type::Circle);
+    setupSeed("seed", state.getParameter("TapSeed"));
 }
 
 void TapBlock::resized() { layout(); }

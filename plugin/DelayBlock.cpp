@@ -8,6 +8,7 @@ DelayBlock::DelayBlock(const juce::String &name, const juce::AudioProcessorValue
     addParameter("decay", state.getParameter("LineDecay"), type::Circle);
     addParameter("mod amt.", state.getParameter("LineModAmount"), type::Circle);
     addParameter("mod rate", state.getParameter("LineModRate"), type::Circle);
+    setupSeed("seed", state.getParameter("DelaySeed"));
 }
 
 void DelayBlock::resized() { layout(); }

@@ -20,6 +20,7 @@ public:
     // void resized() override;
     void addParameter(const juce::String &, juce::RangedAudioParameter *param,
                       const ReverbSlider::Type type);
+    void setupSeed(const juce::String &, juce::RangedAudioParameter *param);
 
 protected:
     void layout();
@@ -31,6 +32,8 @@ protected:
 
     std::vector<std::unique_ptr<juce::Label>> labels;
     std::vector<std::unique_ptr<juce::SliderParameterAttachment>> attachments;
+    juce::Slider seedSlider;
+    std::unique_ptr<juce::SliderParameterAttachment> seedAttachment;
     // std::unordered_map<juce::String, std::unique_ptr<juce::Label>> labels;
     // std::unordered_map<juce::String, std::unique_ptr<juce::SliderParameterAttachment>>
     // attachments;

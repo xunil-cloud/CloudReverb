@@ -10,6 +10,7 @@ DiffusionBlock::DiffusionBlock(const juce::String &name,
     addParameter("feedback", state.getParameter("DiffusionFeedback"), type::Circle);
     addParameter("mod amt.", state.getParameter("EarlyDiffusionModAmount"), type::Circle);
     addParameter("mod rate", state.getParameter("EarlyDiffusionModRate"), type::Circle);
+    setupSeed("seed", state.getParameter("DiffusionSeed"));
     // button.setToggleState();
     auto param = state.getParameter("DiffusionEnabled");
     button_attachment = std::make_unique<juce::ButtonParameterAttachment>(

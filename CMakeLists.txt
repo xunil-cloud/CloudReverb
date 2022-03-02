@@ -82,6 +82,7 @@ target_sources(CloudReverb PRIVATE
 	    plugin/DelayBlock.cpp
 	    plugin/EqBlock.cpp
 	    plugin/Mixer.cpp
+        plugin/RouteBlock.cpp
 	    plugin/Block.cpp
 	    plugin/PluginEditor.cpp
 	    plugin/PluginProcessor.cpp)

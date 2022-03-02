@@ -10,5 +10,9 @@ public:
     const std::vector<juce::String> params_id{"InputMix", "PreDelay", "HighPass", "LowPass"};
 
 private:
+    juce::ToggleButton lowButton;
+    std::unique_ptr<juce::ButtonParameterAttachment> LowButton_attachment;
+    juce::ToggleButton HighButton;
+    std::unique_ptr<juce::ButtonParameterAttachment> HighButton_attachment;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(InputBlock)
 };
