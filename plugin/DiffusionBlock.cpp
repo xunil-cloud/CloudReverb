@@ -21,6 +21,12 @@ DiffusionBlock::DiffusionBlock(const juce::String &name,
 
 void DiffusionBlock::resized()
 {
-    button.setBounds(getWidth() - 35, 5, 30, 30);
+    button.setSize(1, 1);
+    button.setBoundsToFit(getLocalBounds()
+                              .withSizeKeepingCentre(getWidth() * 0.95, getHeight() * 0.9)
+                              .removeFromTop(getHeaderSize())
+                              .withSizeKeepingCentre(getWidth() * 0.95, getHeaderSize() * 0.7),
+                          juce::Justification::centredRight, false);
+    // button.setTopRightPosition(getWidth() * 0.97, button.getY());
     layout();
 }

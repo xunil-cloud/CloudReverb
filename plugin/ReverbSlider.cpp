@@ -12,7 +12,7 @@ ReverbSlider::ReverbSlider(const juce::String &name, const ReverbSlider::Type ty
         setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
         break;
     case Type::Line:
-        setSliderStyle(juce::Slider::LinearVertical);
+        setSliderStyle(juce::Slider::LinearBarVertical);
         break;
     }
 

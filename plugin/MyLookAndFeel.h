@@ -52,7 +52,15 @@ public:
         auto size = std::min(button.getWidth(), button.getHeight());
         auto x = button.getX();
         auto y = button.getY();
-        auto padding = 2;
-        g.fillEllipse(2, 2, size - 4, size - 4);
+        auto padding = 1;
+
+        g.fillEllipse(padding, padding, size - padding * 2, size - padding * 2);
+        if (hover)
+        {
+            g.setColour(juce::Colours::white);
+            g.drawEllipse(padding, padding, size - padding * 2, size - padding * 2, 1);
+        }
+        // g.fillRoundedRectangle(padding, padding, size - padding * 2, size - padding * 2, size *
+        // 0.2);
     }
 };
