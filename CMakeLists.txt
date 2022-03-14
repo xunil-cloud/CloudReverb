@@ -74,6 +74,7 @@ juce_add_plugin(CloudReverb
 # that will be built into the target. This is a standard CMake command.
 
 target_sources(CloudReverb PRIVATE
+    plugin/MyLookAndFeel.cpp
             plugin/ReverbSlider.cpp
 	    plugin/DiffusionBlock.cpp
 	    plugin/LateDiffusionBlock.cpp

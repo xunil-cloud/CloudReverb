@@ -10,12 +10,9 @@ Block::Block(const juce::String &name) : name(std::move(name))
 }
 void Block::paint(juce::Graphics &g)
 {
-    // g.fillAll(juce::Colour(0xff283338));
-    g.fillAll(juce::Colour(0xff383838));
-    // g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-    g.setColour(juce::Colour(0xffd4be98));
+    g.fillAll(juce::Colour(0xff343434));
     g.setColour(juce::Colour(0xffd6d6d6));
-    // g.drawText(name, 0, 0, getWidth(), 50, juce::Justification::centred);
+
     auto rec = getLocalBounds()
                    // .withSizeKeepingCentre(getWidth() * 0.9, getHeight() * ((1/header_ratio-1)*
                    // 0.05+0.9));
@@ -51,20 +48,17 @@ void Block::resized() {
 void Block::setupSeed(const juce::String &name, juce::RangedAudioParameter *param)
 {
     seedSlider.setName(name);
-    seedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     addAndMakeVisible(seedSlider);
-    seedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    seedSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    seedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
+    // seedSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
     seedAttachment = std::make_unique<juce::SliderParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), seedSlider);
 }
 void Block::addParameter(const juce::String &name, juce::RangedAudioParameter *param,
                          ReverbSlider::Type type)
 {
-    auto const fontSize = 16;
 
     std::unique_ptr<ReverbSlider> slider = std::make_unique<ReverbSlider>(name, type);
-    // sliders.insert({name, std::move(slider)});
     slider->setPopupDisplayEnabled(true, true, this);
 
     auto attachment = std::make_unique<juce::SliderParameterAttachment>(
@@ -72,18 +66,8 @@ void Block::addParameter(const juce::String &name, juce::RangedAudioParameter *p
     attachments.push_back(std::move(attachment));
 
     auto label = std::make_unique<juce::Label>(param->paramID, name);
-    label->setFont(juce::Font(fontSize));
-    label->setColour(juce::Label::ColourIds::textColourId, juce::Colour(0xffd4be98));
-    label->setColour(juce::Label::ColourIds::textColourId, juce::Colour(0xffd6d6d6));
-    // label->setColour(juce::Label::ColourIds::backgroundColourId,
-    // juce::Colour(juce::Colours::antiquewhite));
     label->setMinimumHorizontalScale(1);
-    auto const width = label->getFont().getStringWidthFloat(label->getText()) +
-                       label->getBorderSize().getLeftAndRight() + 1;
-    auto const height = fontSize + label->getBorderSize().getTopAndBottom() + 1;
-    label->setSize(width, height);
     label->setJustificationType(juce::Justification::centred);
-    // labels.insert({name, std::move(label)});
     addAndMakeVisible(slider.get());
     addAndMakeVisible(label.get());
     sliders.push_back(std::move(slider));
@@ -103,7 +87,7 @@ void Block::layout()
     rec.removeFromTop(getHeaderSize());
     // auto size = std::min(getWidth() / 4.0 * 0.3, getHeight() * 0.3);
     auto size = getHeight() * 0.3;
-    seedSlider.setBounds(30, 2, getWidth() / 5.0, getHeight() / 7.0);
+    seedSlider.setBounds(30, 10, getWidth() / 7.0, 25);
 
     flex.items.clearQuick();
     for (auto &i : sliders)
@@ -111,7 +95,6 @@ void Block::layout()
         auto slider = i.get();
         flex.items.add(juce::FlexItem(size, size, *slider).withMaxHeight(70).withMaxWidth(70));
     }
-    auto bound = main.withSizeKeepingCentre(main.getWidth() * 0.8, main.getHeight() * 0.8);
     flex.performLayout(rec);
 
     rec = getLocalBounds()
@@ -124,7 +107,6 @@ void Block::layout()
     {
         auto &slider = sliders[i];
         auto &label = labels[i];
-        label->setFont(juce::Font("Roboto", 20, juce::Font::plain));
         auto fontsize = std::min(rec.getWidth() * 0.05 * x_ratio, size * 0.35);
         label->setFont(juce::Font("Roboto", fontsize, juce::Font::plain));
         // label->setFont(juce::Font("Open Sans Condensed", 20, juce::Font::plain));

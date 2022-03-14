@@ -5,11 +5,7 @@
 class MyLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    MyLookAndFeel()
-    {
-        // setColour(juce::Slider::thumbColourId, {255, 0, 153});
-        // setColour(juce::ResizableWindow::backgroundColourId, {234, 234, 234});
-    }
+    MyLookAndFeel();
 
     void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos,
                           const float rotaryStartAngle, const float rotaryEndAngle,
@@ -24,11 +20,11 @@ public:
         auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
         g.setColour(findColour(juce::Slider::thumbColourId));
-        g.setColour(juce::Colour(0xff225ebd));
+        // g.setColour(juce::Colour(0xff225ebd));
         g.fillEllipse(rx, ry, rw, rw);
 
-        g.setColour(juce::Colours::black);
-        // g.drawEllipse(rx, ry, rw, rw, 1.0f);
+        g.setColour(juce::Colour(0xff121212));
+        // g.drawEllipse(rx, ry, rw, rw, 1.5f);
         // g.drawRect(x,y,width,height);
 
         juce::Path p;
@@ -38,7 +34,7 @@ public:
         p.applyTransform(juce::AffineTransform::rotation(angle).translated(centreX, centreY));
 
         g.setColour(juce::Colours::black);
-        g.setColour(findColour(juce::Slider::trackColourId));
+        // g.setColour((getCurrentColourScheme().getUIColour(juce::LookAndFeel_V4::ColourScheme::UIColour::outline)));
         g.fillPath(p);
     }
     void drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,

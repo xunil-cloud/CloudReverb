@@ -118,11 +118,8 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    // g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-    g.fillAll(juce::Colour(0xff283338));
-    g.fillAll(juce::Colour(0xff303030));
-    // g.setColour(juce::Colour(33, 80, 100));
-    g.setColour(juce::Colour(0xff585E61));
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.setColour(juce::Colours::white);
     g.setFont(juce::Font("Roboto", std::min(50.0, getHeight() * 0.08 * 0.8), juce::Font::plain));
     g.drawFittedText("CloudReverb", 10, 0, tap.getWidth() * 0.6, getHeight() * 0.08,
                      juce::Justification::centredLeft, 1, 1);
