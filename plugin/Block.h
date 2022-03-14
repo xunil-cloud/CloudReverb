@@ -13,11 +13,8 @@
 class Block : public juce::Component
 {
 public:
-    // Block(const juce::String&, const juce::AudioProcessorValueTreeState&, const
-    // std::vector<juce::String>&);
     Block(const juce::String &);
     void paint(juce::Graphics &) override;
-    // void resized() override;
     void addParameter(const juce::String &, juce::RangedAudioParameter *param,
                       const ReverbSlider::Type type);
     void setupSeed(const juce::String &, juce::RangedAudioParameter *param);
@@ -27,11 +24,10 @@ protected:
     int getHeaderSize() { return getHeight() / 6.0 * header_ratio; };
     int getCenterY() { return (getY() + getBottom()) * 0.5; };
     int getCenterX() { return (getX() + getRight()) * 0.5; };
-    // const std::vector<juce::String> params_id{"InputMix"};
+
     const juce::String name;
     float header_ratio = 1.0;
     float x_ratio = 1.0;
-    // std::unordered_map<juce::String, std::unique_ptr<juce::Slider>> sliders;
 
     std::vector<std::unique_ptr<ReverbSlider>> sliders;
 
@@ -40,10 +36,7 @@ protected:
     juce::Slider seedSlider;
     std::unique_ptr<juce::SliderParameterAttachment> seedAttachment;
     juce::FlexBox flex = juce::FlexBox();
-    // std::unordered_map<juce::String, std::unique_ptr<juce::Label>> labels;
-    // std::unordered_map<juce::String, std::unique_ptr<juce::SliderParameterAttachment>>
-    // attachments;
-    //  NOTE: maybe we only need vector to store objects?
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Block)
 };

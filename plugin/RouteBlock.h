@@ -5,10 +5,7 @@ class RouteBlock : public Block
 public:
     RouteBlock(const juce::String &, const juce::AudioProcessorValueTreeState &);
     ~RouteBlock();
-    // void paint(juce::Graphics&) override;
     void resized() override;
-
-    const std::vector<juce::String> params_id{"InputMix", "PreDelay", "HighPass", "LowPass"};
 
 private:
     juce::ToggleButton mode_switch;

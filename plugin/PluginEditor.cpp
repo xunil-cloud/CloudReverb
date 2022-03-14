@@ -82,8 +82,6 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
 
     label_cross_seed.attachToComponent(&cross_seed_slider, true);
 
-    // setResizable(true, true);
-
     limit = std::make_unique<juce::ComponentBoundsConstrainer>();
     limit->setMinimumSize(1100, 450);
     setConstrainer(limit.get());
@@ -117,37 +115,21 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
     g.setColour(juce::Colours::white);
     g.setFont(juce::Font("Roboto", std::min(50.0, getHeight() * 0.08 * 0.8), juce::Font::plain));
     g.drawFittedText("CloudReverb", 10, 0, tap.getWidth() * 0.6, getHeight() * 0.08,
                      juce::Justification::centredLeft, 1, 1);
-    //  g.fillRect(5, 2, tap.getWidth(), getHeight() * 0.08);
-    // g.setColour(juce::Colours::black);
-    // g.fillRect(0, delay.getY() - 2, eq.getX(), 4);
-    // g.fillRect(0, input.getY() - 2, getWidth(), 4);
-    // g.fillRect(diffusion1.getX() - 2, diffusion1.getY(), 4, getHeight() - diffusion1.getY());
-    // g.fillRect(eq.getX() - 2, eq.getY(), 4, getHeight() - eq.getY());
-    // g.fillRect(getWidth() / 2, 0, 2, getHeight() / 5 * 3);
-    // g.fillRect(0, getHeight() / 5 * 3 / 2, getWidth(), 2);
-    // g.fillRect(0, getHeight() / 5 * 3, getWidth(), 2);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
 {
     reset_button.setBounds(getWidth() - 70, 3, 50, 35);
-    // combobox.setBounds(getLocalBounds());
-    auto mainSection = getLocalBounds().removeFromTop(getHeight() * 1 / 7);
-    Block fakeBlock{"fake"};
 
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
-    // grid.templateColumns = {Track(Fr(1)), Track(Fr(1))};
-    // grid.templateRows = {Track(Fr(1)), Track(Fr(1))};
-    // grid.items = {juce::GridItem(tap), juce::GridItem(diffusion1), juce::GridItem(delay),
-    //               juce::GridItem(diffusion2)};
+
     grid.templateColumns = {Track(Fr(3)), Track(Fr(3)), Track(Fr(2))};
     grid.templateRows = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
     grid.columnGap = Px(4);
@@ -157,10 +139,7 @@ void AudioPluginAudioProcessorEditor::resized()
         juce::GridItem(delay), juce::GridItem(diffusion2), juce::GridItem(input),
         juce::GridItem(route), juce::GridItem(mixer)};
     grid.performLayout(getLocalBounds().removeFromBottom(getHeight() * 0.92));
-    // grid.performLayout(up);
-    // eq.setBounds(down.removeFromTop(down.getHeight() / 2.0));
-    // mixer.setBounds(down.removeFromLeft(down.getWidth() / 2.0));
-    // input.setBounds(down.removeFromLeft(down.getWidth() / 2.0));
+
     auto bound =
         tap.getBounds()
             .withHeight(getHeight() * 0.08)

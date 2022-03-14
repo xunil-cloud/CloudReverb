@@ -4,7 +4,6 @@ ReverbSlider::ReverbSlider(const juce::String &name, const ReverbSlider::Type ty
     : juce::Slider(name), type(type)
 {
     setName(name);
-    setLookAndFeel(&myLookAndFeel);
 
     switch (type)
     {
@@ -18,6 +17,5 @@ ReverbSlider::ReverbSlider(const juce::String &name, const ReverbSlider::Type ty
 
     setMouseDragSensitivity(300);
     setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-    // setPopupDisplayEnabled(true, true, getParentComponent());
     setNumDecimalPlacesToDisplay(2);
 }

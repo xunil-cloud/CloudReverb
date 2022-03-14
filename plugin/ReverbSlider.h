@@ -13,11 +13,9 @@ public:
         Line
     };
     ReverbSlider(const juce::String &name, const ReverbSlider::Type type);
-    ~ReverbSlider() override { setLookAndFeel(nullptr); }
 
 private:
     juce::String name;
     ReverbSlider::Type type;
-    MyLookAndFeel myLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReverbSlider)
 };

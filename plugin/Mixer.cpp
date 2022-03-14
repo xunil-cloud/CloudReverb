@@ -33,7 +33,6 @@ void Mixer::resized()
         flex.items.add(
             juce::FlexItem(size * 0.6, size, *slider).withMaxHeight(70).withMaxWidth(70));
     }
-    auto bound = main.withSizeKeepingCentre(main.getWidth() * 0.8, main.getHeight() * 0.8);
     flex.performLayout(rec);
 
     for (auto &i : sliders)
@@ -54,66 +53,10 @@ void Mixer::resized()
     {
         auto &slider = sliders[i];
         auto &label = labels[i];
-        label->setFont(juce::Font("Roboto", 20, juce::Font::plain));
         auto fontsize = std::min(rec.getWidth() * 0.05 * x_ratio, size * 0.35);
         label->setFont(juce::Font("Roboto", fontsize, juce::Font::plain));
-        // label->setFont(juce::Font("Open Sans Condensed", 20, juce::Font::plain));
-        // label->setSize(bound.getWidth() / 4.0, (bound.getHeight() - slider->getHeight()) / 2.0);
-        // label->setCentrePosition(slider->getBounds().getCentreX(),
-        //                          getHeight() - label->getHeight() * 0.5);
-        // label->setTopLeftPosition(label->getX(), bound.getBottom() - 1.2 * label->getHeight());
         label->setSize(float(rec.getWidth()) / sliders.size(), fontsize + 2);
         label->setCentrePosition(slider->getBounds().getCentreX(),
                                  slider->getBounds().getBottom() + fontsize * 0.75);
     }
-    /*
-
-    auto main = getLocalBounds();
-    auto rec =
-        getLocalBounds()
-            // .withSizeKeepingCentre(getWidth() * 0.9, getHeight() * ((1/header_ratio-1)*
-            // 0.05+0.9));
-            .withSizeKeepingCentre(getWidth() * x_ratio * (0.9 + 1 / x_ratio - 1),
-                                   getHeight() * header_ratio * (0.9 + 1 / header_ratio - 1));
-    rec.removeFromTop(getHeaderSize());
-    main.removeFromTop(50);
-    main.removeFromBottom(30);
-    auto size = 50;
-    size = getHeight() * 0.3;
-
-    auto flex = juce::FlexBox();
-    using Fl = juce::FlexBox;
-    flex.justifyContent = Fl::JustifyContent::spaceAround;
-    flex.alignItems = Fl::AlignItems::stretch;
-    flex.alignContent = Fl::AlignContent::center;
-    flex.alignContent = Fl::AlignContent::stretch;
-    auto items = juce::Array<juce::FlexItem>();
-
-    for (auto &i : sliders)
-    {
-        auto slider = i.get();
-        items.add(juce::FlexItem(size, size, *slider));
-    }
-    flex.items = items;
-    flex.performLayout(main);
-
-    for (size_t i = 0; i < sliders.size(); i++)
-    {
-        auto &slider = sliders[i];
-        auto &label = labels[i];
-        // label->setCentrePosition(slider->getBounds().getCentreX(),
-        //                          slider->getBounds().getBottom() + 8);
-        label->setFont(juce::Font("Roboto", 20, juce::Font::plain));
-        auto fontsize = std::min(rec.getWidth() * 0.05 * x_ratio, size * 0.35);
-        label->setFont(juce::Font("Roboto", fontsize, juce::Font::plain));
-        // label->setFont(juce::Font("Open Sans Condensed", 20, juce::Font::plain));
-        // label->setSize(bound.getWidth() / 4.0, (bound.getHeight() - slider->getHeight()) / 2.0);
-        // label->setCentrePosition(slider->getBounds().getCentreX(),
-        //                          getHeight() - label->getHeight() * 0.5);
-        // label->setTopLeftPosition(label->getX(), bound.getBottom() - 1.2 * label->getHeight());
-        label->setSize(float(rec.getWidth()) / sliders.size(), fontsize + 2);
-        label->setCentrePosition(slider->getBounds().getCentreX(),
-                                 slider->getBounds().getBottom() + fontsize * 0.75);
-    }
-    */
 }

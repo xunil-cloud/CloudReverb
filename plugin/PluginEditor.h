@@ -35,20 +35,15 @@ private:
     juce::Grid input_sec;
     juce::Grid early_sec;
     std::vector<juce::SliderParameterAttachment *> attachments;
+
     InputBlock input;
     TapBlock tap;
     DelayBlock delay;
     Mixer mixer;
     EqBlock eq;
-    // Block tap;
-    // Block delayLine;
     DiffusionBlock diffusion1;
     LateDiffusionBlock diffusion2;
-
     RouteBlock route;
-
-    // InputBlock input;
-    // juce::AudioProcessorValueTreeState::ButtonAttachment a;
 
     std::unique_ptr<juce::ComponentBoundsConstrainer> limit;
     juce::Grid grid;

@@ -75,18 +75,18 @@ juce_add_plugin(CloudReverb
 
 target_sources(CloudReverb PRIVATE
     plugin/MyLookAndFeel.cpp
-            plugin/ReverbSlider.cpp
-	    plugin/DiffusionBlock.cpp
-	    plugin/LateDiffusionBlock.cpp
-	    plugin/InputBlock.cpp
-	    plugin/TapBlock.cpp
-	    plugin/DelayBlock.cpp
-	    plugin/EqBlock.cpp
-	    plugin/Mixer.cpp
-        plugin/RouteBlock.cpp
-	    plugin/Block.cpp
-	    plugin/PluginEditor.cpp
-	    plugin/PluginProcessor.cpp)
+    plugin/ReverbSlider.cpp
+    plugin/DiffusionBlock.cpp
+    plugin/LateDiffusionBlock.cpp
+    plugin/InputBlock.cpp
+    plugin/TapBlock.cpp
+    plugin/DelayBlock.cpp
+    plugin/EqBlock.cpp
+    plugin/Mixer.cpp
+    plugin/RouteBlock.cpp
+    plugin/Block.cpp
+    plugin/PluginEditor.cpp
+    plugin/PluginProcessor.cpp)
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
 # of compile definitions to switch certain features on/off, so if there's a particular feature you

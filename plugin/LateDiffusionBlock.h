@@ -8,14 +8,12 @@
 #include <unordered_map>
 
 #include "Block.h"
-#define DIFFUSION_STAGES "DiffusionStages"
 
 class LateDiffusionBlock : public Block
 {
 public:
     LateDiffusionBlock(const juce::String &, const juce::AudioProcessorValueTreeState &);
     ~LateDiffusionBlock() override { button.setLookAndFeel(nullptr); }
-    // void paint(juce::Graphics&) override;
     void resized() override;
 
 private:

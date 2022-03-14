@@ -11,7 +11,7 @@ DiffusionBlock::DiffusionBlock(const juce::String &name,
     addParameter("mod amt.", state.getParameter("EarlyDiffusionModAmount"), type::Circle);
     addParameter("mod rate", state.getParameter("EarlyDiffusionModRate"), type::Circle);
     setupSeed("seed", state.getParameter("DiffusionSeed"));
-    // button.setToggleState();
+
     auto param = state.getParameter("DiffusionEnabled");
     button_attachment = std::make_unique<juce::ButtonParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), button);
@@ -27,6 +27,5 @@ void DiffusionBlock::resized()
                               .removeFromTop(getHeaderSize())
                               .withSizeKeepingCentre(getWidth() * 0.95, getHeaderSize() * 0.7),
                           juce::Justification::centredRight, false);
-    // button.setTopRightPosition(getWidth() * 0.97, button.getY());
     layout();
 }
