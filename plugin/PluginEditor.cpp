@@ -82,6 +82,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
 
     label_cross_seed.attachToComponent(&cross_seed_slider, true);
 
+    cross_seed_slider.setPopupDisplayEnabled(true, true, this);
+
     limit = std::make_unique<juce::ComponentBoundsConstrainer>();
     limit->setMinimumSize(1100, 450);
     setConstrainer(limit.get());

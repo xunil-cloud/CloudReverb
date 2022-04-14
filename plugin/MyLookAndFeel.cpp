@@ -5,10 +5,7 @@ MyLookAndFeel::MyLookAndFeel()
                                             0xffd6d6d6, 0xff225ebd, 0xfffff1ff, 0xff227dbd,
                                             0xffffffff})
 {
-    // setColour(juce::Slider::thumbColourId, {255, 0, 153});
-    // 0xff227dbd
-    // setColour(juce::ResizableWindow::backgroundColourId, {234, 234, 234});
-    // setColourScheme({0x303030, 0xff683838, 0x303030, 0xff46d6d6, 0xff16d6d6, 0xff225ebd,
-    // 0xfffff1ff,
-    //                  0xff181f22, 0xfffff1ff});
+    setColour(juce::Slider::trackColourId, juce::Colour(0xff225ebd));
+    setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff383838));
+    // setDefaultSansSerifTypefaceName("Roboto");
 }

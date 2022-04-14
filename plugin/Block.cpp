@@ -26,7 +26,8 @@ void Block::setupSeed(const juce::String &name, juce::RangedAudioParameter *para
     seedSlider.setName(name);
     addAndMakeVisible(seedSlider);
     seedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
-    // seedSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    seedSlider.setColour(juce::Slider::trackColourId, juce::Colour(0xff343434));
+
     seedAttachment = std::make_unique<juce::SliderParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), seedSlider);
 }
