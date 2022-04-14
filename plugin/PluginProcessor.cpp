@@ -278,322 +278,159 @@ void AudioPluginAudioProcessor::setStateInformation(const void *data, int sizeIn
 // This creates new instances of the plugin..
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new AudioPluginAudioProcessor(); }
 
-#define TO_TEXT(numberOfDecimalPlaces, SUFFIX)                                                     \
+#define FLOAT_TO_TEXT(numberOfDecimalPlaces, SUFFIX)                                               \
     [](float value, int) { return juce::String(value, numberOfDecimalPlaces) + " " + #SUFFIX; }
 
-#define TO_TEXT_IN_DB(numberOfDecimalPlaces)                                                     \
-    [](float value, int) { return value == 0 ? "0" : juce::String(10* log(value), numberOfDecimalPlaces) + " " + "dB"; }
+#define INT_TO_TEXT(SUFFIX)                                                                        \
+    [](float value, int) { return juce::String((int)value) + " " + #SUFFIX; }
 
-#define MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P)                                                     \
-        juce::NormalisableRange<float>( \
-            START, END,\
-            [](float start, float end, float value) { \
-                return start + (std::pow(P, value) - 1) / (P-1) * (end - start); \
-            }, \
-            [](float start, float end, float value) { \
-                return std::log((value - start) / (end - start) * (P-1) + 1) / std::log(P); \
-            }) \
+#define TO_TEXT_IN_DB(numberOfDecimalPlaces)                                                       \
+    [](float value, int) {                                                                         \
+        return value == 0 ? "0"                                                                    \
+                          : juce::String(10 * log(value), numberOfDecimalPlaces) + " " + "dB";     \
+    }
 
-#define MAKE_PARAMETER_FLOAT(NAME, START, END, DEFAULT_VALUE, P, SUFFIX) \
-    #NAME, #NAME, MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P), \
-        DEFAULT_VALUE,juce::String(),juce::AudioProcessorParameter::genericParameter, TO_TEXT(2, SUFFIX)
+#define MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P)                                               \
+    juce::NormalisableRange<float>(                                                                \
+        START, END,                                                                                \
+        [](float start, float end, float value) {                                                  \
+            return start + (std::pow(P, value) - 1) / (P - 1) * (end - start);                     \
+        },                                                                                         \
+        [](float start, float end, float value) {                                                  \
+            return std::log((value - start) / (end - start) * (P - 1) + 1) / std::log(P);          \
+        })
 
-#define MAKE_PARAMETER_DB_FLOAT(NAME, START, END, DEFAULT_VALUE, P) \
-    #NAME, #NAME, MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P), \
-        DEFAULT_VALUE,juce::String(),juce::AudioProcessorParameter::genericParameter, TO_TEXT_IN_DB(2)
+#define MAKE_PARAMETER_FLOAT(NAME, START, END, DEFAULT_VALUE, P, SUFFIX)                           \
+    std::make_unique<juce::AudioParameterFloat>(                                                   \
+        #NAME, #NAME, MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P), DEFAULT_VALUE, juce::String(), \
+        juce::AudioProcessorParameter::genericParameter, FLOAT_TO_TEXT(2, SUFFIX))
 
-#define MAKE_PARAMETER_LINEAR_FLOAT(NAME, START, END, DEFAULT_VALUE, SUFFIX) \
-    #NAME, #NAME, juce::NormalisableRange<float>(START, END), \
-        DEFAULT_VALUE,juce::String(),juce::AudioProcessorParameter::genericParameter, TO_TEXT(2, SUFFIX)
+#define MAKE_PARAMETER_DB_FLOAT(NAME, START, END, DEFAULT_VALUE, P)                                \
+    std::make_unique<juce::AudioParameterFloat>(                                                   \
+        #NAME, #NAME, MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P), DEFAULT_VALUE, juce::String(), \
+        juce::AudioProcessorParameter::genericParameter, TO_TEXT_IN_DB(2))
 
-#define MAKE_PARAMETER_INT(NAME, START, END, DEFAULT_VALUE, SUFFIX) \
-    #NAME, #NAME, START, END, \
-        DEFAULT_VALUE,juce::String(), TO_TEXT(0, SUFFIX)
+#define MAKE_PARAMETER_LINEAR_FLOAT(NAME, START, END, DEFAULT_VALUE, SUFFIX)                       \
+    std::make_unique<juce::AudioParameterFloat>(                                                   \
+        #NAME, #NAME, juce::NormalisableRange<float>(START, END), DEFAULT_VALUE, juce::String(),   \
+        juce::AudioProcessorParameter::genericParameter, FLOAT_TO_TEXT(2, SUFFIX))
+
+#define MAKE_PARAMETER_INT(NAME, START, END, DEFAULT_VALUE, SUFFIX)                                \
+    std::make_unique<juce::AudioParameterInt>(#NAME, #NAME, START, END, DEFAULT_VALUE,             \
+                                              juce::String(), INT_TO_TEXT(SUFFIX))
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
     std::vector<std::unique_ptr<juce::AudioProcessorParameterGroup>> params;
 
-    auto InputMix = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(InputMix, 0.f, 1.f,0.f ,));
-        // "InputMix", "InputMix", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f, juce::String(),
-        // juce::AudioProcessorParameter::genericParameter, TO_TEXT(2, ));
-    // [](float value, int) { return juce::String(value, 2); });
-    auto PreDelay =
-        // std::make_unique<juce::AudioParameterInt>("PreDelay", "PreDelay", 0, 1000, 0); // ms
-        std::make_unique<juce::AudioParameterInt>(
-            MAKE_PARAMETER_INT(PreDelay, 0, 1000,0 ,ms));
-            // "PreDelay", "PreDelay", 0, 1000, 0, // ms
-            //                                       juce::String(), TO_TEXT(0, ms));
-    auto HighPass = std::make_unique<juce::AudioParameterFloat>(
-        "HighPass", "HighPass",
-        // juce::NormalisableRange<float>(
-        //     20.0f, 1000.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(16, value) - 1) / 15 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 15 + 1) / std::log(16);
-        //     }),
-            MAKE_NORMALISABLE_RANGE_FLOAT(20.0f, 1000.0f, 16),
-        20.0f,juce::String(),juce::AudioProcessorParameter::genericParameter, TO_TEXT(2, Hz) );
-    auto LowPass = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(LowPass, 400.0f, 20000.0f,20000.0f , 16, Hz));
-        // "LowPass", "LowPass",
-        // juce::NormalisableRange<float>(
-        //     400.0f, 20000.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(16, value) - 1) / 15 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 15 + 1) / std::log(16);
-        //     }),
-        // 20000.0f);
-    auto TapCount = std::make_unique<juce::AudioParameterInt>("TapCount", "TapCount", 1, 50, 1);
-    auto TapLength = std::make_unique<juce::AudioParameterInt>(
-            MAKE_PARAMETER_INT(TapLength, 0, 500,0 ,ms));
-            // "TapLength", "TapLength", 0, 500, 1);
-    auto TapGain = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(TapGain, 0.0f, 1.0f,0.5f , 100,));
-        // "TapGain", "TapGain",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto TapDecay = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(TapDecay, 0.f, 1.f,0.f ,));
-        // "TapDecay", "TapDecay", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f);
+    auto InputMix = MAKE_PARAMETER_LINEAR_FLOAT(InputMix, 0.f, 1.f, 0.f, );
+
+    auto PreDelay = MAKE_PARAMETER_INT(PreDelay, 0, 1000, 0, ms);
+
+    auto HighPass = MAKE_PARAMETER_FLOAT(HighPass, 20.0f, 1000.0f, 20.0f, 16, Hz);
+
+    auto LowPass = MAKE_PARAMETER_FLOAT(LowPass, 400.0f, 20000.0f, 20000.0f, 16, Hz);
+
+    auto TapCount = MAKE_PARAMETER_INT(TapCount, 1, 50, 1, );
+
+    auto TapLength = MAKE_PARAMETER_INT(TapLength, 0, 500, 0, ms);
+
+    auto TapGain = MAKE_PARAMETER_FLOAT(TapGain, 0.0f, 1.0f, 0.5f, 100, );
+
+    auto TapDecay = MAKE_PARAMETER_LINEAR_FLOAT(TapDecay, 0.f, 1.f, 0.f, );
+
     auto DiffusionEnabled =
         std::make_unique<juce::AudioParameterBool>("DiffusionEnabled", "DiffusionEnabled", false);
-    auto DiffusionStages =
-        std::make_unique<juce::AudioParameterInt>("DiffusionStages", "DiffusionStages", 1, 8, 1);
-    auto DiffusionDelay = std::make_unique<juce::AudioParameterInt>(
-            MAKE_PARAMETER_INT(DiffusionDelay, 10, 100,10 ,ms));
-        // "DiffusionDelay", "DiffusionDelay", 10, 100, 10); // ms
 
-    auto DiffusionFeedback = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(DiffusionFeedback, 0.f, 1.f,0.f ,));
-        // "DiffusionFeedback", "DiffusionFeedback", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f);
-    auto LineCount = std::make_unique<juce::AudioParameterInt>("LineCount", "LineCount", 1, 12, 1);
-    auto LineDelay = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(LineDelay, 20.0f, 1000.0f,20.f , 100,ms));
-        // "LineDelay", "LineDelay",
-        // juce::NormalisableRange<float>(
-        //     20.0f, 1000.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 20.0f);
-    auto LineDecay = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(LineDecay, 0.05f, 60.f,1.f , 1000,ms));
-        // "LineDecay", "LineDecay",
-        // juce::NormalisableRange<float>(
-        //     0.05f, 60.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(1000, value) - 1) / 999 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 999 + 1) / std::log(1000);
-        //     }),
-        // 1.0f);
+    auto DiffusionStages = MAKE_PARAMETER_INT(DiffusionStages, 1, 8, 1, );
+
+    auto DiffusionDelay = MAKE_PARAMETER_INT(DiffusionDelay, 10, 100, 10, ms);
+
+    auto DiffusionFeedback = MAKE_PARAMETER_LINEAR_FLOAT(DiffusionFeedback, 0.f, 1.f, 0.f, );
+
+    auto LineCount = MAKE_PARAMETER_INT(LineCount, 1, 12, 1, );
+
+    auto LineDelay = MAKE_PARAMETER_FLOAT(LineDelay, 20.0f, 1000.0f, 20.f, 100, ms);
+
+    auto LineDecay = MAKE_PARAMETER_FLOAT(LineDecay, 0.05f, 60.f, 1.f, 1000, ms);
+
     auto LateDiffusionEnabled = std::make_unique<juce::AudioParameterBool>(
         "LateDiffusionEnabled", "LateDiffusionEnabled", false);
-    auto LateDiffusionStages = std::make_unique<juce::AudioParameterInt>(
-        "LateDiffusionStages", "LateDiffusionStages", 1, 8, 1);
-    auto LateDiffusionDelay = std::make_unique<juce::AudioParameterInt>(
-            MAKE_PARAMETER_INT(LateDiffusionDelay, 10.0f, 100.0f,10.f ,ms));
-        // "LateDiffusionDelay", "LateDiffusionDelay", 10, 100, 10);
-    auto LateDiffusionFeedback = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(LateDiffusionFeedback, 0.f, 1.f,0.5f ,));
-        // "LateDiffusionFeedback", "LateDiffusionFeedback",
-        // juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f);
-    auto PostLowShelfGain = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(PostLowShelfGain, 0.f, 1.f,0.5f , 100,));
-        // "PostLowShelfGain", "PostLowShelfGain",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto PostLowShelfFrequency = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(PostLowShelfFrequency, 20.f, 1000.f,1000.f , 16,Hz));
-        // "PostLowShelfFrequency", "PostLowShelfFrequency",
-        // juce::NormalisableRange<float>(
-        //     20.0f, 1000.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(16, value) - 1) / 15 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 15 + 1) / std::log(16);
-        //     }),
-        // 1000.0f);
-    auto PostHighShelfGain = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(PostHighShelfGain, 0.f, 1.f,0.5f , 100,));
-        // "PostHighShelfGain", "PostHighShelfGain",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto PostHighShelfFrequency = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(PostHighShelfFrequency, 400.f, 20000.f,20000.f , 16,Hz));
-        // "PostHighShelfFrequency", "PostHighShelfFrequency",
-        // juce::NormalisableRange<float>(
-        //     400.0f, 20000.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(16, value) - 1) / 15 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 15 + 1) / std::log(16);
-        //     }),
-        // 20000.0f);
-    auto PostCutoffFrequency = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(PostCutoffFrequency, 400.f, 20000.f,20000.f , 16,Hz));
-        // "PostCutoffFrequency", "PostCutoffFrequency",
-        // juce::NormalisableRange<float>(
-        //     400.0f, 20000.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(16, value) - 1) / 15 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 15 + 1) / std::log(16);
-        //     }),
-        // 20000.0f);
-    auto EarlyDiffusionModAmount = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(EarlyDiffusionModAmount, 0.f, 2.5f,0.f ,));
-        // "EarlyDiffusionModAmount", "EarlyDiffusionModAmount",
-        // juce::NormalisableRange<float>(0.0f, 2.5f), 0.5f);
-    auto EarlyDiffusionModRate = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(EarlyDiffusionModRate, 0.f, 5.f,0.5f , 100,Hz));
-        // "EarlyDiffusionModRate", "EarlyDiffusionModRate",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 5.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto LineModAmount = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(LineModAmount, 0.f, 2.5f,0.f ,));
-        // "LineModAmount", "LineModAmount", juce::NormalisableRange<float>(0.0f, 2.5f), 0.5f);
-    auto LineModRate = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(LineModRate, 0.f, 5.f,0.5f , 100,Hz));
-        // "LineModRate", "LineModRate",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 5.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto LateDiffusionModAmount = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(LateDiffusionModAmount, 0.f, 2.5f,0.f ,));
-        // "LateDiffusionModAmount", "LateDiffusionModAmount",
-        // juce::NormalisableRange<float>(0.0f, 2.5f), 0.5f);
-    auto LateDiffusionModRate = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_FLOAT(LateDiffusionModRate, 0.f, 5.f,0.5f , 100,Hz));
-        // "LateDiffusionModRate", "LateDiffusionModRate",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 5.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto TapSeed = std::make_unique<juce::AudioParameterInt>("TapSeed", "TapSeed", 1, 1000000, 1);
-    auto DiffusionSeed =
-        std::make_unique<juce::AudioParameterInt>("DiffusionSeed", "DiffusionSeed", 1, 1000000, 1);
-    auto DelaySeed =
-        std::make_unique<juce::AudioParameterInt>("DelaySeed", "DelaySeed", 1, 1000000, 1);
-    auto PostDiffusionSeed = std::make_unique<juce::AudioParameterInt>(
-        "PostDiffusionSeed", "PostDiffusionSeed", 1, 1000000, 1);
-    auto CrossSeed = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_LINEAR_FLOAT(CrossSeed, 0.f, 1.f,0.f ,));
-        // "CrossSeed", "CrossSeed", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f);
-    auto DryOut = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_DB_FLOAT(DryOut, 0.f, 1.f,1.f ,100));
-        // "DryOut", "DryOut",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto PredelayOut = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_DB_FLOAT(PredelayOut, 0.f, 1.f,0.f ,100));
-        // "PredelayOut", "PredelayOut",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto EarlyOut = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f,0.f ,100));
-        // "EarlyOut", "EarlyOut",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
-    auto MainOut = std::make_unique<juce::AudioParameterFloat>(
-            MAKE_PARAMETER_DB_FLOAT(MainOut, 0.f, 1.f,0.f ,100));
-        // "MainOut", "MainOut",
-        // juce::NormalisableRange<float>(
-        //     0.0f, 1.0f,
-        //     [](float start, float end, float value) {
-        //         return start + (std::pow(100, value) - 1) / 99 * (end - start);
-        //     },
-        //     [](float start, float end, float value) {
-        //         return std::log((value - start) / (end - start) * 99 + 1) / std::log(100);
-        //     }),
-        // 0.5f);
+
+    auto LateDiffusionStages = MAKE_PARAMETER_INT(LateDiffusionStages, 1, 8, 1, );
+
+    auto LateDiffusionDelay = MAKE_PARAMETER_INT(LateDiffusionDelay, 10.0f, 100.0f, 10.f, ms);
+
+    auto LateDiffusionFeedback =
+        MAKE_PARAMETER_LINEAR_FLOAT(LateDiffusionFeedback, 0.f, 1.f, 0.5f, );
+
+    auto PostLowShelfGain = MAKE_PARAMETER_FLOAT(PostLowShelfGain, 0.f, 1.f, 0.5f, 100, );
+
+    auto PostLowShelfFrequency =
+        MAKE_PARAMETER_FLOAT(PostLowShelfFrequency, 20.f, 1000.f, 1000.f, 16, Hz);
+
+    auto PostHighShelfGain = MAKE_PARAMETER_FLOAT(PostHighShelfGain, 0.f, 1.f, 0.5f, 100, );
+
+    auto PostHighShelfFrequency =
+        MAKE_PARAMETER_FLOAT(PostHighShelfFrequency, 400.f, 20000.f, 20000.f, 16, Hz);
+
+    auto PostCutoffFrequency =
+        MAKE_PARAMETER_FLOAT(PostCutoffFrequency, 400.f, 20000.f, 20000.f, 16, Hz);
+
+    auto EarlyDiffusionModAmount =
+        MAKE_PARAMETER_LINEAR_FLOAT(EarlyDiffusionModAmount, 0.f, 2.5f, 0.f, );
+
+    auto EarlyDiffusionModRate =
+        MAKE_PARAMETER_FLOAT(EarlyDiffusionModRate, 0.f, 5.f, 0.5f, 100, Hz);
+
+    auto LineModAmount = MAKE_PARAMETER_LINEAR_FLOAT(LineModAmount, 0.f, 2.5f, 0.f, );
+
+    auto LineModRate = MAKE_PARAMETER_FLOAT(LineModRate, 0.f, 5.f, 0.5f, 100, Hz);
+
+    auto LateDiffusionModAmount =
+        MAKE_PARAMETER_LINEAR_FLOAT(LateDiffusionModAmount, 0.f, 2.5f, 0.f, );
+
+    auto LateDiffusionModRate = MAKE_PARAMETER_FLOAT(LateDiffusionModRate, 0.f, 5.f, 0.5f, 100, Hz);
+
+    auto TapSeed = MAKE_PARAMETER_INT(TapSeed, 1, 1000000, 1, );
+
+    auto DiffusionSeed = MAKE_PARAMETER_INT(DiffusionSeed, 1, 1000000, 1, );
+
+    auto DelaySeed = MAKE_PARAMETER_INT(DelaySeed, 1, 1000000, 1, );
+
+    auto PostDiffusionSeed = MAKE_PARAMETER_INT(PostDiffusionSeed, 1, 1000000, 1, );
+
+    auto CrossSeed = MAKE_PARAMETER_LINEAR_FLOAT(CrossSeed, 0.f, 1.f, 0.f, );
+
+    auto DryOut = MAKE_PARAMETER_DB_FLOAT(DryOut, 0.f, 1.f, 1.f, 100);
+
+    auto PredelayOut = MAKE_PARAMETER_DB_FLOAT(PredelayOut, 0.f, 1.f, 0.f, 100);
+
+    auto EarlyOut = MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f, 0.f, 100);
+
+    auto MainOut = MAKE_PARAMETER_DB_FLOAT(MainOut, 0.f, 1.f, 0.f, 100);
+
     auto HiPassEnabled =
         std::make_unique<juce::AudioParameterBool>("HiPassEnabled", "HiPassEnabled", false);
+
     auto LowPassEnabled =
         std::make_unique<juce::AudioParameterBool>("LowPassEnabled", "LowPassEnabled", false);
+
     auto LowShelfEnabled =
         std::make_unique<juce::AudioParameterBool>("LowShelfEnabled", "LowShelfEnabled", false);
+
     auto HighShelfEnabled =
         std::make_unique<juce::AudioParameterBool>("HighShelfEnabled", "HighShelfEnabled", false);
+
     auto CutoffEnabled =
         std::make_unique<juce::AudioParameterBool>("CutoffEnabled", "CutoffEnabled", false);
+
     auto LateStageTap = std::make_unique<juce::AudioParameterFloat>(
         "LateStageTap", "LateStageTap", juce::NormalisableRange<float>(0.0f, 1.0f), 0.5f);
+
     auto Interpolation =
         std::make_unique<juce::AudioParameterBool>("Interpolation", "Interpolation", false);
+
     auto group =
         std::make_unique<juce::AudioProcessorParameterGroup>("CloudReverb_ID", "CloudReverb", "|");
 
