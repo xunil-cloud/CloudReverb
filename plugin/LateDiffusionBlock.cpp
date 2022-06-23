@@ -19,13 +19,17 @@ LateDiffusionBlock::LateDiffusionBlock(const juce::String &name,
     addAndMakeVisible(button);
 }
 
+void LateDiffusionBlock::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colour(0xff343434));
+    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds());
+    layout.drawTextRightToSlider(g, sliders[3].get(), getLocalBounds());
+    layout.drawTextRightToSlider(g, sliders[4].get(), getLocalBounds());
+}
 void LateDiffusionBlock::resized()
 {
-    button.setSize(1, 1);
-    button.setBoundsToFit(getLocalBounds()
-                              .withSizeKeepingCentre(getWidth() * 0.95, getHeight() * 0.9)
-                              .removeFromTop(getHeaderSize())
-                              .withSizeKeepingCentre(getWidth() * 0.95, getHeaderSize() * 0.7),
-                          juce::Justification::centredRight, false);
-    layout();
+    layout.placeUIs(sliders[0].get(), &seedSlider, sliders[1].get(), sliders[2].get(),
+                    sliders[3].get(), sliders[4].get(), &button, getLocalBounds());
 }

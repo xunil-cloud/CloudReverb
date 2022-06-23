@@ -55,3 +55,4 @@ cmake-build-release
 *.carxp
 
 ignores
+.clang-tidy

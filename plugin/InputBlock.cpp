@@ -21,15 +21,17 @@ InputBlock::InputBlock(const juce::String &name, const juce::AudioProcessorValue
     addAndMakeVisible(HighButton);
 }
 
+void InputBlock::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colour(0xff343434));
+    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[3].get(), getLocalBounds());
+}
 void InputBlock::resized()
 {
-    layout();
-    auto y1 = sliders[2]->getY() * 0.8;
-    auto y2 = sliders[3]->getY() * 0.8;
-    auto size = sliders[2]->getWidth();
-    auto buttonSize = std::min(30.0, size * 0.40);
-    lowButton.setSize(buttonSize, buttonSize);
-    lowButton.setCentrePosition(sliders[3]->getRight(), y2);
-    HighButton.setSize(buttonSize, buttonSize);
-    HighButton.setCentrePosition(sliders[2]->getRight(), y1);
+    layout.placeUIs(sliders[0].get(), sliders[1].get(), sliders[2].get(), sliders[3].get(),
+                    &lowButton, &HighButton, getLocalBounds());
 }

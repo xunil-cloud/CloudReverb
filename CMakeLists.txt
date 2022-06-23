@@ -18,6 +18,7 @@ project(CloudReverb VERSION 0.0.1)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
@@ -57,6 +58,8 @@ juce_add_plugin(CloudReverb
 	COPY_PLUGIN_AFTER_BUILD FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE Juce               # A four-character manufacturer id with at least one upper-case character
     PLUGIN_CODE Dem0                            # A unique four-character plugin id with at least one upper-case character
+    # LV2URI http://cloudreverb.io
+    # LV2_URI http://cloudreverb.io
     FORMATS AU VST3 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
 	PRODUCT_NAME "CloudReverb")        # The name of the final executable, which can differ from the target name
 
@@ -84,9 +87,12 @@ target_sources(CloudReverb PRIVATE
     plugin/EqBlock.cpp
     plugin/Mixer.cpp
     plugin/RouteBlock.cpp
+    plugin/Header.cpp
     plugin/Block.cpp
     plugin/PluginEditor.cpp
-    plugin/PluginProcessor.cpp)
+    plugin/PluginProcessor.cpp
+    plugin/layout/ThreePartLayout.cpp
+    plugin/layout/Layout.cpp)
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
 # of compile definitions to switch certain features on/off, so if there's a particular feature you
@@ -111,7 +117,7 @@ target_compile_definitions(CloudReverb
 # static library. These source files can be of any kind (wav data, images, fonts, icons etc.).
 # Conversion to binary-data will happen when your target is built.
 
-# juce_add_binary_data(AudioPluginData SOURCES ...)
+ juce_add_binary_data(AudioPluginData SOURCES resources/diagram.svg)
 
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module
@@ -120,7 +126,7 @@ target_compile_definitions(CloudReverb
 # here too. This is a standard CMake command.
 
 target_link_libraries(CloudReverb PRIVATE
-    # AudioPluginData           # If we'd created a binary data target, we'd link to it here
+    AudioPluginData           # If we'd created a binary data target, we'd link to it here
     juce::juce_audio_utils
     audio_engine
 PUBLIC

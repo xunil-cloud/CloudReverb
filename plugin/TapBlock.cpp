@@ -11,4 +11,16 @@ TapBlock::TapBlock(const juce::String &name, const juce::AudioProcessorValueTree
     setupSeed("seed", state.getParameter("TapSeed"));
 }
 
-void TapBlock::resized() { layout(); }
+void TapBlock::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colour(0xff343434));
+    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[3].get(), getLocalBounds());
+}
+void TapBlock::resized()
+{
+    layout.placeUIs(sliders[0].get(), &seedSlider, sliders[1].get(), sliders[3].get(),
+                    sliders[2].get(), getLocalBounds());
+}

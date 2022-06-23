@@ -8,15 +8,18 @@
 #include <unordered_map>
 
 #include "Block.h"
+#include "layout/Layout.h"
 
 class Mixer : public Block
 {
 public:
     Mixer(const juce::String &, const juce::AudioProcessorValueTreeState &);
+    void paint(juce::Graphics &) override;
     void resized() override;
 
 private:
     std::unique_ptr<juce::ButtonParameterAttachment> button_attachment;
     MyLookAndFeel look;
+    MixerLayout layout;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Mixer)
 };

@@ -11,4 +11,18 @@ DelayBlock::DelayBlock(const juce::String &name, const juce::AudioProcessorValue
     setupSeed("seed", state.getParameter("DelaySeed"));
 }
 
-void DelayBlock::resized() { layout(); }
+void DelayBlock::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colour(0xff343434));
+    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
+    layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
+    layout.drawTextRightToSlider(g, sliders[2].get(), getLocalBounds());
+    layout.drawTextRightToSlider(g, sliders[3].get(), getLocalBounds());
+}
+
+void DelayBlock::resized()
+{
+    layout.placeUIs(nullptr, &seedSlider, sliders[0].get(), sliders[1].get(), sliders[2].get(),
+                    sliders[3].get(), nullptr, getLocalBounds());
+}

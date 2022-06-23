@@ -1,9 +1,11 @@
 #include "Block.h"
+#include "layout/Layout.h"
 
 class EqBlock : public Block
 {
 public:
     EqBlock(const juce::String &, const juce::AudioProcessorValueTreeState &);
+    void paint(juce::Graphics &) override;
     void resized() override;
 
 private:
@@ -13,6 +15,7 @@ private:
     std::unique_ptr<juce::ButtonParameterAttachment> HighButton_attachment;
     juce::ToggleButton cutoffButton;
     std::unique_ptr<juce::ButtonParameterAttachment> cutoffButton_attachment;
+    EqLayout layout;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EqBlock)
 };

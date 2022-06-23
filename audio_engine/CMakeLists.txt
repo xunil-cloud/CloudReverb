@@ -1,6 +1,3 @@
-
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
 set(audio_engine_source_files 	AllpassDiffuser.h
 	         					DelayLine.h
 								FastSin.cpp

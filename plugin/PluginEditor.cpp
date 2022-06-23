@@ -11,8 +11,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
       mixer("Mixer", this->processorRef.treeState), eq("Shelf EQ", this->processorRef.treeState),
       diffusion1("Early Diffusion", this->processorRef.treeState),
       diffusion2("Late Diffusion", this->processorRef.treeState),
-      route("Route", this->processorRef.treeState),
-      cross_seed_slider("CrossSeed", ReverbSlider::Type::Circle)
+      header("CloudReverb", this->processorRef.treeState),
+      route("Route", this->processorRef.treeState)
 {
     reset_button.setButtonText("R");
 
@@ -70,24 +70,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     combobox.addItem("preset 2", 2);
     combobox.setSelectedId(1);
 
-    interp_switch.setButtonText("interppolation");
-    auto &state = this->processorRef.treeState;
-    auto param = state.getParameter("Interpolation");
-    attachment_interp_switch = std::make_unique<juce::ButtonParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(param), interp_switch);
-
-    param = state.getParameter("CrossSeed");
-    attachment_cross_seed = std::make_unique<juce::SliderParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(param), cross_seed_slider);
-
-    label_cross_seed.attachToComponent(&cross_seed_slider, true);
-
-    cross_seed_slider.setPopupDisplayEnabled(true, true, this);
-
     limit = std::make_unique<juce::ComponentBoundsConstrainer>();
-    limit->setMinimumSize(1100, 450);
+    limit->setMinimumSize(1418 * 0.5, 782 * 0.5);
+    limit->setFixedAspectRatio(1418.f / 782.f);
     setConstrainer(limit.get());
-    setSize(1500, 600);
+    setSize(1418, 782);
 
     addAndMakeVisible(reset_button);
     addAndMakeVisible(input);
@@ -97,69 +84,43 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     addAndMakeVisible(diffusion2);
     addAndMakeVisible(mixer);
     addAndMakeVisible(eq);
-    addAndMakeVisible(combobox);
-    addAndMakeVisible(interp_switch);
-    addAndMakeVisible(cross_seed_slider);
-    addAndMakeVisible(cross_seed_slider);
     addAndMakeVisible(route);
+    addAndMakeVisible(header);
     setLookAndFeel(&myLookAndFeel);
 
-    interp_switch.setLookAndFeel(&defaultLook);
     setResizable(true, true);
 }
 
-AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
-{
-    setLookAndFeel(nullptr);
-    return;
-}
+AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor() { setLookAndFeel(nullptr); }
 
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics &g)
 {
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-    g.setColour(juce::Colours::white);
-    g.setFont(juce::Font("Roboto", std::min(50.0, getHeight() * 0.08 * 0.8), juce::Font::plain));
-    g.drawFittedText("CloudReverb", 10, 0, tap.getWidth() * 0.6, getHeight() * 0.08,
-                     juce::Justification::centredLeft, 1, 1);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    reset_button.setBounds(getWidth() - 70, 3, 50, 35);
-
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
 
-    grid.templateColumns = {Track(Fr(3)), Track(Fr(3)), Track(Fr(2))};
-    grid.templateRows = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
+    grid.templateColumns = {Track(Fr(540)), Track(Fr(540)), Track(Fr(330))};
+    grid.templateRows = {Track(Fr(1)), Track(Fr(2)), Track(Fr(2)), Track(Fr(2))};
     grid.columnGap = Px(4);
     grid.rowGap = Px(4);
-    grid.items = {
-        juce::GridItem(tap),   juce::GridItem(diffusion1), juce::GridItem(eq).withArea(1, 3, 3, 3),
-        juce::GridItem(delay), juce::GridItem(diffusion2), juce::GridItem(input),
-        juce::GridItem(route), juce::GridItem(mixer)};
-    grid.performLayout(getLocalBounds().removeFromBottom(getHeight() * 0.92));
+    grid.items = {juce::GridItem(header).withArea(1, 1, 1, 4),
+                  juce::GridItem(tap),
+                  juce::GridItem(diffusion1),
+                  juce::GridItem(eq).withArea(2, 3, 4, 3),
+                  juce::GridItem(delay),
+                  juce::GridItem(diffusion2),
+                  juce::GridItem(input),
+                  juce::GridItem(route),
+                  juce::GridItem(mixer)};
+    grid.performLayout(getLocalBounds());
 
     auto bound =
-        tap.getBounds()
-            .withHeight(getHeight() * 0.08)
-            .withPosition(tap.getBounds().getX(), 0)
-            .withSizeKeepingCentre(tap.getWidth() * 0.9, std::min(getHeight() * 0.08 * 0.5, 25.0));
-    combobox.setBounds(bound.withTrimmedLeft(bound.getWidth() - 100));
-    auto sliderSize = std::min(55.0, getHeight() * 0.08 * 0.9);
-    bound = diffusion1.getBounds()
-                .withHeight(getHeight() * 0.08)
-                .withPosition(diffusion1.getBounds().getX(), 0)
-                .withSizeKeepingCentre(tap.getWidth() * 0.6, sliderSize);
-    cross_seed_slider.setBounds(bound.withTrimmedRight(bound.getWidth() - sliderSize));
-    bound = diffusion1.getBounds()
-                .withHeight(getHeight() * 0.08)
-                .withPosition(diffusion1.getBounds().getX(), 0)
-                .withSizeKeepingCentre(tap.getWidth() * 0.9, 30);
-    interp_switch.setBounds(bound.withTrimmedLeft(bound.getWidth() * 0.5));
-    bound =
         eq.getBounds()
             .withHeight(getHeight() * 0.08)
             .withPosition(eq.getBounds().getX(), 0)
