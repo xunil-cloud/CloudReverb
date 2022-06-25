@@ -8,7 +8,9 @@ void Layout::drawTextUnderSlider(juce::Graphics &g, ReverbSlider *slider,
                             : bound.getWidth() / WIDTH;
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    g.setFont(juce::Font("Pragati Narrow", 38 * ratio, juce::Font::plain));
+    // g.setFont(juce::Font("Pragati Narrow", 38 * ratio, juce::Font::plain));
+    auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
+    g.setFont(font);
     auto rec = juce::Rectangle<int>(slider->getX(), slider->getBottom() + gap * ratio,
                                     slider->getWidth(), 30 * ratio)
                    .withSizeKeepingCentre(slider->getWidth() * 4, 30 * ratio);
@@ -24,7 +26,9 @@ void Layout::drawTextRightToSlider(juce::Graphics &g, juce::Component *slider,
 
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    g.setFont(juce::Font("Pragati Narrow", 38 * ratio, juce::Font::plain));
+    // g.setFont(juce::Font("Pragati Narrow", 38 * ratio, juce::Font::plain));
+    auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
+    g.setFont(font);
     auto name = slider->getName();
     auto width = g.getCurrentFont().getStringWidth(name);
     auto gap = 12;
@@ -42,7 +46,9 @@ void Layout::drawTitle(juce::Graphics &g, const ::juce::String &name,
                             : bound.getWidth() / WIDTH;
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 38 * ratio, juce::Font::plain));
+    // g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 38 * ratio, juce::Font::plain));
+    auto font = MyLookAndFeel::getCustomFont().withHeight(38 / 22.f * 38 * ratio);
+    g.setFont(font);
 
     g.drawFittedText(name, X_PADDING * ratio, Y_PADDING * ratio, 200 * ratio, 47 * ratio,
                      juce::Justification::centredLeft, 1);
@@ -166,7 +172,9 @@ void RouteLayout::drawTextOndiagram(juce::Graphics &g, const juce::String &fist_
                             : bound.getWidth() / WIDTH;
     const int width = 110 * ratio;
     const int height = 41 * ratio;
-    g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 22 * ratio, juce::Font::plain));
+    // g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 22 * ratio, juce::Font::plain));
+    auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
+    g.setFont(font);
     g.drawFittedText(fist_block, 166 * ratio, 96 * ratio, width, height,
                      juce::Justification::centred, 1);
     g.drawFittedText(second_block, 355 * ratio, 96 * ratio, width, height,
@@ -182,7 +190,9 @@ void HeaderLayout::drawTitle(juce::Graphics &g, const ::juce::String &name,
                             : bound.getWidth() / WIDTH;
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 62 * ratio, juce::Font::plain));
+    // g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 62 * ratio, juce::Font::plain));
+    auto font = MyLookAndFeel::getCustomFont().withHeight(38 / 22.f * 62 * ratio);
+    g.setFont(font);
 
     g.drawFittedText(name, X_PADDING * ratio, 0, bound.getWidth(), bound.getHeight(),
                      juce::Justification::centredLeft, 1);

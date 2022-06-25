@@ -1,15 +1,22 @@
 #include "MyLookAndFeel.h"
+#include "BinaryData.h"
 
 MyLookAndFeel::MyLookAndFeel()
     : juce::LookAndFeel_V4::LookAndFeel_V4({0xff2b2b2b, 0xff484848, 0xff2b2b2b, 0xff121212,
                                             0xffd6d6d6, 0xff225ebd, 0xfffff1ff, 0xff227dbd,
                                             0xffffffff})
 {
+
+    auto futuraMediumFont = juce::Typeface::createSystemTypefaceFor(
+        BinaryData::PragatiNarrowRegular_ttf,BinaryData::PragatiNarrowRegular_ttfSize);
+    // juce::LookAndFeel::setDefaultLookAndFeel(this);
+    // setDefaultSansSerifTypeface(futuraMediumFont);
     setColour(juce::Slider::trackColourId, juce::Colour(0xff225ebd));
     setColour(juce::Slider::thumbColourId, juce::Colour(0xff225ebd));
 
     setColour(juce::Label::backgroundColourId, juce::Colour(0xff484848));
     setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff383838));
+    // setDefaultSansSerifTypefaceName("Roboto");
 }
 void MyLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
                                      bool is_down)
@@ -121,3 +128,4 @@ void MyLookAndFeel::drawTextEditorOutline(juce::Graphics &g, int width, int heig
                                           juce::TextEditor &textEditor)
 {
 }
+

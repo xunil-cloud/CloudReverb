@@ -26,6 +26,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # include that subdirectory as part of the build.
 
 add_compile_definitions(_USE_MATH_DEFINES)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 # find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
 # or
@@ -118,7 +119,7 @@ target_compile_definitions(CloudReverb
 # static library. These source files can be of any kind (wav data, images, fonts, icons etc.).
 # Conversion to binary-data will happen when your target is built.
 
- juce_add_binary_data(AudioPluginData SOURCES resources/diagram.svg)
+juce_add_binary_data(AudioPluginData SOURCES resources/diagram.svg resources/PragatiNarrow-Regular.ttf)
 
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module

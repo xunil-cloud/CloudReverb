@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CustomToggleButton.h"
+#include "BinaryData.h"
 #include "PluginProcessor.h"
 
 class MyLookAndFeel : public juce::LookAndFeel_V4
@@ -55,12 +56,12 @@ public:
     juce::Font getLabelFont(juce::Label &label) override
     {
         auto fontSize = label.getHeight() / 40.f * 38;
-        return juce::Font("Pragati Narrow", fontSize, juce::Font::plain);
+        return getCustomFont().withHeight(fontSize);
     }
     juce::Font getTextButtonFont(juce::TextButton &, int buttonHeight) override
     {
         auto fontSize = buttonHeight / 40.f * 38;
-        return juce::Font("Pragati Narrow", fontSize, juce::Font::plain);
+        return getCustomFont().withHeight(fontSize);
     }
     juce::Label *createSliderTextBox(juce::Slider &slider) override
     {
@@ -79,4 +80,16 @@ public:
                                   juce::TextEditor &textEditor) override;
     void drawTextEditorOutline(juce::Graphics &g, int width, int height,
                                juce::TextEditor &textEditor) override;
+    // juce::Font getSliderPopupFont(juce::Slider &) override
+    // {
+    //     return juce::Font("Hack", 18, juce::Font::plain);
+    // }
+    static const juce::Font getCustomFont()
+    {
+        // static auto typeface = juce::Typeface::createSystemTypefaceFor(
+        //     BinaryData::PathwayGothicOneRegular_ttf, BinaryData::PathwayGothicOneRegular_ttfSize);
+        static auto typeface = juce::Typeface::createSystemTypefaceFor(
+            BinaryData::PragatiNarrowRegular_ttf, BinaryData::PragatiNarrowRegular_ttfSize);
+        return juce::Font(typeface);
+    }
 };

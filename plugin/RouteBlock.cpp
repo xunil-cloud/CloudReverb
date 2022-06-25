@@ -10,7 +10,7 @@ RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValue
     diagram = juce::Drawable::createFromSVG(*svg_xml);
 
     mode_switch.setButtonText("pre/post");
-    mode_switch.setName("pre/post");
+    mode_switch.setName("pre / post");
     auto param = state.getParameter("LateStageTap");
     attachment_mode_switch = std::make_unique<juce::ButtonParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), mode_switch);
