@@ -392,13 +392,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto LateDiffusionModRate = MAKE_PARAMETER_FLOAT(LateDiffusionModRate, 0.f, 5.f, 0.5f, 100, Hz);
 
-    auto TapSeed = MAKE_PARAMETER_INT(TapSeed, 1, 1000000, 1, );
+    auto TapSeed = MAKE_PARAMETER_INT(TapSeed, 1, 1000000, 1, "");
 
-    auto DiffusionSeed = MAKE_PARAMETER_INT(DiffusionSeed, 1, 1000000, 1, );
+    auto DiffusionSeed = MAKE_PARAMETER_INT(DiffusionSeed, 1, 1000000, 1, "");
 
-    auto DelaySeed = MAKE_PARAMETER_INT(DelaySeed, 1, 1000000, 1, );
+    auto DelaySeed = MAKE_PARAMETER_INT(DelaySeed, 1, 1000000, 1, "");
 
-    auto PostDiffusionSeed = MAKE_PARAMETER_INT(PostDiffusionSeed, 1, 1000000, 1, );
+    auto PostDiffusionSeed = MAKE_PARAMETER_INT(PostDiffusionSeed, 1, 1000000, 1, "");
 
     auto CrossSeed = MAKE_PARAMETER_LINEAR_FLOAT(CrossSeed, 0.f, 1.f, 0.f, );
 
