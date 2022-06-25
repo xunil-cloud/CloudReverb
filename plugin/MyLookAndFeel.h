@@ -4,6 +4,18 @@
 
 class MyLookAndFeel : public juce::LookAndFeel_V4
 {
+    /*
+    windowBackground    #2b2b2b #323e44
+    widgetBackground    #484848 #263238
+    menuBackground      #2b2b2b #323e44
+    outline             #121212 #8e989b
+    defaultText         #d6d6d6 #ffffff
+    defaultFill         #225ebd #42a2c8
+    highlightedText     #fff1ff #ffffff
+    highlightedFill     #227dbd #181f22
+    menuText            #ffffff #ffffff
+    numColours
+*/
 public:
     MyLookAndFeel();
 
@@ -59,4 +71,31 @@ public:
         // g.fillRoundedRectangle(padding, padding, size - padding * 2, size - padding * 2, size *
         // 0.2);
     }
+    juce::Font getLabelFont(juce::Label &label) override
+    {
+        auto fontSize = label.getHeight() / 40.f * 38;
+        return juce::Font("Pragati Narrow", fontSize, juce::Font::plain);
+    }
+    juce::Font getTextButtonFont(juce::TextButton &, int buttonHeight) override
+    {
+        auto fontSize = buttonHeight / 40.f * 38;
+        return juce::Font("Pragati Narrow", fontSize, juce::Font::plain);
+    }
+    juce::Label *createSliderTextBox(juce::Slider &slider) override
+    {
+        auto *l = LookAndFeel_V4::createSliderTextBox(slider);
+
+        if (slider.getSliderStyle() == juce::Slider::LinearBar ||
+            slider.getSliderStyle() == juce::Slider::LinearBarVertical)
+        {
+            l->setColour(juce::Label::ColourIds::backgroundColourId, juce::Colour(0xff484848));
+        }
+
+        return l;
+    }
+    void drawLabel(juce::Graphics &g, juce::Label &label) override;
+    void fillTextEditorBackground(juce::Graphics &g, int width, int height,
+                                  juce::TextEditor &textEditor) override;
+    void drawTextEditorOutline(juce::Graphics &g, int width, int height,
+                               juce::TextEditor &textEditor) override;
 };

@@ -21,12 +21,19 @@ void Block::paint(juce::Graphics &g)
     g.drawFittedText(name, rec, juce::Justification::centred, 1);
 }
 
+void Block::setupNumberBoxSlider(juce::Slider &slider, juce::RangedAudioParameter *param)
+{
+    addAndMakeVisible(slider);
+    slider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
+    slider.setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::transparentBlack);
+
+}
 void Block::setupSeed(const juce::String &name, juce::RangedAudioParameter *param)
 {
     seedSlider.setName(name);
     addAndMakeVisible(seedSlider);
     seedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
-    seedSlider.setColour(juce::Slider::trackColourId, juce::Colour(0xff343434));
+    seedSlider.setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::transparentBlack);
 
     seedAttachment = std::make_unique<juce::SliderParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), seedSlider);

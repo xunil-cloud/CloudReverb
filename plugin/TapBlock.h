@@ -10,5 +10,7 @@ public:
 
 private:
     TapLayout layout;
+    juce::Slider tapCount;
+    std::unique_ptr<juce::SliderParameterAttachment> tapCount_attachment;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TapBlock)
 };

@@ -5,12 +5,12 @@
 RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
     : Block(name)
 {
-    using type = ReverbSlider::Type;
-    addParameter("line count", state.getParameter("LineCount"), type::Circle);
+
     std::unique_ptr<juce::XmlElement> svg_xml(juce::XmlDocument::parse(BinaryData::diagram_svg));
     diagram = juce::Drawable::createFromSVG(*svg_xml);
 
     mode_switch.setButtonText("pre/post");
+    mode_switch.setName("pre/post");
     auto param = state.getParameter("LateStageTap");
     attachment_mode_switch = std::make_unique<juce::ButtonParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), mode_switch);
@@ -19,6 +19,10 @@ RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValue
     {
         addAndMakeVisible(diagram.get());
     }
+    setupNumberBoxSlider(lineCount, state.getParameter("LineCount"));
+    lineCount_attachment = std::make_unique<juce::SliderParameterAttachment>(
+        *dynamic_cast<juce::RangedAudioParameter *>(state.getParameter("LineCount")), lineCount);
+
     mode_switch.onStateChange = [this]() {
         this->mode = mode_switch.getToggleState() ? RouteBlock::Mode::POST : RouteBlock::Mode::PRE;
         repaint();
@@ -48,5 +52,5 @@ void RouteBlock::paintOverChildren(juce::Graphics &g)
 
 void RouteBlock::resized()
 {
-    layout.placeUIs(diagram.get(), sliders[0].get(), &mode_switch, getLocalBounds());
+    layout.placeUIs(diagram.get(), &lineCount, &mode_switch, getLocalBounds());
 }

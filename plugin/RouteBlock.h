@@ -21,6 +21,8 @@ private:
     juce::ToggleButton mode_switch;
     juce::LookAndFeel_V4 defaultLook;
     std::unique_ptr<juce::ButtonParameterAttachment> attachment_mode_switch;
+    juce::Slider lineCount;
+    std::unique_ptr<juce::SliderParameterAttachment> lineCount_attachment;
     std::unique_ptr<juce::Drawable> diagram;
     RouteLayout layout;
     Mode mode;

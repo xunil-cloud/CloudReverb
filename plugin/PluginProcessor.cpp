@@ -331,7 +331,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto LowPass = MAKE_PARAMETER_FLOAT(LowPass, 400.0f, 20000.0f, 20000.0f, 16, Hz);
 
-    auto TapCount = MAKE_PARAMETER_INT(TapCount, 1, 50, 1, );
+    auto TapCount = MAKE_PARAMETER_INT(TapCount, 1, 50, 1, taps);
 
     auto TapLength = MAKE_PARAMETER_INT(TapLength, 0, 500, 0, ms);
 
@@ -342,13 +342,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     auto DiffusionEnabled =
         std::make_unique<juce::AudioParameterBool>("DiffusionEnabled", "DiffusionEnabled", false);
 
-    auto DiffusionStages = MAKE_PARAMETER_INT(DiffusionStages, 1, 8, 1, );
+    auto DiffusionStages = MAKE_PARAMETER_INT(DiffusionStages, 1, 8, 1, stages);
 
     auto DiffusionDelay = MAKE_PARAMETER_INT(DiffusionDelay, 10, 100, 10, ms);
 
     auto DiffusionFeedback = MAKE_PARAMETER_LINEAR_FLOAT(DiffusionFeedback, 0.f, 1.f, 0.f, );
 
-    auto LineCount = MAKE_PARAMETER_INT(LineCount, 1, 12, 1, );
+    auto LineCount = MAKE_PARAMETER_INT(LineCount, 1, 12, 1, parallel delay);
 
     auto LineDelay = MAKE_PARAMETER_FLOAT(LineDelay, 20.0f, 1000.0f, 20.f, 100, ms);
 
@@ -357,7 +357,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     auto LateDiffusionEnabled = std::make_unique<juce::AudioParameterBool>(
         "LateDiffusionEnabled", "LateDiffusionEnabled", false);
 
-    auto LateDiffusionStages = MAKE_PARAMETER_INT(LateDiffusionStages, 1, 8, 1, );
+    auto LateDiffusionStages = MAKE_PARAMETER_INT(LateDiffusionStages, 1, 8, 1, stages);
 
     auto LateDiffusionDelay = MAKE_PARAMETER_INT(LateDiffusionDelay, 10.0f, 100.0f, 10.f, ms);
 

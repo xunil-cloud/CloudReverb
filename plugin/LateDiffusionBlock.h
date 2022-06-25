@@ -20,7 +20,9 @@ public:
 
 private:
     juce::ToggleButton button;
+    juce::Slider stages;
     std::unique_ptr<juce::ButtonParameterAttachment> button_attachment;
+    std::unique_ptr<juce::SliderParameterAttachment> stages_attachment;
     MyLookAndFeel look;
     ThreePartLayout layout;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LateDiffusionBlock)

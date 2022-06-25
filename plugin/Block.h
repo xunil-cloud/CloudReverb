@@ -18,6 +18,7 @@ public:
     void addParameter(const juce::String &, juce::RangedAudioParameter *param,
                       const ReverbSlider::Type type);
     void setupSeed(const juce::String &, juce::RangedAudioParameter *param);
+    void setupNumberBoxSlider(juce::Slider &slider, juce::RangedAudioParameter *param);
 
 protected:
     void layout();
