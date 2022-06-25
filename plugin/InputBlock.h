@@ -1,4 +1,5 @@
 #include "Block.h"
+#include "CustomToggleButton.h"
 #include "layout/Layout.h"
 
 class InputBlock : public Block
@@ -9,9 +10,9 @@ public:
     void resized() override;
 
 private:
-    juce::ToggleButton lowButton;
+    CustomToggleButton lowButton{CustomToggleButton::Style::circle};
     std::unique_ptr<juce::ButtonParameterAttachment> LowButton_attachment;
-    juce::ToggleButton HighButton;
+    CustomToggleButton HighButton{CustomToggleButton::Style::circle};
     std::unique_ptr<juce::ButtonParameterAttachment> HighButton_attachment;
     InputLayout layout;
 

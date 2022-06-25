@@ -1,5 +1,6 @@
 #include "Block.h"
 #include "BinaryData.h"
+#include "CustomToggleButton.h"
 #include "layout/Layout.h"
 
 class RouteBlock : public Block
@@ -18,7 +19,7 @@ public:
     };
 
 private:
-    juce::ToggleButton mode_switch;
+    CustomToggleButton mode_switch{CustomToggleButton::Style::rectSwitch, "pre/post"};
     juce::LookAndFeel_V4 defaultLook;
     std::unique_ptr<juce::ButtonParameterAttachment> attachment_mode_switch;
     juce::Slider lineCount;

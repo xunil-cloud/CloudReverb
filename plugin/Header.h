@@ -19,7 +19,7 @@ public:
     void paint(juce::Graphics &) override;
 
 private:
-    juce::ToggleButton interp_switch;
+    CustomToggleButton interp_switch{CustomToggleButton::Style::circle, "interpolation"};
     std::unique_ptr<juce::ButtonParameterAttachment> attachment_interp_switch;
     ReverbSlider cross_seed_slider;
     std::unique_ptr<juce::SliderParameterAttachment> attachment_cross_seed;

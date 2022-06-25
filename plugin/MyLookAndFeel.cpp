@@ -11,6 +11,65 @@ MyLookAndFeel::MyLookAndFeel()
     setColour(juce::Label::backgroundColourId, juce::Colour(0xff484848));
     setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff383838));
 }
+void MyLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
+                                     bool is_down)
+{
+
+    auto *customButton = dynamic_cast<CustomToggleButton *>(&button);
+    if (customButton != nullptr)
+    {
+        auto padding = 1;
+        juce::Colour buttonOnColour{0xffbd8122};
+        juce::Colour buttonOffColour{0xff555555};
+
+        using style = CustomToggleButton::Style;
+        auto baseColour = button.getToggleState() ? juce::Colour(0xffbd8122) : buttonOffColour;
+
+        if (is_down || hover)
+        {
+            if (button.getToggleState())
+                baseColour = baseColour.contrasting(is_down ? 0.2f : 0.08f);
+            else
+                baseColour = baseColour.contrasting(is_down ? 0.02f : 0.08);
+        }
+        g.setColour(baseColour);
+        switch (customButton->getStyle())
+        {
+        case style::circle:
+            g.fillEllipse(button.getLocalBounds().toFloat());
+            break;
+
+        case style::roundedRect:
+            g.fillRoundedRectangle(button.getLocalBounds().toFloat(), 3.f);
+            break;
+
+        case style::rectSwitch:
+            if (is_down || hover)
+            {
+                buttonOffColour = buttonOffColour.contrasting(is_down ? 0.02f : 0.08f);
+            }
+
+            g.setColour(buttonOffColour);
+            g.fillRoundedRectangle(padding, padding, button.getWidth() - padding * 2,
+                                   button.getHeight() - padding * 2, 3.f);
+            g.setColour(buttonOnColour);
+            if (button.getToggleState())
+                g.fillRoundedRectangle(button.getWidth() / 2.f, 0, button.getWidth() / 2.f,
+                                       button.getHeight(), 3.f);
+            else
+                g.fillRoundedRectangle(0, 0, button.getWidth() / 2.f, button.getHeight(), 3.f);
+
+            break;
+        default:
+            juce::LookAndFeel_V4::drawToggleButton(g, button, hover, is_down);
+            break;
+        }
+    }
+    else
+    {
+        juce::LookAndFeel_V4::drawToggleButton(g, button, hover, is_down);
+    }
+}
 void MyLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)
 {
     // g.fillAll(label.findColour(juce::Label::backgroundColourId));

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CustomToggleButton.h"
 #include "PluginProcessor.h"
 
 class MyLookAndFeel : public juce::LookAndFeel_V4
@@ -50,27 +51,7 @@ public:
         g.fillPath(p);
     }
     void drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
-                          bool is_down) override
-    {
-        if (button.getToggleState())
-            // g.setColour(juce::Colour(66, 200, 158));
-            g.setColour(juce::Colour(0xffbd8122));
-        else
-            g.setColour(juce::Colours::grey);
-        auto size = std::min(button.getWidth(), button.getHeight());
-        auto x = button.getX();
-        auto y = button.getY();
-        auto padding = 1;
-
-        g.fillEllipse(padding, padding, size - padding * 2, size - padding * 2);
-        if (hover)
-        {
-            g.setColour(juce::Colours::white);
-            g.drawEllipse(padding, padding, size - padding * 2, size - padding * 2, 1);
-        }
-        // g.fillRoundedRectangle(padding, padding, size - padding * 2, size - padding * 2, size *
-        // 0.2);
-    }
+                          bool is_down) override;
     juce::Font getLabelFont(juce::Label &label) override
     {
         auto fontSize = label.getHeight() / 40.f * 38;

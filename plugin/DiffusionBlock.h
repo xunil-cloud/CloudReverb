@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "Block.h"
+#include "CustomToggleButton.h"
 #include "layout/ThreePartLayout.h"
 
 class DiffusionBlock : public Block
@@ -19,7 +20,7 @@ public:
     void paint(juce::Graphics &) override;
 
 private:
-    juce::ToggleButton button;
+    CustomToggleButton button{CustomToggleButton::Style::roundedRect};
     juce::Slider stages;
     std::unique_ptr<juce::ButtonParameterAttachment> button_attachment;
     std::unique_ptr<juce::SliderParameterAttachment> stages_attachment;

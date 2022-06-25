@@ -85,7 +85,7 @@ void InputLayout::placeUIs(juce::Slider *slider_1, juce::Slider *slider_2, juce:
     slider_3->setBounds(slider_2->getRight() + gutter, y, sliderSize, sliderSize);
     slider_4->setBounds(slider_3->getRight() + gutter, y, sliderSize, sliderSize);
 
-    const auto buttonSize = 18 * ratio;
+    const auto buttonSize = 20 * ratio;
     const auto x_offset = -11 * ratio;
     const auto y_offset = -5 * ratio - buttonSize;
     button_3->setBounds(slider_3->getX() + x_offset, slider_3->getY() + y_offset, buttonSize,
@@ -131,7 +131,7 @@ void EqLayout::placeUIs(juce::Slider *low_1, juce::Slider *low_2, juce::Slider *
     high_2->setBounds(x3, y2, sliderSize, sliderSize);
     cutoff->setBounds(x2, y3, sliderSize, sliderSize);
 
-    const auto buttonSize = 18 * ratio;
+    const auto buttonSize = 20 * ratio;
     const auto x_offset = -11 * ratio;
     const auto y_offset = -5 * ratio - buttonSize;
     cutoff_button->setBounds(cutoff->getX() + x_offset, cutoff->getY() + y_offset, buttonSize,
@@ -194,7 +194,7 @@ void HeaderLayout::placeUIs(juce::Slider *cross_seed, juce::Button *interpolatio
                             ? bound.getHeight() / HEIGHT
                             : bound.getWidth() / WIDTH;
     const auto sliderSize = 40 * ratio;
-    const auto buttonSize = 18 * ratio;
+    const auto buttonSize = 20 * ratio;
     const float x1 = 655 * ratio;
     const float y1 = 35 * ratio;
     const float x2 = 943 * ratio;

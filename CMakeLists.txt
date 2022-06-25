@@ -79,6 +79,7 @@ juce_add_plugin(CloudReverb
 target_sources(CloudReverb PRIVATE
     plugin/MyLookAndFeel.cpp
     plugin/ReverbSlider.cpp
+    plugin/CustomToggleButton.cpp
     plugin/DiffusionBlock.cpp
     plugin/LateDiffusionBlock.cpp
     plugin/InputBlock.cpp
