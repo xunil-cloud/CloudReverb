@@ -1,6 +1,33 @@
-BasedOnStyle:    Google
-Language:        Cpp
+# modified from surge synth team's settings. thanks surge team.
+# https://github.com/surge-synthesizer/surge/blob/main/.clang-format
+---
+BasedOnStyle: LLVM
 IndentWidth: 4
+---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+AlignAfterOpenBracket: Align
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel:  true
+  AfterClass:      true
+  AfterControlStatement: Always
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterObjCDeclaration: true
+  AfterStruct:     true
+  AfterUnion:      true
+  AfterExternBlock: true
+  BeforeCatch:     true
+  BeforeElse:      true
+  BeforeLambdaBody: false
+  BeforeWhile:     false
+  IndentBraces:    false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+ColumnLimit: 100
+SortIncludes: false
 AccessModifierOffset: -4
-ColumnLimit: 0
-
