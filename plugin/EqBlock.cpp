@@ -35,6 +35,7 @@ void EqBlock::paint(juce::Graphics &g)
     layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds(), 7);
     layout.drawTextUnderSlider(g, sliders[3].get(), getLocalBounds(), 7);
     layout.drawTextUnderSlider(g, sliders[4].get(), getLocalBounds(), 7);
+    layout.drawLines(g, getLocalBounds());
 }
 
 void EqBlock::resized()

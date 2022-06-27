@@ -147,7 +147,27 @@ void EqLayout::placeUIs(juce::Slider *low_1, juce::Slider *low_2, juce::Slider *
     high_button->setBounds(bound.getWidth() - buttonSize - X_PADDING * ratio, low_high_button_y,
                            buttonSize, buttonSize);
 }
-void EqLayout::drawLines(juce::Rectangle<int> &bound) {}
+void EqLayout::drawLines(juce::Graphics &g, const juce::Rectangle<int> &bound)
+{
+    const float ratio = bound.getWidth() / WIDTH > bound.getHeight() / HEIGHT
+                            ? bound.getHeight() / HEIGHT
+                            : bound.getWidth() / WIDTH;
+    const auto x1 = 49 * ratio;
+    const auto x2 = 269 * ratio;
+    const auto y1 = 127 * ratio;
+    const auto y2 = 252 * ratio;
+    const auto width = 12 * ratio;
+    const auto height = 125 * ratio;
+    const auto thinkness = 1.f;
+    g.setColour(juce::Colour(0xffd6d6d6));
+    g.drawRect(x1, y1, width, thinkness);
+    g.drawRect(x1, y2, width, thinkness);
+    g.drawRect(x1, y1, thinkness, height);
+
+    g.drawRect(x2, y1, width, thinkness);
+    g.drawRect(x2, y2, width, thinkness);
+    g.drawRect(x2 + width - 1, y1, thinkness, height);
+}
 void RouteLayout::placeUIs(juce::Drawable *diagram, juce::Slider *slider, juce::Button *button,
                            const juce::Rectangle<int> &bound)
 {
