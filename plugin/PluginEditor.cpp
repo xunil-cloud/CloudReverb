@@ -69,12 +69,20 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     combobox.addItem("preset 1", 1);
     combobox.addItem("preset 2", 2);
     combobox.setSelectedId(1);
+    const auto displayWidth =
+        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->totalArea.getWidth();
+    const auto displayHeight =
+        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->totalArea.getHeight();
+    const auto userRatio = std::min(displayWidth / 1920.f, displayHeight / 1080.f);
+    const auto defaultWidth = 1418.f;
+    const auto defaultHeight = 782.f;
 
     limit = std::make_unique<juce::ComponentBoundsConstrainer>();
-    limit->setMinimumSize(1418 * 0.5, 782 * 0.5);
-    limit->setFixedAspectRatio(1418.f / 782.f);
+    limit->setMinimumSize(defaultWidth * 0.9 * userRatio * 0.4,
+                          defaultHeight * 0.9 * userRatio * 0.4);
+    limit->setFixedAspectRatio(defaultWidth / defaultHeight);
     setConstrainer(limit.get());
-    setSize(1418, 782);
+    setSize(defaultWidth * 0.9 * userRatio, defaultHeight * 0.9 * userRatio);
 
     addAndMakeVisible(reset_button);
     addAndMakeVisible(input);
