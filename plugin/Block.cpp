@@ -26,8 +26,8 @@ void Block::setupNumberBoxSlider(juce::Slider &slider, juce::RangedAudioParamete
     addAndMakeVisible(slider);
     slider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
     slider.setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::transparentBlack);
-    slider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::transparentBlack);
-
+    slider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId,
+                     juce::Colours::transparentBlack);
 }
 void Block::setupSeed(const juce::String &name, juce::RangedAudioParameter *param)
 {
@@ -35,7 +35,8 @@ void Block::setupSeed(const juce::String &name, juce::RangedAudioParameter *para
     addAndMakeVisible(seedSlider);
     seedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearBar);
     seedSlider.setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::transparentBlack);
-    seedSlider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    seedSlider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId,
+                         juce::Colours::transparentBlack);
 
     seedAttachment = std::make_unique<juce::SliderParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), seedSlider);

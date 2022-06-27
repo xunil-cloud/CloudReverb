@@ -11,7 +11,7 @@ TapBlock::TapBlock(const juce::String &name, const juce::AudioProcessorValueTree
 
     setupNumberBoxSlider(tapCount, state.getParameter("TapCount"));
     tapCount_attachment = std::make_unique<juce::SliderParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(state.getParameter("TapCount")),tapCount);
+        *dynamic_cast<juce::RangedAudioParameter *>(state.getParameter("TapCount")), tapCount);
 }
 
 void TapBlock::paint(juce::Graphics &g)
@@ -24,6 +24,6 @@ void TapBlock::paint(juce::Graphics &g)
 }
 void TapBlock::resized()
 {
-    layout.placeUIs(&tapCount, &seedSlider, sliders[0].get(), sliders[2].get(),
-                    sliders[1].get(), getLocalBounds());
+    layout.placeUIs(&tapCount, &seedSlider, sliders[0].get(), sliders[2].get(), sliders[1].get(),
+                    getLocalBounds());
 }

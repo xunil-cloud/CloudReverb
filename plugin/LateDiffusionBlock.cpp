@@ -13,7 +13,8 @@ LateDiffusionBlock::LateDiffusionBlock(const juce::String &name,
 
     setupNumberBoxSlider(stages, state.getParameter("LateDiffusionStages"));
     stages_attachment = std::make_unique<juce::SliderParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(state.getParameter("LateDiffusionStages")), stages);
+        *dynamic_cast<juce::RangedAudioParameter *>(state.getParameter("LateDiffusionStages")),
+        stages);
 
     auto param = state.getParameter("LateDiffusionEnabled");
     button_attachment = std::make_unique<juce::ButtonParameterAttachment>(
@@ -33,6 +34,6 @@ void LateDiffusionBlock::paint(juce::Graphics &g)
 }
 void LateDiffusionBlock::resized()
 {
-    layout.placeUIs(&stages, &seedSlider, sliders[0].get(), sliders[1].get(),
-                    sliders[2].get(), sliders[3].get(), &button, getLocalBounds());
+    layout.placeUIs(&stages, &seedSlider, sliders[0].get(), sliders[1].get(), sliders[2].get(),
+                    sliders[3].get(), &button, getLocalBounds());
 }

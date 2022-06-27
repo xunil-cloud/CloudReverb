@@ -1,10 +1,9 @@
 #include "Header.h"
 
 Header::Header(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
-    : Block(name)
-      ,cross_seed_slider("cross seed", ReverbSlider::Type::Circle)
+    : Block(name), cross_seed_slider("cross seed", ReverbSlider::Type::Circle)
 {
-    setInterceptsMouseClicks(false,true);
+    setInterceptsMouseClicks(false, true);
     using type = ReverbSlider::Type;
     // addParameter("stages", state.getParameter("DiffusionStages"), type::Circle);
 
@@ -17,7 +16,6 @@ Header::Header(const juce::String &name, const juce::AudioProcessorValueTreeStat
     param = state.getParameter("CrossSeed");
     attachment_cross_seed = std::make_unique<juce::SliderParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), cross_seed_slider);
-
 
     cross_seed_slider.setPopupDisplayEnabled(true, true, this);
     addAndMakeVisible(interp_switch);
@@ -40,5 +38,5 @@ void Header::resized()
     //                           .withSizeKeepingCentre(getWidth() * 0.95, getHeaderSize() * 0.7),
     //                       juce::Justification::centredRight, false);
     // layout();
-    layout.placeUIs(&cross_seed_slider,&interp_switch,getLocalBounds());
+    layout.placeUIs(&cross_seed_slider, &interp_switch, getLocalBounds());
 }

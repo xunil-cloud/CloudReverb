@@ -7,7 +7,8 @@
 //==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor &p)
     : AudioProcessorEditor(&p), processorRef(p), input("Input", this->processorRef.treeState),
-      tap("Multitap Delay", this->processorRef.treeState), delay("Late Delay", this->processorRef.treeState),
+      tap("Multitap Delay", this->processorRef.treeState),
+      delay("Late Delay", this->processorRef.treeState),
       mixer("Mixer", this->processorRef.treeState), eq("Shelf EQ", this->processorRef.treeState),
       diffusion1("Early Diffusion", this->processorRef.treeState),
       diffusion2("Late Diffusion", this->processorRef.treeState),
