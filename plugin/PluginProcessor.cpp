@@ -281,7 +281,7 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new AudioPlugi
 #define FLOAT_TO_TEXT(numberOfDecimalPlaces, SUFFIX)                                               \
     [](float value, int) { return juce::String(value, numberOfDecimalPlaces) + " " + #SUFFIX; }
 
-#define INT_TO_TEXT(SUFFIX)                                                                        \
+#define INT_TO_TEXT(SUFFIX, EMPTY_TOKEN)                                                           \
     [](float value, int) { return juce::String((int)value) + " " + #SUFFIX; }
 
 #define TO_TEXT_IN_DB(numberOfDecimalPlaces)                                                       \
@@ -317,7 +317,7 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new AudioPlugi
 
 #define MAKE_PARAMETER_INT(NAME, START, END, DEFAULT_VALUE, SUFFIX)                                \
     std::make_unique<juce::AudioParameterInt>(#NAME, #NAME, START, END, DEFAULT_VALUE,             \
-                                              juce::String(), INT_TO_TEXT(SUFFIX))
+                                              juce::String(), INT_TO_TEXT(SUFFIX, ))
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
