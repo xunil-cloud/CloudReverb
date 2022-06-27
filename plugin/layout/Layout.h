@@ -63,6 +63,7 @@ public:
                   juce::Slider *high_2, juce::Slider *cutoff, juce::Button *low_button,
                   juce::Button *high_button, juce::Button *cutoff_button,
                   const juce::Rectangle<int> &bound);
+    void drawLines(juce::Rectangle<int> &bound);
 };
 class RouteBlock;
 class RouteLayout : public Layout

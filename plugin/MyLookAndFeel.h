@@ -23,34 +23,7 @@ public:
 
     void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos,
                           const float rotaryStartAngle, const float rotaryEndAngle,
-                          juce::Slider &) override
-    {
-        auto radius = (float)juce::jmin(width / 2, height / 2) - 5.0f;
-        auto centreX = (float)x + (float)width * 0.5f;
-        auto centreY = (float)y + (float)height * 0.5f;
-        auto rx = centreX - radius;
-        auto ry = centreY - radius;
-        auto rw = radius * 2.0f;
-        auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-
-        g.setColour(findColour(juce::Slider::thumbColourId));
-        // g.setColour(juce::Colour(0xff225ebd));
-        g.fillEllipse(rx, ry, rw, rw);
-
-        g.setColour(juce::Colour(0xff121212));
-        // g.drawEllipse(rx, ry, rw, rw, 1.5f);
-        // g.drawRect(x,y,width,height);
-
-        juce::Path p;
-        auto pointerLength = radius * 0.33f;
-        auto pointerThickness = 2.0f;
-        p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
-        p.applyTransform(juce::AffineTransform::rotation(angle).translated(centreX, centreY));
-
-        g.setColour(juce::Colours::black);
-        // g.setColour((getCurrentColourScheme().getUIColour(juce::LookAndFeel_V4::ColourScheme::UIColour::outline)));
-        g.fillPath(p);
-    }
+                          juce::Slider &) override;
     void drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
                           bool is_down) override;
     juce::Font getLabelFont(juce::Label &label) override
@@ -86,8 +59,6 @@ public:
     // }
     static const juce::Font getCustomFont()
     {
-        // static auto typeface = juce::Typeface::createSystemTypefaceFor(
-        //     BinaryData::PathwayGothicOneRegular_ttf, BinaryData::PathwayGothicOneRegular_ttfSize);
         static auto typeface = juce::Typeface::createSystemTypefaceFor(
             BinaryData::PragatiNarrowRegular_ttf, BinaryData::PragatiNarrowRegular_ttfSize);
         return juce::Font(typeface);

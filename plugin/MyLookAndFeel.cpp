@@ -8,15 +8,39 @@ MyLookAndFeel::MyLookAndFeel()
 {
 
     auto futuraMediumFont = juce::Typeface::createSystemTypefaceFor(
-        BinaryData::PragatiNarrowRegular_ttf,BinaryData::PragatiNarrowRegular_ttfSize);
+        BinaryData::PragatiNarrowRegular_ttf, BinaryData::PragatiNarrowRegular_ttfSize);
     // juce::LookAndFeel::setDefaultLookAndFeel(this);
     // setDefaultSansSerifTypeface(futuraMediumFont);
-    setColour(juce::Slider::trackColourId, juce::Colour(0xff225ebd));
-    setColour(juce::Slider::thumbColourId, juce::Colour(0xff225ebd));
+    setColour(juce::Slider::trackColourId, juce::Colour(0xff2660bd));
+    setColour(juce::Slider::thumbColourId, juce::Colour(0xff2660bd));
 
     setColour(juce::Label::backgroundColourId, juce::Colour(0xff484848));
     setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colour(0xff383838));
     // setDefaultSansSerifTypefaceName("Roboto");
+}
+void MyLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
+                                     float sliderPos, const float rotaryStartAngle,
+                                     const float rotaryEndAngle, juce::Slider &)
+{
+    auto radius = (float)juce::jmin(width / 2, height / 2) - 5.0f;
+    auto centreX = (float)x + (float)width * 0.5f;
+    auto centreY = (float)y + (float)height * 0.5f;
+    auto rx = centreX - radius;
+    auto ry = centreY - radius;
+    auto rw = radius * 2.0f;
+    auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+
+    g.setColour(findColour(juce::Slider::thumbColourId));
+    g.fillEllipse(rx, ry, rw, rw);
+
+    juce::Path p;
+    auto pointerLength = radius * 0.5f;
+    auto pointerThickness = 3.5 * width / 65.f;
+    p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
+    p.applyTransform(juce::AffineTransform::rotation(angle).translated(centreX, centreY));
+
+    g.setColour(juce::Colour(0xff87b6ff));
+    g.fillPath(p);
 }
 void MyLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
                                      bool is_down)
@@ -26,11 +50,11 @@ void MyLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &butt
     if (customButton != nullptr)
     {
         auto padding = 1;
-        juce::Colour buttonOnColour{0xffbd8122};
+        juce::Colour buttonOnColour{0xff269cbd};
         juce::Colour buttonOffColour{0xff555555};
 
         using style = CustomToggleButton::Style;
-        auto baseColour = button.getToggleState() ? juce::Colour(0xffbd8122) : buttonOffColour;
+        auto baseColour = button.getToggleState() ? buttonOnColour : buttonOffColour;
 
         if (is_down || hover)
         {
@@ -128,4 +152,3 @@ void MyLookAndFeel::drawTextEditorOutline(juce::Graphics &g, int width, int heig
                                           juce::TextEditor &textEditor)
 {
 }
-
