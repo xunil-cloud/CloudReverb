@@ -34,12 +34,12 @@ void MyLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
     g.fillEllipse(rx, ry, rw, rw);
 
     juce::Path p;
-    auto pointerLength = radius * 0.5f;
+    auto pointerLength = radius * 0.65;
     auto pointerThickness = 3.5 * width / 65.f;
     p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
     p.applyTransform(juce::AffineTransform::rotation(angle).translated(centreX, centreY));
 
-    g.setColour(juce::Colour(0xff87b6ff));
+    g.setColour(juce::Colour(0xff343434));
     g.fillPath(p);
 }
 void MyLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button, bool hover,
