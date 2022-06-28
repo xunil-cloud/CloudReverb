@@ -493,5 +493,5 @@ void AudioPluginAudioProcessor::parameterChanged(const juce::String &parameterID
     if (param_enum == map.end())
         return;
     queue.enqueue({normalised_value, newValue, param_enum->second});
-    std::cout << parameterID << ": " << newValue << std::endl;
+    DBG(parameterID << ": " << newValue);
 }
