@@ -33,5 +33,5 @@ void InputBlock::paint(juce::Graphics &g)
 void InputBlock::resized()
 {
     layout.placeUIs(sliders[0].get(), sliders[1].get(), sliders[2].get(), sliders[3].get(),
-                    &lowButton, &HighButton, getLocalBounds());
+                    &HighButton, &lowButton, getLocalBounds());
 }
