@@ -70,10 +70,14 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     combobox.addItem("preset 1", 1);
     combobox.addItem("preset 2", 2);
     combobox.setSelectedId(1);
+
+    const auto *primaryDisplay = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
+
     const auto displayWidth =
-        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->totalArea.getWidth();
+        primaryDisplay != nullptr ? primaryDisplay->totalArea.getWidth() : 1920;
     const auto displayHeight =
-        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->totalArea.getHeight();
+        primaryDisplay != nullptr ? primaryDisplay->totalArea.getHeight() : 1080;
+
     const auto userRatio = std::min(displayWidth / 1920.f, displayHeight / 1080.f);
     const auto defaultWidth = 1418.f;
     const auto defaultHeight = 782.f;
