@@ -8,13 +8,12 @@ Mixer::Mixer(const juce::String &name, const juce::AudioProcessorValueTreeState 
     addParameter("predelay", state.getParameter("PredelayOut"), type::Line);
     addParameter("early", state.getParameter("EarlyOut"), type::Line);
     addParameter("late", state.getParameter("MainOut"), type::Line);
-    x_ratio = 1.5;
 }
 
 void Mixer::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colour(0xff343434));
-    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTitle(g, getName(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds());

@@ -1,4 +1,5 @@
 #include "Layout.h"
+#include "../MyLookAndFeel.h"
 
 void Layout::drawTextUnderSlider(juce::Graphics &g, ReverbSlider *slider,
                                  const juce::Rectangle<int> &bound, int gap)
@@ -8,7 +9,6 @@ void Layout::drawTextUnderSlider(juce::Graphics &g, ReverbSlider *slider,
                             : bound.getWidth() / WIDTH;
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    // g.setFont(juce::Font("Pragati Narrow", 38 * ratio, juce::Font::plain));
     auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
     g.setFont(font);
     auto rec = juce::Rectangle<int>(slider->getX(), slider->getBottom() + gap * ratio,
@@ -26,7 +26,6 @@ void Layout::drawTextRightToSlider(juce::Graphics &g, juce::Component *slider,
 
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    // g.setFont(juce::Font("Pragati Narrow", 38 * ratio, juce::Font::plain));
     auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
     g.setFont(font);
     auto name = slider->getName();
@@ -46,7 +45,6 @@ void Layout::drawTitle(juce::Graphics &g, const ::juce::String &name,
                             : bound.getWidth() / WIDTH;
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    // g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 38 * ratio, juce::Font::plain));
     auto font = MyLookAndFeel::getCustomFont().withHeight(38 / 22.f * 38 * ratio);
     g.setFont(font);
 
@@ -193,7 +191,7 @@ void RouteLayout::drawTextOndiagram(juce::Graphics &g, const juce::String &fist_
                             : bound.getWidth() / WIDTH;
     const int width = 110 * ratio;
     const int height = 41 * ratio;
-    // g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 22 * ratio, juce::Font::plain));
+
     auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
     g.setFont(font);
     g.setColour(juce::Colour(0xff2b2b2b));
@@ -212,7 +210,6 @@ void HeaderLayout::drawTitle(juce::Graphics &g, const ::juce::String &name,
                             : bound.getWidth() / WIDTH;
     g.setColour(juce::Colour(0xffd6d6d6));
 
-    // g.setFont(juce::Font("Pragati Narrow", 38 / 22.f * 62 * ratio, juce::Font::plain));
     auto font = MyLookAndFeel::getCustomFont().withHeight(38 / 22.f * 62 * ratio);
     g.setFont(font);
 

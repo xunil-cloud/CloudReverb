@@ -17,7 +17,7 @@ TapBlock::TapBlock(const juce::String &name, const juce::AudioProcessorValueTree
 void TapBlock::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colour(0xff343434));
-    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTitle(g, getName(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds());

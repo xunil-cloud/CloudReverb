@@ -2,7 +2,6 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_gui_extra/juce_gui_extra.h>
-// #include "MyLookAndFeel.h"
 
 class CustomToggleButton : public juce::ToggleButton
 {
@@ -13,12 +12,12 @@ public:
         roundedRect,
         rectSwitch
     };
-    CustomToggleButton(const CustomToggleButton::Style style) : style{style} {};
+    CustomToggleButton(const CustomToggleButton::Style style) : customStyle{style} {};
     CustomToggleButton(const CustomToggleButton::Style style, const juce::String &name)
-        : ToggleButton(name), style{style} {};
-    const CustomToggleButton::Style getStyle() { return style; }
+        : ToggleButton(name), customStyle{style} {};
+    const CustomToggleButton::Style getStyle() { return customStyle; }
 
 private:
-    const CustomToggleButton::Style style;
+    const CustomToggleButton::Style customStyle;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomToggleButton)
 };

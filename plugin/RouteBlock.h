@@ -1,5 +1,4 @@
 #include "Block.h"
-#include "BinaryData.h"
 #include "CustomToggleButton.h"
 #include "layout/Layout.h"
 
@@ -7,7 +6,6 @@ class RouteBlock : public Block
 {
 public:
     RouteBlock(const juce::String &, const juce::AudioProcessorValueTreeState &);
-    ~RouteBlock();
     void paint(juce::Graphics &g) override;
     void paintOverChildren(juce::Graphics &g) override;
     void resized() override;
@@ -20,7 +18,6 @@ public:
 
 private:
     CustomToggleButton mode_switch{CustomToggleButton::Style::rectSwitch, "pre/post"};
-    juce::LookAndFeel_V4 defaultLook;
     std::unique_ptr<juce::ButtonParameterAttachment> attachment_mode_switch;
     juce::Slider lineCount;
     std::unique_ptr<juce::SliderParameterAttachment> lineCount_attachment;

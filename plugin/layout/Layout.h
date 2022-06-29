@@ -16,18 +16,15 @@ public:
     virtual void drawTitle(juce::Graphics &g, const ::juce::String &,
                            const juce::Rectangle<int> &bound);
 
-    void setBound(const juce::Rectangle<int> &newBound) { this->bound = newBound; }
-
-    const int computeRatio()
-    {
-        const float ratio = bound.getWidth() / WIDTH > bound.getHeight() / HEIGHT
-                                ? bound.getHeight() / HEIGHT
-                                : bound.getWidth() / WIDTH;
-        return ratio;
-    }
+    // const int computeRatio()
+    // {
+    //     const float ratio = bound.getWidth() / WIDTH > bound.getHeight() / HEIGHT
+    //                             ? bound.getHeight() / HEIGHT
+    //                             : bound.getWidth() / WIDTH;
+    //     return ratio;
+    // }
 
 protected:
-    juce::Rectangle<int> bound;
     float WIDTH;
     float HEIGHT;
     const float X_PADDING{20};

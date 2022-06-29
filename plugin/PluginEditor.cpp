@@ -114,6 +114,7 @@ void AudioPluginAudioProcessorEditor::resized()
     using Fr = juce::Grid::Fr;
     using Px = juce::Grid::Px;
 
+    juce::Grid grid;
     grid.templateColumns = {Track(Fr(540)), Track(Fr(540)), Track(Fr(330))};
     grid.templateRows = {Track(Fr(1)), Track(Fr(2)), Track(Fr(2)), Track(Fr(2))};
     grid.columnGap = Px(4);

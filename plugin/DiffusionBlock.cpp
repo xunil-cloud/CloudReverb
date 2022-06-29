@@ -18,13 +18,12 @@ DiffusionBlock::DiffusionBlock(const juce::String &name,
     auto param = state.getParameter("DiffusionEnabled");
     button_attachment = std::make_unique<juce::ButtonParameterAttachment>(
         *dynamic_cast<juce::RangedAudioParameter *>(param), button);
-    button.setLookAndFeel(&look);
     addAndMakeVisible(button);
 }
 void DiffusionBlock::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colour(0xff343434));
-    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTitle(g, getName(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
     layout.drawTextRightToSlider(g, sliders[2].get(), getLocalBounds());

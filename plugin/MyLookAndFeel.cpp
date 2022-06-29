@@ -1,5 +1,4 @@
 #include "MyLookAndFeel.h"
-#include "BinaryData.h"
 
 MyLookAndFeel::MyLookAndFeel()
     : juce::LookAndFeel_V4::LookAndFeel_V4({0xff2b2b2b, 0xff484848, 0xff2b2b2b, 0xff121212,
@@ -103,7 +102,6 @@ void MyLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &butt
 }
 void MyLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)
 {
-    // g.fillAll(label.findColour(juce::Label::backgroundColourId));
     g.setColour(label.findColour(juce::Label::backgroundColourId));
     g.fillRoundedRectangle(label.getLocalBounds().toFloat(), 3.f);
 

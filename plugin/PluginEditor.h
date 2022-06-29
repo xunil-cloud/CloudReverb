@@ -11,7 +11,7 @@
 #include "RouteBlock.h"
 #include "Header.h"
 #include "PluginProcessor.h"
-#include <memory>
+#include "MyLookAndFeel.h"
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor
@@ -29,7 +29,6 @@ private:
     // access the processor object that created it.
     AudioPluginAudioProcessor &processorRef;
     MyLookAndFeel myLookAndFeel;
-    // juce::LookAndFeel_V4 defaultLook;
     juce::TextButton reset_button;
 
     InputBlock input;
@@ -43,7 +42,6 @@ private:
     RouteBlock route;
 
     std::unique_ptr<juce::ComponentBoundsConstrainer> limit;
-    juce::Grid grid;
 
     juce::ComboBox combobox;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)

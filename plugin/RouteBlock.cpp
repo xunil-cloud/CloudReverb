@@ -1,6 +1,5 @@
 #include "RouteBlock.h"
 #include "BinaryData.h"
-#include "layout/Layout.h"
 
 RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
     : Block(name)
@@ -29,7 +28,6 @@ RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValue
     };
 }
 
-RouteBlock::~RouteBlock() { mode_switch.setLookAndFeel(nullptr); }
 void RouteBlock::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colour(0xff343434));

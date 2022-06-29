@@ -1,5 +1,4 @@
 #include "EqBlock.h"
-#include <cstddef>
 
 EqBlock::EqBlock(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
     : Block(name)
@@ -29,7 +28,7 @@ EqBlock::EqBlock(const juce::String &name, const juce::AudioProcessorValueTreeSt
 void EqBlock::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colour(0xff343434));
-    layout.drawTitle(g, name, getLocalBounds());
+    layout.drawTitle(g, getName(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds(), 7);
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds(), 7);
     layout.drawTextUnderSlider(g, sliders[2].get(), getLocalBounds(), 7);

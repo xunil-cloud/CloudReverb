@@ -2,7 +2,6 @@
 
 #include "CustomToggleButton.h"
 #include "BinaryData.h"
-#include "PluginProcessor.h"
 
 class MyLookAndFeel : public juce::LookAndFeel_V4
 {

@@ -1,25 +1,7 @@
 #include "Block.h"
 
-Block::Block(const juce::String &name) : name(std::move(name))
-{
-    using Fl = juce::FlexBox;
-    flex.justifyContent = Fl::JustifyContent::spaceBetween;
-    flex.alignContent = Fl::AlignContent::center;
-    flex.alignItems = Fl::AlignItems::center;
-    flex.items = juce::Array<juce::FlexItem>();
-}
-void Block::paint(juce::Graphics &g)
-{
-    g.fillAll(juce::Colour(0xff343434));
-    g.setColour(juce::Colour(0xffd6d6d6));
-
-    auto rec = getLocalBounds()
-                   .withSizeKeepingCentre(getWidth() * 0.9,
-                                          getHeight() * header_ratio * (0.9 + 1 / header_ratio - 1))
-                   .removeFromTop(getHeaderSize());
-    g.setFont(juce::Font(std::min(36, rec.getHeight())));
-    g.drawFittedText(name, rec, juce::Justification::centred, 1);
-}
+Block::Block(const juce::String &name) : juce::Component(name) {}
+void Block::paint(juce::Graphics &g) { g.fillAll(juce::Colour(0xff343434)); }
 
 void Block::setupNumberBoxSlider(juce::Slider &slider, juce::RangedAudioParameter *param)
 {
@@ -59,40 +41,4 @@ void Block::addParameter(const juce::String &name, juce::RangedAudioParameter *p
     addAndMakeVisible(label.get());
     sliders.push_back(std::move(slider));
     labels.push_back(std::move(label));
-}
-
-void Block::layout()
-{
-    auto main = getLocalBounds();
-    main.removeFromTop(getHeight() / 7.0 * header_ratio);
-    auto rec = getLocalBounds().withSizeKeepingCentre(
-        getWidth() * x_ratio * (0.9 + 1 / x_ratio - 1),
-        getHeight() * header_ratio * (0.9 + 1 / header_ratio - 1));
-    rec.removeFromTop(getHeaderSize());
-
-    auto size = getHeight() * 0.3;
-    seedSlider.setBounds(30, 10, getWidth() / 7.0, 25);
-
-    flex.items.clearQuick();
-    for (auto &i : sliders)
-    {
-        auto slider = i.get();
-        flex.items.add(juce::FlexItem(size, size, *slider).withMaxHeight(70).withMaxWidth(70));
-    }
-    flex.performLayout(rec);
-
-    rec = getLocalBounds().withSizeKeepingCentre(
-        getWidth() * 0.9, getHeight() * header_ratio * (0.9 + 1 / header_ratio - 1));
-    rec.removeFromTop(getHeaderSize());
-
-    for (size_t i = 0; i < sliders.size(); i++)
-    {
-        auto &slider = sliders[i];
-        auto &label = labels[i];
-        auto fontsize = std::min(rec.getWidth() * 0.05 * x_ratio, size * 0.35);
-        label->setFont(juce::Font("Roboto", fontsize, juce::Font::plain));
-        label->setSize(float(rec.getWidth()) / sliders.size(), fontsize + 2);
-        label->setCentrePosition(slider->getBounds().getCentreX(),
-                                 slider->getBounds().getBottom() + fontsize * 0.75);
-    }
 }
