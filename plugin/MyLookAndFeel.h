@@ -58,7 +58,8 @@ public:
     // }
     static const juce::Font getCustomFont()
     {
-        static auto typeface = juce::Typeface::createSystemTypefaceFor(
+        // TODO: declare typeface as static would cause memory leak, why?
+        auto typeface = juce::Typeface::createSystemTypefaceFor(
             BinaryData::PragatiNarrowRegular_ttf, BinaryData::PragatiNarrowRegular_ttfSize);
         return juce::Font(typeface);
     }
