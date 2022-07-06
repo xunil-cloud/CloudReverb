@@ -10,199 +10,196 @@
 
 namespace CloudSeed
 {
-	using namespace std;
+using namespace std;
 
-	class MultitapDiffuser
-	{
-	public:
-		static const int MaxTaps = 50;
+class MultitapDiffuser
+{
+public:
+    static const int MaxTaps = 50;
 
-	private:
-		double* buffer;
-		double* output;
-		int len;
+private:
+    double *buffer;
+    double *output;
+    int len;
 
-		int index;
-		vector<double> tapGains;
-		vector<int> tapPosition;
-		vector<double> seedValues;
-		int seed;
-		double crossSeed;
-		int count;
-		double length;
-		double gain;
-		double decay;
+    int index;
+    vector<double> tapGains;
+    vector<int> tapPosition;
+    vector<double> seedValues;
+    int seed;
+    double crossSeed;
+    int count;
+    double length;
+    double gain;
+    double decay;
 
-		bool isDirty;
-		vector<double> tapGainsTemp;
-		vector<int> tapPositionTemp;
-		int countTemp;
+    bool isDirty;
+    vector<double> tapGainsTemp;
+    vector<int> tapPositionTemp;
+    int countTemp;
 
-	public:
-		MultitapDiffuser(int delayBufferSize)
-		{
-			len = delayBufferSize;
-			buffer = new double[delayBufferSize];
-			output = new double[delayBufferSize];
-			index = 0;
-			count = 1;
-			length = 1;
-			gain = 1.0;
-			decay = 0.0;
-			crossSeed = 0.0;
-			UpdateSeeds();
-		}
+public:
+    MultitapDiffuser(int delayBufferSize)
+    {
+        len = delayBufferSize;
+        buffer = new double[delayBufferSize];
+        output = new double[delayBufferSize];
+        index = 0;
+        count = 1;
+        length = 1;
+        gain = 1.0;
+        decay = 0.0;
+        crossSeed = 0.0;
+        UpdateSeeds();
+    }
 
-		~MultitapDiffuser()
-		{
-			delete[] buffer;
-			delete[] output;
-		}
+    ~MultitapDiffuser()
+    {
+        delete[] buffer;
+        delete[] output;
+    }
 
+    void SetSeed(int seed)
+    {
+        this->seed = seed;
+        UpdateSeeds();
+    }
 
-		void SetSeed(int seed)
-		{
-			this->seed = seed;
-			UpdateSeeds();
-		}
+    void SetCrossSeed(double crossSeed)
+    {
+        this->crossSeed = crossSeed;
+        UpdateSeeds();
+    }
 
-		void SetCrossSeed(double crossSeed)
-		{
-			this->crossSeed = crossSeed;
-			UpdateSeeds();
-		}
+    double *GetOutput() { return output; }
 
-		double* GetOutput()
-		{
-			return output;
-		}
+    void SetTapCount(int tapCount)
+    {
+        count = tapCount;
+        Update();
+    }
 
-		void SetTapCount(int tapCount)
-		{
-			count = tapCount;
-			Update();
-		}
+    void SetTapLength(int tapLength)
+    {
+        length = tapLength;
+        Update();
+    }
 
-		void SetTapLength(int tapLength)
-		{
-			length = tapLength;
-			Update();
-		}
+    void SetTapDecay(double tapDecay)
+    {
+        decay = tapDecay;
+        Update();
+    }
 
-		void SetTapDecay(double tapDecay)
-		{
-			decay = tapDecay;
-			Update();
-		}
+    void SetTapGain(double tapGain)
+    {
+        gain = tapGain;
+        Update();
+    }
 
-		void SetTapGain(double tapGain)
-		{
-			gain = tapGain;
-			Update();
-		}
+    void Process(double *input, int sampleCount)
+    {
+        // prevents race condition when parameters are updated from Gui
+        if (isDirty)
+        {
+            tapGainsTemp = tapGains;
+            tapPositionTemp = tapPosition;
+            countTemp = count;
+            isDirty = false;
+        }
 
-		void Process(double* input, int sampleCount)
-		{
-			// prevents race condition when parameters are updated from Gui
-			if (isDirty)
-			{
-				tapGainsTemp = tapGains;
-				tapPositionTemp = tapPosition;
-				countTemp = count;
-				isDirty = false;
-			}
+        int *const tapPos = &tapPositionTemp[0];
+        double *const tapGain = &tapGainsTemp[0];
+        const int cnt = countTemp;
 
-			int* const tapPos = &tapPositionTemp[0];
-			double* const tapGain = &tapGainsTemp[0];
-			const int cnt = countTemp;
+        for (int i = 0; i < sampleCount; i++)
+        {
+            if (index < 0)
+                index += len;
+            buffer[index] = input[i];
+            output[i] = 0.0;
 
-			for (int i = 0; i < sampleCount; i++)
-			{
-				if (index < 0) index += len;
-				buffer[index] = input[i];
-				output[i] = 0.0;
+            for (int j = 0; j < cnt; j++)
+            {
+                auto idx = (index + tapPos[j]) % len;
+                output[i] += buffer[idx] * tapGain[j];
+            }
 
-				for (int j = 0; j < cnt; j++)
-				{
-					auto idx = (index + tapPos[j]) % len;
-					output[i] += buffer[idx] * tapGain[j];
-				}
+            index--;
+        }
+    }
 
-				index--;
-			}
-		}
+    void ClearBuffers()
+    {
+        Utils::ZeroBuffer(buffer, len);
+        Utils::ZeroBuffer(output, len);
+    }
 
-		void ClearBuffers()
-		{
-			Utils::ZeroBuffer(buffer, len);
-			Utils::ZeroBuffer(output, len);
-		}
+private:
+    void Update()
+    {
+        vector<double> newTapGains;
+        vector<int> newTapPosition;
 
+        int s = 0;
+        auto rand = [&]() { return seedValues[s++]; };
 
-	private:
-		void Update()
-		{
-			vector<double> newTapGains;
-			vector<int> newTapPosition;
+        if (count < 1)
+            count = 1;
 
-			int s = 0;
-			auto rand = [&]() {return seedValues[s++]; };
+        if (length < count)
+            length = count;
 
-			if (count < 1)
-				count = 1;
+        // used to adjust the volume of the overall output as it grows when we add more taps
+        double tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
 
-			if (length < count)
-				length = count;
+        newTapGains.resize(count);
+        newTapPosition.resize(count);
 
-			// used to adjust the volume of the overall output as it grows when we add more taps
-			double tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
+        vector<double> tapData(count, 0.0);
 
-			newTapGains.resize(count);
-			newTapPosition.resize(count);
+        auto sumLengths = 0.0;
+        for (size_t i = 0; i < count; i++)
+        {
+            auto val = 0.1 + rand();
+            tapData[i] = val;
+            sumLengths += val;
+        }
 
-			vector<double> tapData(count, 0.0);
+        auto scaleLength = length / sumLengths;
+        newTapPosition[0] = 0;
 
-			auto sumLengths = 0.0;
-			for (size_t i = 0; i < count; i++)
-			{
-				auto val = 0.1 + rand();
-				tapData[i] = val;
-				sumLengths += val;
-			}
+        for (int i = 1; i < count; i++)
+        {
+            newTapPosition[i] = newTapPosition[i - 1] + (int)(tapData[i] * scaleLength);
+        }
 
-			auto scaleLength = length / sumLengths;
-			newTapPosition[0] = 0;
+        double sumGains = 0.0;
+        double lastTapPos = newTapPosition[count - 1];
+        for (int i = 0; i < count; i++)
+        {
+            // when decay set to 0, there is no decay, when set to 1, the gain at the last sample is
+            // 0.01 = -40dB
+            auto g = std::pow(10, -decay * 2 * newTapPosition[i] / (double)(lastTapPos + 1));
 
-			for (int i = 1; i < count; i++)
-			{
-				newTapPosition[i] = newTapPosition[i - 1] + (int)(tapData[i] * scaleLength);
-			}
+            auto tap = (2 * rand() - 1) * tapCountFactor;
+            newTapGains[i] = tap * g * gain;
+        }
 
-			double sumGains = 0.0;
-			double lastTapPos = newTapPosition[count - 1];
-			for (int i = 0; i < count; i++)
-			{
-				// when decay set to 0, there is no decay, when set to 1, the gain at the last sample is 0.01 = -40dB
-				auto g = std::pow(10, -decay * 2 * newTapPosition[i] / (double)(lastTapPos + 1));
+        // Set the tap vs. clean mix
+        newTapGains[0] = (1 - gain);
 
-				auto tap = (2 * rand() - 1) * tapCountFactor;
-				newTapGains[i] = tap * g * gain;
-			}
+        this->tapGains = newTapGains;
+        this->tapPosition = newTapPosition;
+        isDirty = true;
+    }
 
-			// Set the tap vs. clean mix
-			newTapGains[0] = (1 - gain);
-
-			this->tapGains = newTapGains;
-			this->tapPosition = newTapPosition;
-			isDirty = true;
-		}
-
-		void UpdateSeeds()
-		{
-			this->seedValues = AudioLib::ShaRandom::Generate(seed, 100, crossSeed);
-			Update();
-		}
-	};
-}
+    void UpdateSeeds()
+    {
+        this->seedValues = AudioLib::ShaRandom::Generate(seed, 100, crossSeed);
+        Update();
+    }
+};
+} // namespace CloudSeed
 
 #endif

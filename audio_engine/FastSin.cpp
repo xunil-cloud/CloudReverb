@@ -4,5 +4,5 @@
 
 namespace CloudSeed
 {
-	double FastSin::data[FastSin::DataSize];
+double FastSin::data[FastSin::DataSize];
 }
