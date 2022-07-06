@@ -63,9 +63,9 @@ namespace CloudSeed
 
 		~DelayLine()
 		{
-			delete tempBuffer;
-			delete mixedBuffer;
-			delete filterOutputBuffer;
+			delete[] tempBuffer;
+			delete[] mixedBuffer;
+			delete[] filterOutputBuffer;
 		}
 
 

@@ -52,8 +52,8 @@ namespace CloudSeed
 
 		~ModulatedAllpass()
 		{
-			delete delayBuffer;
-			delete output;
+			delete[] delayBuffer;
+			delete[] output;
 		}
 
 

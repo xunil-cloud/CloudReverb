@@ -100,9 +100,9 @@ namespace CloudSeed
 			for (auto line : lines)
 				delete line;
 
-			delete tempBuffer;
-			delete lineOutBuffer;
-			delete outBuffer;
+			delete[] tempBuffer;
+			delete[] lineOutBuffer;
+			delete[] outBuffer;
 		}
 
 		int GetSamplerate()

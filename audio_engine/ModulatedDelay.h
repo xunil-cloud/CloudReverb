@@ -48,8 +48,8 @@ namespace CloudSeed
 
 		~ModulatedDelay()
 		{
-			delete delayBuffer;
-			delete output;
+			delete[] delayBuffer;
+			delete[] output;
 		}
 
 		double* GetOutput()

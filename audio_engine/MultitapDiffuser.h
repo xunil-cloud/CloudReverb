@@ -55,8 +55,8 @@ namespace CloudSeed
 
 		~MultitapDiffuser()
 		{
-			delete buffer;
-			delete output;
+			delete[] buffer;
+			delete[] output;
 		}
 
 
