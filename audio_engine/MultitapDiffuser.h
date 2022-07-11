@@ -29,6 +29,7 @@ private:
     int index;
     vector<double> tapGains;
     vector<int> tapPosition;
+    vector<double> tapData;
     vector<double> seedValues;
     int seed;
     double crossSeed;
@@ -44,6 +45,10 @@ public:
         maxDelaySamples = delayBufferSize;
         buffer = new double[delayBufferSize];
         output = new double[delayBufferSize];
+        tapGains.resize(50);
+        tapPosition.resize(50);
+        tapData.resize(50);
+
         index = 0;
         count = 1;
         length = 1;
@@ -138,9 +143,6 @@ public:
 private:
     void Update()
     {
-        vector<double> newTapGains;
-        vector<int> newTapPosition;
-
         int s = 0;
         auto rand = [&]() { return seedValues[s++]; };
 
@@ -153,11 +155,6 @@ private:
         // used to adjust the volume of the overall output as it grows when we add more taps
         double tapCountFactor = 1.0 / (1 + std::sqrt(count / MaxTaps));
 
-        newTapGains.resize(count);
-        newTapPosition.resize(count);
-
-        vector<double> tapData(count, 0.0);
-
         auto sumLengths = 0.0;
         for (size_t i = 0; i < count; i++)
         {
@@ -167,30 +164,27 @@ private:
         }
 
         auto scaleLength = length / sumLengths;
-        newTapPosition[0] = 0;
+        tapPosition[0] = 0;
 
         for (int i = 1; i < count; i++)
         {
-            newTapPosition[i] = newTapPosition[i - 1] + (int)(tapData[i] * scaleLength);
+            tapPosition[i] = tapPosition[i - 1] + (int)(tapData[i] * scaleLength);
         }
 
         double sumGains = 0.0;
-        double lastTapPos = newTapPosition[count - 1];
+        double lastTapPos = tapPosition[count - 1];
         for (int i = 0; i < count; i++)
         {
             // when decay set to 0, there is no decay, when set to 1, the gain at the last sample is
             // 0.01 = -40dB
-            auto g = std::pow(10, -decay * 2 * newTapPosition[i] / (double)(lastTapPos + 1));
+            auto g = std::pow(10, -decay * 2 * tapPosition[i] / (double)(lastTapPos + 1));
 
             auto tap = (2 * rand() - 1) * tapCountFactor;
-            newTapGains[i] = tap * g * gain;
+            tapGains[i] = tap * g * gain;
         }
 
         // Set the tap vs. clean mix
-        newTapGains[0] = (1 - gain);
-
-        this->tapGains = newTapGains;
-        this->tapPosition = newTapPosition;
+        tapGains[0] = (1 - gain);
     }
 
     void UpdateSeeds()
