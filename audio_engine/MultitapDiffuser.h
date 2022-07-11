@@ -37,11 +37,6 @@ private:
     double gain;
     double decay;
 
-    bool isDirty;
-    vector<double> tapGainsTemp;
-    vector<int> tapPositionTemp;
-    int countTemp;
-
 public:
     MultitapDiffuser(int delayBufferSize)
     {
@@ -104,19 +99,6 @@ public:
 
     void Process(double *input, int sampleCount)
     {
-        // prevents race condition when parameters are updated from Gui
-        if (isDirty)
-        {
-            tapGainsTemp = tapGains;
-            tapPositionTemp = tapPosition;
-            countTemp = count;
-            isDirty = false;
-        }
-
-        int *const tapPos = &tapPositionTemp[0];
-        double *const tapGain = &tapGainsTemp[0];
-        const int cnt = countTemp;
-
         for (int i = 0; i < sampleCount; i++)
         {
             if (index < 0)
@@ -125,10 +107,10 @@ public:
             buffer[index] = input[i];
             output[i] = 0.0;
 
-            for (int j = 0; j < cnt; j++)
+            for (int j = 0; j < count; j++)
             {
-                auto idx = (index + tapPos[j]) % maxDelaySamples;
-                output[i] += buffer[idx] * tapGain[j];
+                auto idx = (index + tapPosition[j]) % maxDelaySamples;
+                output[i] += buffer[idx] * tapGains[j];
             }
 
             index--;
@@ -209,7 +191,6 @@ private:
 
         this->tapGains = newTapGains;
         this->tapPosition = newTapPosition;
-        isDirty = true;
     }
 
     void UpdateSeeds()
