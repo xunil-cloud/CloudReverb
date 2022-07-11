@@ -214,6 +214,24 @@ public:
             filterOutputBuffer[i] = 0.0;
         }
     }
+
+    void prepare(int sampleRate, int bufferSize)
+    {
+        delay.prepare(sampleRate, bufferSize);
+        diffuser.prepare(sampleRate, bufferSize);
+
+        this->bufferSize = bufferSize;
+        delete[] tempBuffer;
+        delete[] mixedBuffer;
+        delete[] filterOutputBuffer;
+        tempBuffer = new double[bufferSize];
+        mixedBuffer = new double[bufferSize];
+        filterOutputBuffer = new double[bufferSize];
+        Utils::ZeroBuffer(tempBuffer, bufferSize);
+        Utils::ZeroBuffer(mixedBuffer, bufferSize);
+        Utils::ZeroBuffer(filterOutputBuffer, bufferSize);
+        lowPass.Output = 0;
+    }
 };
 } // namespace CloudSeed
 

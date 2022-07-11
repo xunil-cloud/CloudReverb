@@ -1,9 +1,11 @@
 #ifndef MULTITAPDIFFUSER
 #define MULTITAPDIFFUSER
 
+#include <algorithm>
 #include <vector>
 #include <memory>
 #include <array>
+#include <cassert>
 
 #include "Utils.h"
 #include "AudioLib/ShaRandom.h"
@@ -20,7 +22,9 @@ public:
 private:
     double *buffer;
     double *output;
-    int len;
+    // int len;
+    int bufferSize;
+    int maxDelaySamples;
 
     int index;
     vector<double> tapGains;
@@ -41,7 +45,8 @@ private:
 public:
     MultitapDiffuser(int delayBufferSize)
     {
-        len = delayBufferSize;
+        bufferSize = delayBufferSize;
+        maxDelaySamples = delayBufferSize;
         buffer = new double[delayBufferSize];
         output = new double[delayBufferSize];
         index = 0;
@@ -115,13 +120,14 @@ public:
         for (int i = 0; i < sampleCount; i++)
         {
             if (index < 0)
-                index += len;
+                index += maxDelaySamples;
+            assert(index < maxDelaySamples);
             buffer[index] = input[i];
             output[i] = 0.0;
 
             for (int j = 0; j < cnt; j++)
             {
-                auto idx = (index + tapPos[j]) % len;
+                auto idx = (index + tapPos[j]) % maxDelaySamples;
                 output[i] += buffer[idx] * tapGain[j];
             }
 
@@ -131,8 +137,20 @@ public:
 
     void ClearBuffers()
     {
-        Utils::ZeroBuffer(buffer, len);
-        Utils::ZeroBuffer(output, len);
+        Utils::ZeroBuffer(buffer, bufferSize);
+        Utils::ZeroBuffer(output, maxDelaySamples);
+    }
+    void prepare(int sampleRate, int bufferSize)
+    {
+        this->bufferSize = bufferSize;
+        maxDelaySamples = sampleRate; // 1 second delay
+        delete[] output;
+        delete[] buffer;
+        output = new double[bufferSize];
+        buffer = new double[maxDelaySamples];
+        Utils::ZeroBuffer(output, bufferSize);
+        Utils::ZeroBuffer(buffer, maxDelaySamples);
+        index = 0;
     }
 
 private:

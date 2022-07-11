@@ -1,6 +1,7 @@
 #ifndef UTILS
 #define UTILS
 
+#include <cmath>
 #include <cstring>
 #include <algorithm>
 

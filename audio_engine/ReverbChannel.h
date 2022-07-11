@@ -413,6 +413,29 @@ public:
         for (auto line : lines)
             line->ClearBuffers();
     }
+    void prepare(int sampleRate, int bufferSize)
+    {
+        this->bufferSize = bufferSize;
+        preDelay.prepare(sampleRate, bufferSize);
+        diffuser.prepare(sampleRate, bufferSize);
+        for (auto *line : lines)
+        {
+            line->prepare(sampleRate, bufferSize);
+        }
+        multitap.prepare(sampleRate, bufferSize);
+
+        delete[] tempBuffer;
+        delete[] lineOutBuffer;
+        delete[] outBuffer;
+        tempBuffer = new double[bufferSize];
+        lineOutBuffer = new double[bufferSize];
+        outBuffer = new double[bufferSize];
+        Utils::ZeroBuffer(tempBuffer, bufferSize);
+        Utils::ZeroBuffer(lineOutBuffer, bufferSize);
+        Utils::ZeroBuffer(outBuffer, bufferSize);
+        lowPass.Output = 0;
+        highPass.Output = 0;
+    }
 
 private:
     double GetPerLineGain() { return 1.0 / std::sqrt(lineCount); }

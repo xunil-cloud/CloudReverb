@@ -131,6 +131,13 @@ public:
         for (size_t i = 0; i < filters.size(); i++)
             filters[i]->ClearBuffers();
     }
+    void prepare(int sampleRate, int bufferSize)
+    {
+        for (auto *filter : filters)
+        {
+            filter->prepare(sampleRate, bufferSize);
+        }
+    }
 
 private:
     void Update()

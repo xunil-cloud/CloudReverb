@@ -3,13 +3,14 @@
 
 #include "FastSin.h"
 #include "Utils.h"
+#include <cassert>
 
 namespace CloudSeed
 {
 class ModulatedAllpass
 {
 public:
-    const int DelayBufferSamples = 19200; // 100ms at 192Khz
+    int DelayBufferSamples = 19200; // 100ms at 192Khz
     static const int ModulationUpdateRate = 8;
 
 private:
@@ -17,7 +18,7 @@ private:
     double *output;
     int bufferSize;
     int index;
-    unsigned int samplesProcessed;
+    unsigned int samplesProcessed{8};
 
     double modPhase;
     int delayA;
@@ -69,6 +70,19 @@ public:
         else
             ProcessNoMod(input, sampleCount);
     }
+    void prepare(int sampleRate, int bufferSize)
+    {
+        this->bufferSize = bufferSize;
+        DelayBufferSamples = sampleRate * 2; // 2 second delay
+        delete[] output;
+        delete[] delayBuffer;
+        output = new double[bufferSize];
+        delayBuffer = new double[DelayBufferSamples];
+        Utils::ZeroBuffer(output, bufferSize);
+        Utils::ZeroBuffer(delayBuffer, DelayBufferSamples);
+        index = 0;
+        samplesProcessed = ModulationUpdateRate;
+    }
 
 private:
     void ProcessNoMod(double *input, int sampleCount)
@@ -111,15 +125,19 @@ private:
                 idxA += DelayBufferSamples * (idxA < 0); // modulo
                 idxB += DelayBufferSamples * (idxB < 0); // modulo
 
+                assert(idxA < DelayBufferSamples);
+                assert(idxB < DelayBufferSamples);
                 bufOut = delayBuffer[idxA] * gainA + delayBuffer[idxB] * gainB;
             }
             else
             {
                 int idxA = index - delayA;
                 idxA += DelayBufferSamples * (idxA < 0); // modulo
+                assert(idxA < DelayBufferSamples);
                 bufOut = delayBuffer[idxA];
             }
 
+            assert(index < DelayBufferSamples);
             auto inVal = input[i] + bufOut * Feedback;
             delayBuffer[index] = inVal;
             output[i] = bufOut - inVal * Feedback;

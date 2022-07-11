@@ -16,15 +16,15 @@ namespace CloudSeed
 class ReverbController
 {
 private:
-    static const int bufferSize = 2048; // just make it huge by default...
+    int bufferSize = 128;
     int samplerate;
 
     ReverbChannel channelL;
     ReverbChannel channelR;
-    double leftChannelIn[bufferSize];
-    double rightChannelIn[bufferSize];
-    double leftLineBuffer[bufferSize];
-    double rightLineBuffer[bufferSize];
+    double *leftChannelIn;
+    double *rightChannelIn;
+    // double leftLineBuffer[bufferSize];
+    // double rightLineBuffer[bufferSize];
     double parameters[(int)Parameter::Count];
 
 public:
@@ -33,6 +33,13 @@ public:
           channelR(bufferSize, samplerate, ChannelLR::Right)
     {
         this->samplerate = samplerate;
+        leftChannelIn = new double[bufferSize];
+        rightChannelIn = new double[bufferSize];
+    }
+    ~ReverbController()
+    {
+        delete[] leftChannelIn;
+        delete[] rightChannelIn;
     }
 
     int GetSamplerate() { return samplerate; }
@@ -231,6 +238,18 @@ public:
             output[0][i] = leftOut[i];
             output[1][i] = rightOut[i];
         }
+    }
+    void prepare(int sampleRate, int bufferSize)
+    {
+        this->bufferSize = bufferSize;
+        channelL.prepare(sampleRate, bufferSize);
+        channelR.prepare(sampleRate, bufferSize);
+        delete[] leftChannelIn;
+        delete[] rightChannelIn;
+        leftChannelIn = new double[bufferSize];
+        rightChannelIn = new double[bufferSize];
+        Utils::ZeroBuffer(leftChannelIn, bufferSize);
+        Utils::ZeroBuffer(rightChannelIn, bufferSize);
     }
 
 private:

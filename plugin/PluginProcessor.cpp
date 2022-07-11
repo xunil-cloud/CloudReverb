@@ -185,6 +185,7 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     juce::ignoreUnused(samplesPerBlock);
+    reverb.prepare(sampleRate, samplesPerBlock);
     reverb.SetSamplerate(sampleRate);
 }
 

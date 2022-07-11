@@ -3,6 +3,7 @@
 
 #include "Utils.h"
 #include "FastSin.h"
+#include <cassert>
 
 namespace CloudSeed
 {
@@ -17,7 +18,7 @@ private:
     int writeIndex;
     int readIndexA;
     int readIndexB;
-    int samplesProcessed;
+    int samplesProcessed{8};
     int delayBufferSizeSamples;
 
     double modPhase;
@@ -59,6 +60,7 @@ public:
             if (samplesProcessed == ModulationUpdateRate)
                 Update();
 
+            assert(readIndexA < delayBufferSizeSamples);
             delayBuffer[writeIndex] = input[i];
             output[i] = delayBuffer[readIndexA] * gainA + delayBuffer[readIndexB] * gainB;
 
@@ -79,6 +81,19 @@ public:
     {
         Utils::ZeroBuffer(delayBuffer, delayBufferSizeSamples);
         Utils::ZeroBuffer(output, bufferSize);
+    }
+    void prepare(int sampleRate, int bufferSize)
+    {
+        this->bufferSize = bufferSize;
+        delayBufferSizeSamples = sampleRate * 2; // 2 second delay
+        delete[] output;
+        delete[] delayBuffer;
+        output = new double[bufferSize];
+        delayBuffer = new double[delayBufferSizeSamples];
+        Utils::ZeroBuffer(output, bufferSize);
+        Utils::ZeroBuffer(delayBuffer, delayBufferSizeSamples);
+        samplesProcessed = ModulationUpdateRate;
+        writeIndex = 0;
     }
 
 private:
