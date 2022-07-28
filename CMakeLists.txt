@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.15)
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(CloudReverb VERSION 0.0.1)
+project(CloudReverb VERSION 0.2)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -50,17 +50,20 @@ juce_add_plugin(CloudReverb
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
-    # COMPANY_NAME ...                          # Specify the name of the plugin's author
+    COMPANY_NAME BensonC                          # Specify the name of the plugin's author
     IS_SYNTH FALSE                       # Is this a synth or an effect?
     NEEDS_MIDI_INPUT FALSE               # Does the plugin need midi input?
     NEEDS_MIDI_OUTPUT FALSE              # Does the plugin need midi output?
     IS_MIDI_EFFECT FALSE                 # Is this plugin a MIDI effect?
 	EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
 	COPY_PLUGIN_AFTER_BUILD FALSE        # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE Juce               # A four-character manufacturer id with at least one upper-case character
-    PLUGIN_CODE Dem0                            # A unique four-character plugin id with at least one upper-case character
-    LV2URI http://cloudreverb.io
+    PLUGIN_MANUFACTURER_CODE ODUT               # A four-character manufacturer id with at least one upper-case character
+    PLUGIN_CODE Pm4e                            # A unique four-character plugin id with at least one upper-case character
+    LV2URI "http://github.com/xunil-cloud/CloudReverb"
     FORMATS AU VST3 LV2 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    VST2_CATEGORY kPlugCategEffect
+    VST3_CATEGORIES Fx Reverb
+    AU_MAIN_TYPE kAudioUnitType_Effect
 	PRODUCT_NAME "CloudReverb")        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
