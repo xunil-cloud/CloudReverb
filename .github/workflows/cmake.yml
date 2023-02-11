@@ -58,7 +58,7 @@ jobs:
     - name: Archive all artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: all-artifacts
+        name: ${{matrix.os}}-all-artifacts
         path: ${{runner.workspace}}/build/CloudReverb_artefacts/
 
     - name: Download all workflow run artifacts
