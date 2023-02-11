@@ -236,8 +236,8 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
         reverb.updateParameter(message.param, message.newScaledValue, message.newNormalisedValue);
     }
     // real dsp
-    const float **in_sig = buffer.getArrayOfReadPointers();
-    float **out_sig = buffer.getArrayOfWritePointers();
+    const float *const *in_sig = buffer.getArrayOfReadPointers();
+    float *const *out_sig = buffer.getArrayOfWritePointers();
     reverb.Process(in_sig, out_sig, buffer.getNumSamples());
 }
 
