@@ -145,19 +145,16 @@ void AudioPluginAudioProcessorEditor::resized()
 void AudioPluginAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
 {
     int i = comboBox->getSelectedId();
+    if (i < 1 || i > 9)
+    {
+        return;
+    }
     struct ui_state state
     {
         0, 0, i
     };
     processorRef.state.set_state(&state);
-    switch (comboBox->getSelectedId())
-    {
-    case 1 ... 9:
-        processorRef.setPreset(cloudPresets::presets[i - 1]);
-
-    default:
-        break;
-    }
+    processorRef.setPreset(cloudPresets::presets[i - 1]);
 }
 
 void AudioPluginAudioProcessorEditor::restoreUIstate()
