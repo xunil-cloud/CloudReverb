@@ -22,5 +22,8 @@ private:
     std::unique_ptr<juce::SliderParameterAttachment> attachment_cross_seed;
     HeaderLayout layout;
 
+public:
+    juce::ComboBox combobox;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Header)
 };

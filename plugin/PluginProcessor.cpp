@@ -76,52 +76,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     map.insert({"Interpolation", Parameter::Interpolation});
 
     // https://github.com/ValdemarOrn/CloudSeed/blob/master/Factory%20Programs/Chorus%20Delay.json
-    treeState.getParameter("InputMix")->setValueNotifyingHost(0.0);
-    treeState.getParameter("PreDelay")->setValueNotifyingHost(0.070000000298023224);
-    treeState.getParameter("HighPass")->setValueNotifyingHost(0.0);
-    treeState.getParameter("LowPass")->setValueNotifyingHost(0.29000008106231689);
-    treeState.getParameter("TapCount")->setValueNotifyingHost(0.35);
-    treeState.getParameter("TapLength")->setValueNotifyingHost(1.0);
-    treeState.getParameter("TapGain")->setValueNotifyingHost(1.0);
-    treeState.getParameter("TapDecay")->setValueNotifyingHost(0.86500012874603271);
-    treeState.getParameter("DiffusionEnabled")->setValueNotifyingHost(1.0);
-    treeState.getParameter("DiffusionStages")->setValueNotifyingHost(0.4285714328289032);
-    treeState.getParameter("DiffusionDelay")->setValueNotifyingHost(0.43500006198883057);
-    treeState.getParameter("DiffusionFeedback")->setValueNotifyingHost(0.725000262260437);
-    treeState.getParameter("LineCount")->setValueNotifyingHost(1.0);
-    treeState.getParameter("LineDelay")->setValueNotifyingHost(0.68499988317489624);
-    treeState.getParameter("LineDecay")->setValueNotifyingHost(0.68000012636184692);
-    treeState.getParameter("LateDiffusionEnabled")->setValueNotifyingHost(1.0);
-    treeState.getParameter("LateDiffusionStages")->setValueNotifyingHost(0.28571429848670959);
-    treeState.getParameter("LateDiffusionDelay")->setValueNotifyingHost(0.54499995708465576);
-    treeState.getParameter("LateDiffusionFeedback")->setValueNotifyingHost(0.65999996662139893);
-    treeState.getParameter("PostLowShelfGain")->setValueNotifyingHost(0.5199999213218689);
-    treeState.getParameter("PostLowShelfFrequency")->setValueNotifyingHost(0.31499990820884705);
-    treeState.getParameter("PostHighShelfGain")->setValueNotifyingHost(0.83500003814697266);
-    treeState.getParameter("PostHighShelfFrequency")->setValueNotifyingHost(0.73000013828277588);
-    treeState.getParameter("PostCutoffFrequency")->setValueNotifyingHost(0.73499983549118042);
-    treeState.getParameter("EarlyDiffusionModAmount")->setValueNotifyingHost(0.50000005960464478);
-    treeState.getParameter("EarlyDiffusionModRate")->setValueNotifyingHost(0.42500010132789612);
-    treeState.getParameter("LineModAmount")->setValueNotifyingHost(0.59000003337860107);
-    treeState.getParameter("LineModRate")->setValueNotifyingHost(0.46999993920326233);
-    treeState.getParameter("LateDiffusionModAmount")->setValueNotifyingHost(0.619999885559082);
-    treeState.getParameter("LateDiffusionModRate")->setValueNotifyingHost(0.42500019073486328);
-    treeState.getParameter("TapSeed")->setValueNotifyingHost(0.001149);
-    treeState.getParameter("DiffusionSeed")->setValueNotifyingHost(0.000188);
-    treeState.getParameter("DelaySeed")->setValueNotifyingHost(0.000336);
-    treeState.getParameter("PostDiffusionSeed")->setValueNotifyingHost(0.000499);
-    treeState.getParameter("CrossSeed")->setValueNotifyingHost(0.0);
-    treeState.getParameter("DryOut")->setValueNotifyingHost(0.94499987363815308);
-    treeState.getParameter("PredelayOut")->setValueNotifyingHost(0.0);
-    treeState.getParameter("EarlyOut")->setValueNotifyingHost(0.77999997138977051);
-    treeState.getParameter("MainOut")->setValueNotifyingHost(0.74500006437301636);
-    treeState.getParameter("HiPassEnabled")->setValueNotifyingHost(0.0);
-    treeState.getParameter("LowPassEnabled")->setValueNotifyingHost(0.0);
-    treeState.getParameter("LowShelfEnabled")->setValueNotifyingHost(0.0);
-    treeState.getParameter("HighShelfEnabled")->setValueNotifyingHost(0.0);
-    treeState.getParameter("CutoffEnabled")->setValueNotifyingHost(1.0);
-    treeState.getParameter("LateStageTap")->setValueNotifyingHost(1.0);
-    treeState.getParameter("Interpolation")->setValueNotifyingHost(0.);
+    setPreset(cloudPresets::ChorusDelay);
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
@@ -258,8 +213,22 @@ void AudioPluginAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    auto state = treeState.copyState();
-    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    auto tree_state = treeState.copyState();
+    std::unique_ptr<juce::XmlElement> xml(tree_state.createXml());
+    struct ui_state state = this->state.get_state();
+
+    auto *ui_state = xml->getChildByName("UIState");
+
+    if (ui_state == nullptr)
+    {
+        ui_state = xml->createNewChildElement("UIState");
+    }
+
+    ui_state->setAttribute("presetID", state.preset_id);
+    ui_state->setAttribute("width", state.width);
+    ui_state->setAttribute("height", state.height);
+    DBG("store state");
+    // std::cout << xml->toString();
     copyXmlToBinary(*xml, destData);
 }
 
@@ -268,11 +237,24 @@ void AudioPluginAudioProcessor::setStateInformation(const void *data, int sizeIn
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-    std::cout << xmlState->toString();
+    auto *ui_state = xmlState->getChildByName("UIState");
+    if (ui_state != nullptr)
+    {
+        // selectedPresetId = ui_state->getIntAttribute("presetID");
+        struct ui_state state = {
+            ui_state->getIntAttribute("width", 0),
+            ui_state->getIntAttribute("height", 0),
+            ui_state->getIntAttribute("presetID", 1),
+        };
+        this->state.set_state(&state);
+    }
+    DBG("restore state");
+    // std::cout << xmlState->toString();
 
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(treeState.state.getType()))
             treeState.replaceState(juce::ValueTree::fromXml(*xmlState));
+    triggerAsyncUpdate();
 }
 
 //==============================================================================
@@ -494,5 +476,74 @@ void AudioPluginAudioProcessor::parameterChanged(const juce::String &parameterID
     if (param_enum == map.end())
         return;
     queue.enqueue({normalised_value, newValue, param_enum->second});
-    DBG(parameterID << ": " << newValue);
+    // DBG(parameterID << ": " << newValue);
+}
+
+void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset) const
+{
+    treeState.getParameter("InputMix")->setValueNotifyingHost(preset.InputMix);
+    treeState.getParameter("PreDelay")->setValueNotifyingHost(preset.PreDelay);
+    treeState.getParameter("HighPass")->setValueNotifyingHost(preset.HighPass);
+    treeState.getParameter("LowPass")->setValueNotifyingHost(preset.LowPass);
+    treeState.getParameter("TapCount")->setValueNotifyingHost(preset.TapCount);
+    treeState.getParameter("TapLength")->setValueNotifyingHost(preset.TapLength);
+    treeState.getParameter("TapGain")->setValueNotifyingHost(preset.TapGain);
+    treeState.getParameter("TapDecay")->setValueNotifyingHost(preset.TapDecay);
+    treeState.getParameter("DiffusionEnabled")->setValueNotifyingHost(preset.DiffusionEnabled);
+    treeState.getParameter("DiffusionStages")->setValueNotifyingHost(preset.DiffusionStages);
+    treeState.getParameter("DiffusionDelay")->setValueNotifyingHost(preset.DiffusionDelay);
+    treeState.getParameter("DiffusionFeedback")->setValueNotifyingHost(preset.DiffusionFeedback);
+    treeState.getParameter("LineCount")->setValueNotifyingHost(preset.LineCount);
+    treeState.getParameter("LineDelay")->setValueNotifyingHost(preset.LineDelay);
+    treeState.getParameter("LineDecay")->setValueNotifyingHost(preset.LineDecay);
+    treeState.getParameter("LateDiffusionEnabled")
+        ->setValueNotifyingHost(preset.LateDiffusionEnabled);
+    treeState.getParameter("LateDiffusionStages")
+        ->setValueNotifyingHost(preset.LateDiffusionStages);
+    treeState.getParameter("LateDiffusionDelay")->setValueNotifyingHost(preset.LateDiffusionDelay);
+    treeState.getParameter("LateDiffusionFeedback")
+        ->setValueNotifyingHost(preset.LateDiffusionFeedback);
+    treeState.getParameter("PostLowShelfGain")->setValueNotifyingHost(preset.PostLowShelfGain);
+    treeState.getParameter("PostLowShelfFrequency")
+        ->setValueNotifyingHost(preset.PostLowShelfFrequency);
+    treeState.getParameter("PostHighShelfGain")->setValueNotifyingHost(preset.PostHighShelfGain);
+    treeState.getParameter("PostHighShelfFrequency")
+        ->setValueNotifyingHost(preset.PostHighShelfFrequency);
+    treeState.getParameter("PostCutoffFrequency")
+        ->setValueNotifyingHost(preset.PostCutoffFrequency);
+    treeState.getParameter("EarlyDiffusionModAmount")
+        ->setValueNotifyingHost(preset.EarlyDiffusionModAmount);
+    treeState.getParameter("EarlyDiffusionModRate")
+        ->setValueNotifyingHost(preset.EarlyDiffusionModRate);
+    treeState.getParameter("LineModAmount")->setValueNotifyingHost(preset.LineModAmount);
+    treeState.getParameter("LineModRate")->setValueNotifyingHost(preset.LineModRate);
+    treeState.getParameter("LateDiffusionModAmount")
+        ->setValueNotifyingHost(preset.LateDiffusionModAmount);
+    treeState.getParameter("LateDiffusionModRate")
+        ->setValueNotifyingHost(preset.LateDiffusionModRate);
+    treeState.getParameter("TapSeed")->setValueNotifyingHost(preset.TapSeed);
+    treeState.getParameter("DiffusionSeed")->setValueNotifyingHost(preset.DiffusionSeed);
+    treeState.getParameter("DelaySeed")->setValueNotifyingHost(preset.DelaySeed);
+    treeState.getParameter("PostDiffusionSeed")->setValueNotifyingHost(preset.PostDiffusionSeed);
+    treeState.getParameter("CrossSeed")->setValueNotifyingHost(preset.CrossSeed);
+    treeState.getParameter("DryOut")->setValueNotifyingHost(preset.DryOut);
+    treeState.getParameter("PredelayOut")->setValueNotifyingHost(preset.PredelayOut);
+    treeState.getParameter("EarlyOut")->setValueNotifyingHost(preset.EarlyOut);
+    treeState.getParameter("MainOut")->setValueNotifyingHost(preset.MainOut);
+    treeState.getParameter("HiPassEnabled")->setValueNotifyingHost(preset.HiPassEnabled);
+    treeState.getParameter("LowPassEnabled")->setValueNotifyingHost(preset.LowPassEnabled);
+    treeState.getParameter("LowShelfEnabled")->setValueNotifyingHost(preset.LowShelfEnabled);
+    treeState.getParameter("HighShelfEnabled")->setValueNotifyingHost(preset.HighShelfEnabled);
+    treeState.getParameter("CutoffEnabled")->setValueNotifyingHost(preset.CutoffEnabled);
+    treeState.getParameter("LateStageTap")->setValueNotifyingHost(preset.LateStageTap);
+    treeState.getParameter("Interpolation")->setValueNotifyingHost(preset.Interpolation);
+}
+
+void AudioPluginAudioProcessor::handleAsyncUpdate()
+{
+    AudioPluginAudioProcessorEditor *editor =
+        (AudioPluginAudioProcessorEditor *)(getActiveEditor());
+    if (!editor)
+        return;
+    editor->restoreUIstate();
 }

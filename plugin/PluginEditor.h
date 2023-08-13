@@ -14,7 +14,8 @@
 #include "MyLookAndFeel.h"
 
 //==============================================================================
-class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor
+class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                        public juce::ComboBox::Listener
 {
 public:
     explicit AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor &);
@@ -23,6 +24,9 @@ public:
     //==============================================================================
     void paint(juce::Graphics &) override;
     void resized() override;
+    // user has changed the preset
+    void comboBoxChanged(juce::ComboBox *comboBox) override;
+    void restoreUIstate();
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -43,6 +47,5 @@ private:
 
     std::unique_ptr<juce::ComponentBoundsConstrainer> limit;
 
-    juce::ComboBox combobox;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };

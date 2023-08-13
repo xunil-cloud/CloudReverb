@@ -67,9 +67,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
         state.getParameter("Interpolation")->setValueNotifyingHost(0.);
     };
 
-    combobox.addItem("preset 1", 1);
-    combobox.addItem("preset 2", 2);
-    combobox.setSelectedId(1);
+    struct ui_state state = processorRef.state.get_state();
+    header.combobox.setSelectedId(state.preset_id, juce::NotificationType::dontSendNotification);
+    header.combobox.addListener(this);
 
     const auto *primaryDisplay = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
 
@@ -140,4 +140,29 @@ void AudioPluginAudioProcessorEditor::resized()
             .withPosition(eq.getBounds().getX(), 0)
             .withSizeKeepingCentre(eq.getWidth() * 0.9, std::min(getHeight() * 0.08 * 0.6, 25.0));
     reset_button.setBounds(bound.withTrimmedLeft(bound.getWidth() - 35));
+}
+
+void AudioPluginAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
+{
+    int i = comboBox->getSelectedId();
+    struct ui_state state
+    {
+        0, 0, i
+    };
+    processorRef.state.set_state(&state);
+    switch (comboBox->getSelectedId())
+    {
+    case 1 ... 9:
+        processorRef.setPreset(cloudPresets::presets[i - 1]);
+
+    default:
+        break;
+    }
+}
+
+void AudioPluginAudioProcessorEditor::restoreUIstate()
+{
+    struct ui_state state = processorRef.state.get_state();
+    header.combobox.setSelectedId(state.preset_id, juce::NotificationType::dontSendNotification);
+    DBG("restore ui state from async_updater!");
 }

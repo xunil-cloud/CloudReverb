@@ -217,7 +217,7 @@ void HeaderLayout::drawTitle(juce::Graphics &g, const ::juce::String &name,
                      juce::Justification::centredLeft, 1);
 }
 void HeaderLayout::placeUIs(juce::Slider *cross_seed, juce::Button *interpolation,
-                            const juce::Rectangle<int> &bound)
+                            juce::ComboBox *comboBox, const juce::Rectangle<int> &bound)
 {
     const float ratio = bound.getWidth() / WIDTH > bound.getHeight() / HEIGHT
                             ? bound.getHeight() / HEIGHT
@@ -228,6 +228,9 @@ void HeaderLayout::placeUIs(juce::Slider *cross_seed, juce::Button *interpolatio
     const float y1 = 35 * ratio;
     const float x2 = 943 * ratio;
     const float y2 = 46 * ratio;
+    const float x3 = 1100 * ratio;
+    const float y3 = 40 * ratio;
     cross_seed->setBounds(x1, y1, sliderSize, sliderSize);
     interpolation->setBounds(x2, y2, buttonSize, buttonSize);
+    comboBox->setBounds(x3, y3, 200 * ratio, 35 * ratio);
 }

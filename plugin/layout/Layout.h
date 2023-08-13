@@ -77,6 +77,6 @@ public:
     HeaderLayout() : Layout(1418, 110) {}
     void drawTitle(juce::Graphics &g, const ::juce::String &,
                    const juce::Rectangle<int> &bound) override;
-    void placeUIs(juce::Slider *cross_seed, juce::Button *interpolation,
+    void placeUIs(juce::Slider *cross_seed, juce::Button *interpolation, juce::ComboBox *comboBox,
                   const juce::Rectangle<int> &bound);
 };
