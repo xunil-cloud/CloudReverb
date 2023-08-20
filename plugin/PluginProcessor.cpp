@@ -270,7 +270,7 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new AudioPlugi
 #define TO_TEXT_IN_DB(numberOfDecimalPlaces)                                                       \
     [](float value, int) {                                                                         \
         return value == 0 ? "0"                                                                    \
-                          : juce::String(10 * log(value), numberOfDecimalPlaces) + " " + "dB";     \
+                          : juce::String(20 * log(value), numberOfDecimalPlaces) + " " + "dB";     \
     }
 
 #define MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P)                                               \
@@ -385,13 +385,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto CrossSeed = MAKE_PARAMETER_LINEAR_FLOAT(CrossSeed, 0.f, 1.f, 0.f, );
 
-    auto DryOut = MAKE_PARAMETER_DB_FLOAT(DryOut, 0.f, 1.f, 1.f, 100);
+    auto DryOut = MAKE_PARAMETER_DB_FLOAT(DryOut, 0.f, 1.f, 1.f, 2);
 
-    auto PredelayOut = MAKE_PARAMETER_DB_FLOAT(PredelayOut, 0.f, 1.f, 0.f, 100);
+    auto PredelayOut = MAKE_PARAMETER_DB_FLOAT(PredelayOut, 0.f, 1.f, 0.f, 2);
+    auto EarlyOut = MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f, 0.f, 2);
 
-    auto EarlyOut = MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f, 0.f, 100);
-
-    auto MainOut = MAKE_PARAMETER_DB_FLOAT(MainOut, 0.f, 1.f, 0.f, 100);
+    auto MainOut = MAKE_PARAMETER_DB_FLOAT(MainOut, 0.001f, 1.f, 0.f, 10);
 
     auto HiPassEnabled =
         std::make_unique<juce::AudioParameterBool>("HiPassEnabled", "HiPassEnabled", false);
