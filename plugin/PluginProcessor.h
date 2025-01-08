@@ -24,7 +24,15 @@ public:
     {
         // sequence lock, increase counter by 1 before and after write
         counter.fetch_add(1, std::memory_order_release);
-        m_state = *state;
+
+        // only update state if value is not zero.
+        if (state->width && state->height)
+        {
+            m_state.width = state->width;
+            m_state.height = state->height;
+        }
+        if (state->preset_id)
+            m_state.preset_id = state->preset_id;
         counter.fetch_add(1, std::memory_order_release);
     }
 

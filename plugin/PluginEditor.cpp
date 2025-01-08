@@ -87,7 +87,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
                           defaultHeight * 0.9 * userRatio * 0.4);
     limit->setFixedAspectRatio(defaultWidth / defaultHeight);
     setConstrainer(limit.get());
-    setSize(defaultWidth * 0.9 * userRatio, defaultHeight * 0.9 * userRatio);
+    if (state.width && state.height)
+        setSize(state.width, state.height);
+    else
+        setSize(defaultWidth * 0.9 * userRatio, defaultHeight * 0.9 * userRatio);
 
     addAndMakeVisible(reset_button);
     addAndMakeVisible(input);
@@ -140,6 +143,11 @@ void AudioPluginAudioProcessorEditor::resized()
             .withPosition(eq.getBounds().getX(), 0)
             .withSizeKeepingCentre(eq.getWidth() * 0.9, std::min(getHeight() * 0.08 * 0.6, 25.0));
     reset_button.setBounds(bound.withTrimmedLeft(bound.getWidth() - 35));
+    struct ui_state state
+    {
+        getWidth(), getHeight(), 0
+    };
+    processorRef.state.set_state(&state);
 }
 
 void AudioPluginAudioProcessorEditor::comboBoxChanged(juce::ComboBox *comboBox)
@@ -161,5 +169,6 @@ void AudioPluginAudioProcessorEditor::restoreUIstate()
 {
     struct ui_state state = processorRef.state.get_state();
     header.combobox.setSelectedId(state.preset_id, juce::NotificationType::dontSendNotification);
+    setSize(state.width, state.height);
     DBG("restore ui state from async_updater!");
 }
