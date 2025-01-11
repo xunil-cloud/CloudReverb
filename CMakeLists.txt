@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION 3.15)
 # directories, and the current project version. This is a standard CMake command.
 
 project(CloudReverb VERSION 0.2)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
