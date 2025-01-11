@@ -3,11 +3,6 @@
 
 namespace AudioLib
 {
-	Biquad::Biquad() 
-	{
-		ClearBuffers();
-	}
-
 	Biquad::Biquad(FilterType filterType, double samplerate)
 	{
 		Type = filterType;

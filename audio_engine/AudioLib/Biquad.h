@@ -22,7 +22,7 @@ namespace AudioLib
 
 	private:
 		double samplerate;
-		double _gainDb;
+		// double _gainDb;
 		double _q;
 		double a0, a1, a2, b0, b1, b2;
 		double x1, x2, y, y1, y2;
@@ -30,11 +30,10 @@ namespace AudioLib
 
 	public:
 		FilterType Type;
-		double Output;
+		double Output{0};
 		double Frequency;
 		double Slope;
 
-		Biquad();
 		Biquad(FilterType filterType, double samplerate);
 		~Biquad();
 
