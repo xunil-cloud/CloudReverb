@@ -56,3 +56,16 @@ cmake-build-release
 
 ignores
 .clang-tidy
+
+
+# cppcheck
+/cppcheck/
+/cppcheck*.xml
+/report/
+
+justfile
+
+
+# gdb
+.gdbinit
+gdb.txt
