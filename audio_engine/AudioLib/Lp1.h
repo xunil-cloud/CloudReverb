@@ -11,12 +11,12 @@ namespace AudioLib
 	class Lp1
 	{
 	public:
-		double Output;
+		double Output{0};
 
 	public:
-		Lp1(double fs)
+		Lp1()
 		{
-			this->fs = fs;
+			SetCutoffHz(20000);
 		}
 
 		double GetSamplerate()
@@ -27,6 +27,7 @@ namespace AudioLib
 		void SetSamplerate(double samplerate)
 		{
 			fs = samplerate;
+			Update();
 		}
 
 		double GetCutoffHz()
@@ -75,7 +76,7 @@ namespace AudioLib
 
 
 	private:
-		double fs;
+		double fs{48000};
 		double b0, a1;
 		double cutoffHz;
 	};

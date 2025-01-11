@@ -33,7 +33,7 @@ public:
     bool LateStageTap;
 
     DelayLine(int bufferSize, int samplerate)
-        : lowPass(samplerate),
+        : lowPass(),
           delay(bufferSize, samplerate * 2,
                 10000) // 2 second buffer, to prevent buffer overflow with modulation and randomness
                        // added (Which may increase effective delay)

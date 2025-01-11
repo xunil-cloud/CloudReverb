@@ -69,7 +69,7 @@ public:
           ,
           multitap(samplerate) // use samplerate = 1 second delay buffer
           ,
-          highPass(samplerate), lowPass(samplerate),
+          highPass(), lowPass(),
           diffuser(samplerate, 150) // 150ms buffer, to allow for 100ms + modulation time
     {
         this->channelLr = leftOrRight;
