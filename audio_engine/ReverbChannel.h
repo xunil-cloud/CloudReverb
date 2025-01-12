@@ -45,7 +45,6 @@ private:
     AudioLib::Hp1 highPass;
     AudioLib::Lp1 lowPass;
     double *tempBuffer;
-    double *lineOutBuffer;
     double *outBuffer;
     int delayLineSeed;
     int postDiffusionSeed;
@@ -89,7 +88,6 @@ public:
         lowPass.SetCutoffHz(20000);
 
         tempBuffer = new double[bufferSize];
-        lineOutBuffer = new double[bufferSize];
         outBuffer = new double[bufferSize];
 
         this->samplerate = samplerate;
@@ -101,7 +99,6 @@ public:
             delete line;
 
         delete[] tempBuffer;
-        delete[] lineOutBuffer;
         delete[] outBuffer;
     }
 
@@ -133,7 +130,6 @@ public:
 
     double *GetOutput() { return outBuffer; }
 
-    double *GetLineOutput() { return lineOutBuffer; }
 
     void SetParameter(Parameter para, double value)
     {
@@ -386,7 +382,6 @@ public:
 
         auto perLineGain = GetPerLineGain();
         Utils::Gain(tempBuffer, perLineGain, len);
-        Utils::Copy(tempBuffer, lineOutBuffer, len);
 
         for (int i = 0; i < len; i++)
         {
@@ -400,7 +395,6 @@ public:
         for (int i = 0; i < bufferSize; i++)
         {
             tempBuffer[i] = 0.0;
-            lineOutBuffer[i] = 0.0;
             outBuffer[i] = 0.0;
         }
 
@@ -425,13 +419,10 @@ public:
         multitap.prepare(sampleRate, bufferSize);
 
         delete[] tempBuffer;
-        delete[] lineOutBuffer;
         delete[] outBuffer;
         tempBuffer = new double[bufferSize];
-        lineOutBuffer = new double[bufferSize];
         outBuffer = new double[bufferSize];
         Utils::ZeroBuffer(tempBuffer, bufferSize);
-        Utils::ZeroBuffer(lineOutBuffer, bufferSize);
         Utils::ZeroBuffer(outBuffer, bufferSize);
         lowPass.Output = 0;
         highPass.Output = 0;
