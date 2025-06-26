@@ -8,6 +8,15 @@ CloudReverb has been tested on Linux and Windows. It should run on MacOS too, bu
 You can see the plugin [document](https://github.com/ValdemarOrn/CloudSeed/blob/master/Documentation/readme.md) here. The document is written by the author of CloudSeed.
 
 ![screenshot](screenshots/screenshot_01.png)
+
+## Supported Plugin Format
+
+- AU
+- LV2
+- VST3
+
+It also works as a standalone application.
+
 ## How to Build
 
 ### Linux
