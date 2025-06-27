@@ -19,6 +19,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
@@ -26,7 +27,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # include that subdirectory as part of the build.
 
 add_compile_definitions(_USE_MATH_DEFINES)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 # find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
 # or
@@ -55,8 +55,8 @@ juce_add_plugin(CloudReverb
     NEEDS_MIDI_INPUT FALSE               # Does the plugin need midi input?
     NEEDS_MIDI_OUTPUT FALSE              # Does the plugin need midi output?
     IS_MIDI_EFFECT FALSE                 # Is this plugin a MIDI effect?
-	EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
-	COPY_PLUGIN_AFTER_BUILD FALSE        # Should the plugin be installed to a default location after building?
+    EDITOR_WANTS_KEYBOARD_FOCUS TRUE    # Does the editor need keyboard focus?
+    COPY_PLUGIN_AFTER_BUILD FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE ODUT               # A four-character manufacturer id with at least one upper-case character
     PLUGIN_CODE Pm4e                            # A unique four-character plugin id with at least one upper-case character
     LV2URI "http://github.com/xunil-cloud/CloudReverb"
@@ -64,7 +64,7 @@ juce_add_plugin(CloudReverb
     VST2_CATEGORY kPlugCategEffect
     VST3_CATEGORIES Fx Reverb
     AU_MAIN_TYPE kAudioUnitType_Effect
-	PRODUCT_NAME "CloudReverb")        # The name of the final executable, which can differ from the target name
+    PRODUCT_NAME "CloudReverb")        # The name of the final executable, which can differ from the target name
 
 # `juce_generate_juce_header` will create a JuceHeader.h for a given target, which will be generated
 # into your build tree. This should be included with `#include <JuceHeader.h>`. The include path for
@@ -111,6 +111,9 @@ target_compile_definitions(CloudReverb
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
     JUCE_DISPLAY_SPLASH_SCREEN=0
     JUCE_REPORT_APP_USAGE=0
+    JUCE_USE_FLAC=0
+    JUCE_USE_OGGVORBIS=0
+    JUCE_USE_MP3AUDIOFORMAT=0
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
 
@@ -133,8 +136,7 @@ target_link_libraries(CloudReverb PRIVATE
     AudioPluginData           # If we'd created a binary data target, we'd link to it here
     juce::juce_audio_utils
     audio_engine
-PUBLIC
-	juce::juce_recommended_config_flags
+    PUBLIC
+    juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags)
-
