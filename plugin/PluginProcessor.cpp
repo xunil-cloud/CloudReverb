@@ -162,7 +162,7 @@ bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout &layout
         layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-        // This checks if the input layout matches the output layout
+    // This checks if the input layout matches the output layout
 #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -385,12 +385,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto CrossSeed = MAKE_PARAMETER_LINEAR_FLOAT(CrossSeed, 0.f, 1.f, 0.f, );
 
-    auto DryOut = MAKE_PARAMETER_DB_FLOAT(DryOut, 0.f, 1.f, 1.f, 2);
+    auto DryOut = MAKE_PARAMETER_DB_FLOAT(DryOut, 0.f, 1.f, 1.f, 10);
 
-    auto PredelayOut = MAKE_PARAMETER_DB_FLOAT(PredelayOut, 0.f, 1.f, 0.f, 2);
-    auto EarlyOut = MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f, 0.f, 2);
+    auto PredelayOut = MAKE_PARAMETER_DB_FLOAT(PredelayOut, 0.f, 1.f, 0.f, 10);
+    auto EarlyOut = MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f, 0.f, 10);
 
-    auto MainOut = MAKE_PARAMETER_DB_FLOAT(MainOut, 0.001f, 1.f, 0.f, 10);
+    auto MainOut = MAKE_PARAMETER_DB_FLOAT(MainOut, 0.f, 1.f, 0.f, 10);
 
     auto HiPassEnabled =
         std::make_unique<juce::AudioParameterBool>("HiPassEnabled", "HiPassEnabled", false);
