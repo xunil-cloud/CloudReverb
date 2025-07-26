@@ -100,8 +100,7 @@ private:
     void Update()
     {
         modPhase += ModRate * ModulationUpdateRate;
-        if (modPhase > 1)
-            modPhase = std::fmod(modPhase, 1.0);
+        modPhase -= std::floor(modPhase); // [0, 1)
 
         auto mod = FastSin::Get(modPhase);
         auto totalDelay = SampleDelay + ModAmount * mod;
