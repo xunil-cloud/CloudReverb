@@ -64,6 +64,9 @@ jobs:
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v4
 
+    - name: Create ZIP archive
+      run: |
+        zip -v -r ${{matrix.os}}-${{github.ref_name}}.zip ${{runner.workspace}}/build/CloudReverb_artefacts/Release -x "libCloudReverb_SharedCode*"
     - name: Release
       uses: softprops/action-gh-release@v2
       if: github.ref_type == 'tag'
