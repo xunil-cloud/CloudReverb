@@ -19,7 +19,7 @@ Header::Header(const juce::String &name, const juce::AudioProcessorValueTreeStat
     combobox.addItem("Chorus Delay", 1);
     combobox.addItem("Dull Echoes", 2);
     combobox.addItem("Hyperplane", 3);
-    combobox.addItem("Mudium Space", 4);
+    combobox.addItem("Medium Space", 4);
     combobox.addItem("Noise in the Hallway", 5);
     combobox.addItem("Rubi-Ka Fields", 6);
     combobox.addItem("Small Room", 7);
