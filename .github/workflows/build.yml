@@ -67,8 +67,8 @@ jobs:
       with:
         name: CloudReverb-${{github.ref_name}}-${{matrix.name}}-x86_64
         path: |
-          ${{runner.workspace}}/build/CloudReverb_artefacts/$BUILD_TYPE
-          !${{runner.workspace}}/build/CloudReverb_artefacts/$BUILD_TYPE/*CloudReverb_SharedCode*
+          ${{runner.workspace}}/build/CloudReverb_artefacts/${{env.BUILD_TYPE}}
+          !${{runner.workspace}}/build/CloudReverb_artefacts/${{env.BUILD_TYPE}}/*CloudReverb_SharedCode*
   release:
     if: contains(github.ref, 'tags/v')
     runs-on: ubuntu-latest
