@@ -1,11 +1,11 @@
 # CloudReverb
 
-This is an audio plugin for algorithmic reverb. The algorithm is borrowed from [CloudSeed VST](https://github.com/ValdemarOrn/CloudSeed) 
+This is an audio plugin for algorithmic reverb. The algorithm is borrowed from [CloudSeed VST](https://github.com/ValdemarOrn/CloudSeed/tree/legacy-v1) 
 by Valdemar Erlingsson. I try to rewrite the plugin with JUCE, so it can be also run on Linux and MacOS.
 
 CloudReverb has been tested on Linux and Windows. It should run on MacOS too, but I've never tested it. If you find any issue or suggestions, feel free to create new issue.
 
-You can see the plugin [document](https://github.com/ValdemarOrn/CloudSeed/blob/master/Documentation/readme.md) here. The document is written by the author of CloudSeed.
+You can see the plugin [document](https://github.com/ValdemarOrn/CloudSeed/blob/legacy-v1/Documentation/readme.md) here. The document is written by the author of CloudSeed.
 
 ![screenshot](screenshots/CloudReverb.png)
 
