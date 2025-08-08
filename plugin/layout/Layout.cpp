@@ -29,7 +29,7 @@ void Layout::drawTextRightToSlider(juce::Graphics &g, juce::Component *slider,
     auto font = MyLookAndFeel::getCustomFont().withHeight(38 * ratio);
     g.setFont(font);
     auto name = slider->getName();
-    auto width = g.getCurrentFont().getStringWidth(name);
+    auto width = juce::GlyphArrangement::getStringWidth(g.getCurrentFont(), name);
     auto gap = 12;
 
     g.drawFittedText(name, slider->getX() - (width + gap * ratio), slider->getY(),
