@@ -335,7 +335,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto LineDelay = MAKE_PARAMETER_FLOAT(LineDelay, 20.0f, 1000.0f, 20.f, 100, ms);
 
-    auto LineDecay = MAKE_PARAMETER_FLOAT(LineDecay, 0.05f, 60.f, 1.f, 1000, ms);
+    auto LineDecay = MAKE_PARAMETER_FLOAT(LineDecay, 0.05f, 60.f, 1.f, 1000, s);
 
     auto LateDiffusionEnabled = std::make_unique<juce::AudioParameterBool>(
         "LateDiffusionEnabled", "LateDiffusionEnabled", false);
