@@ -50,52 +50,59 @@ struct preset
     double Interpolation;
 };
 
-const static preset ChorusDelay = {0.0,
-                                   0.070000000298023224,
-                                   0.0,
-                                   0.29000008106231689,
-                                   0.36499997973442078,
-                                   1.0,
-                                   1.0,
-                                   0.86500012874603271,
-                                   1.0,
-                                   0.4285714328289032,
-                                   0.43500006198883057,
-                                   0.725000262260437,
-                                   1.0,
-                                   0.68499988317489624,
-                                   0.68000012636184692,
-                                   1.0,
-                                   0.28571429848670959,
-                                   0.54499995708465576,
-                                   0.65999996662139893,
-                                   0.5199999213218689,
-                                   0.31499990820884705,
-                                   0.83500003814697266,
-                                   0.73000013828277588,
-                                   0.73499983549118042,
-                                   0.50000005960464478,
-                                   0.42500010132789612,
-                                   0.59000003337860107,
-                                   0.46999993920326233,
-                                   0.619999885559082,
-                                   0.42500019073486328,
-                                   0.0011500000255182385,
-                                   0.00018899999849963933,
-                                   0.00033700000494718552,
-                                   0.00050099997315555811,
-                                   0.0,
-                                   0.94499987363815308,
-                                   0.0,
-                                   0.77999997138977051,
-                                   0.74500006437301636,
-                                   0.0,
-                                   0.0,
-                                   0.0,
-                                   0.0,
-                                   1.0,
-                                   1.0,
-                                   0.0};
+const static preset ChorusDelay = {
+    0.0,                    // InputMix
+    0.070000000298023224,   // PreDelay
+    0.0,                    // HighPass
+    0.29000008106231689,    // LowPass
+                            // 0.36499997973442078,
+    0.3469387755102041,     // TapCount
+    1.0,                    // TapLength
+    1.0,                    // TapGain
+    0.86500012874603271,    // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.4285714328289032,     // DiffusionStages
+    0.43500006198883057,    // DiffusionDelay
+    0.725000262260437,      // DiffusionFeedback
+    1.0,                    // LineCount
+    0.68499988317489624,    // LineDelay
+    0.68000012636184692,    // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    0.28571429848670959,    // LateDiffusionStages
+    0.54499995708465576,    // LateDiffusionDelay
+    0.65999996662139893,    // LateDiffusionFeedback
+    0.5199999213218689,     // PostLowShelfGain
+    0.31499990820884705,    // PostLowShelfFrequency
+    0.83500003814697266,    // PostHighShelfGain
+    0.73000013828277588,    // PostHighShelfFrequency
+    0.73499983549118042,    // PostCutoffFrequency
+    0.50000005960464478,    // EarlyDiffusionModAmount
+    0.42500010132789612,    // EarlyDiffusionModRate
+    0.59000003337860107,    // LineModAmount
+    0.46999993920326233,    // LineModRate
+    0.619999885559082,      // LateDiffusionModAmount
+    0.42500019073486328,    // LateDiffusionModRate
+    0.0011500000255182385,  // TapSeed
+    0.00018899999849963933, // DiffusionSeed
+    0.00033700000494718552, // DelaySeed
+                            // 0.00050099997315555811,
+    0.0005,                 // PostDiffusionSeed
+    0.0,                    // CrossSeed
+                            // 0.94499987363815308,
+    0.9012339233603366,     // DryOut
+    0.0,                    // PredelayOut
+                            // 0.77999997138977051,
+    0.6242610511276194,     // EarlyOut
+                            // 0.74500006437301636,
+    0.570361946138122,      // MainOut
+    0.0,                    // HiPassEnabled
+    0.0,                    // LowPassEnabled
+    0.0,                    // LowShelfEnabled
+    0.0,                    // HighShelfEnabled
+    1.0,                    // CutoffEnabled
+    1.0,                    // LateStageTap
+    0.0                     // Interpolation
+};
 
 const static preset DullEchoes = {
     0.0,                    // InputMix
