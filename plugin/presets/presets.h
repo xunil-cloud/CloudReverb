@@ -98,383 +98,395 @@ const static preset ChorusDelay = {0.0,
                                    0.0};
 
 const static preset DullEchoes = {
+    0.0,                    // InputMix
+    0.070000000298023224,   // PreDelay
+    0.0,                    // HighPass
+    0.29000008106231689,    // LowPass
+    0.36499997973442078,    // TapCount
+    1.0,                    // TapLength
+    0.83499991893768311,    // TapGain
+    0.86500012874603271,    // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.4285714328289032,     // DiffusionStages
+    0.43500006198883057,    // DiffusionDelay
+    0.725000262260437,      // DiffusionFeedback
+    1.0,                    // LineCount
+    0.34500002861022949,    // LineDelay
+    0.41500008106231689,    // LineDecay
+    0.0,                    // LateDiffusionEnabled
+    0.57142859697341919,    // LateDiffusionStages
+    0.66499996185302734,    // LateDiffusionDelay
+    0.61000001430511475,    // LateDiffusionFeedback
+    0.5199999213218689,     // PostLowShelfGain
+    0.31499990820884705,    // PostLowShelfFrequency
+    0.83500003814697266,    // PostHighShelfGain
+    0.73000013828277588,    // PostHighShelfFrequency
+    0.73499983549118042,    // PostCutoffFrequency
+    0.25499999523162842,    // EarlyDiffusionModAmount
+    0.3250001072883606,     // EarlyDiffusionModRate
+    0.33500000834465027,    // LineModAmount
+    0.26999998092651367,    // LineModRate
+    0.13499975204467773,    // LateDiffusionModAmount
+    0.27500006556510925,    // LateDiffusionModRate
+    0.0011500000255182385,  // TapSeed
+    0.00018899999849963933, // DiffusionSeed
+    0.0002730000123847276,  // DelaySeed
+    0.00050099997315555811, // PostDiffusionSeed
+    0.5,                    // CrossSeed
+    1.0,                    // DryOut
+    0.0,                    // PredelayOut
+    0.77999997138977051,    // EarlyOut
+    0.74500006437301636,    // MainOut
+    0.0,                    // HiPassEnabled
+    1.0,                    // LowPassEnabled
+    0.0,                    // LowShelfEnabled
+    0.0,                    // HighShelfEnabled
+    1.0,                    // CutoffEnabled
+    0.0,                    // LateStageTap
+    1.0                     // Interpolation
+};
 
-    0.0,
-    0.070000000298023224,
-    0.0,
-    0.29000008106231689,
-    0.36499997973442078,
-    1.0,
-    0.83499991893768311,
-    0.86500012874603271,
-    1.0,
-    0.4285714328289032,
-    0.43500006198883057,
-    0.725000262260437,
-    1.0,
-    0.34500002861022949,
-    0.41500008106231689,
-    0.0,
-    0.57142859697341919,
-    0.66499996185302734,
-    0.61000001430511475,
-    0.5199999213218689,
-    0.31499990820884705,
-    0.83500003814697266,
-    0.73000013828277588,
-    0.73499983549118042,
-    0.25499999523162842,
-    0.3250001072883606,
-    0.33500000834465027,
-    0.26999998092651367,
-    0.13499975204467773,
-    0.27500006556510925,
-    0.0011500000255182385,
-    0.00018899999849963933,
-    0.0002730000123847276,
-    0.00050099997315555811,
-    0.5,
-    1.0,
-    0.0,
-    0.77999997138977051,
-    0.74500006437301636,
-    0.0,
-    1.0,
-    0.0,
-    0.0,
-    1.0,
-    0.0,
-    1.0};
+const static preset Hyperplane = {
+    0.1549999862909317,     // InputMix
+    0.0,                    // PreDelay
+    0.57999998331069946,    // HighPass
+    0.9100000262260437,     // LowPass
+    0.41499990224838257,    // TapCount
+    0.43999996781349182,    // TapLength
+    1.0,                    // TapGain
+    1.0,                    // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.4285714328289032,     // DiffusionStages
+    0.27500024437904358,    // DiffusionDelay
+    0.660000205039978,      // DiffusionFeedback
+    0.72727274894714355,    // LineCount
+    0.22500017285346985,    // LineDelay
+    0.794999897480011,      // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    1.0,                    // LateDiffusionStages
+    0.22999951243400574,    // LateDiffusionDelay
+    0.59499990940093994,    // LateDiffusionFeedback
+    0.95999979972839355,    // PostLowShelfGain
+    0.23999994993209839,    // PostLowShelfFrequency
+    0.97500002384185791,    // PostHighShelfGain
+    0.78499996662139893,    // PostHighShelfFrequency
+    0.87999981641769409,    // PostCutoffFrequency
+    0.13499999046325684,    // EarlyDiffusionModAmount
+    0.29000008106231689,    // EarlyDiffusionModRate
+    0.53999996185302734,    // LineModAmount
+    0.44999989867210388,    // LineModRate
+    0.15999998152256012,    // LateDiffusionModAmount
+    0.56000012159347534,    // LateDiffusionModRate
+    0.00048499999684281647, // TapSeed
+    0.00020799999765586108, // DiffusionSeed
+    0.00034699999378062785, // DelaySeed
+    0.00037200000951997936, // PostDiffusionSeed
+    0.800000011920929,      // CrossSeed
+    0.86500018835067749,    // DryOut
+    0.0,                    // PredelayOut
+    0.8200000524520874,     // EarlyOut
+    0.79500007629394531,    // MainOut
+    1.0,                    // HiPassEnabled
+    1.0,                    // LowPassEnabled
+    1.0,                    // LowShelfEnabled
+    1.0,                    // HighShelfEnabled
+    1.0,                    // CutoffEnabled
+    1.0,                    // LateStageTap
+    0.0                     // Interpolation
+};
 
-const static preset Hyperplane = {0.1549999862909317,
-                                  0.0,
-                                  0.57999998331069946,
-                                  0.9100000262260437,
-                                  0.41499990224838257,
-                                  0.43999996781349182,
-                                  1.0,
-                                  1.0,
-                                  1.0,
-                                  0.4285714328289032,
-                                  0.27500024437904358,
-                                  0.660000205039978,
-                                  0.72727274894714355,
-                                  0.22500017285346985,
-                                  0.794999897480011,
-                                  1.0,
-                                  1.0,
-                                  0.22999951243400574,
-                                  0.59499990940093994,
-                                  0.95999979972839355,
-                                  0.23999994993209839,
-                                  0.97500002384185791,
-                                  0.78499996662139893,
-                                  0.87999981641769409,
-                                  0.13499999046325684,
-                                  0.29000008106231689,
-                                  0.53999996185302734,
-                                  0.44999989867210388,
-                                  0.15999998152256012,
-                                  0.56000012159347534,
-                                  0.00048499999684281647,
-                                  0.00020799999765586108,
-                                  0.00034699999378062785,
-                                  0.00037200000951997936,
-                                  0.800000011920929,
-                                  0.86500018835067749,
-                                  0.0,
-                                  0.8200000524520874,
-                                  0.79500007629394531,
-                                  1.0,
-                                  1.0,
-                                  1.0,
-                                  1.0,
-                                  1.0,
-                                  1.0,
-                                  0.0};
+const static preset MediumSpace = {
+    0.0,                    // InputMix
+    0.0,                    // PreDelay
+    0.0,                    // HighPass
+    0.63999992609024048,    // LowPass
+    0.51999980211257935,    // TapCount
+    0.26499992609024048,    // TapLength
+    0.69499999284744263,    // TapGain
+    1.0,                    // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.8571428656578064,     // DiffusionStages
+    0.5700000524520874,     // DiffusionDelay
+    0.76000010967254639,    // DiffusionFeedback
+    0.18181818723678589,    // LineCount
+    0.585000216960907,      // LineDelay
+    0.29499980807304382,    // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    0.57142859697341919,    // LateDiffusionStages
+    0.69499951601028442,    // LateDiffusionDelay
+    0.71499985456466675,    // LateDiffusionFeedback
+    0.87999987602233887,    // PostLowShelfGain
+    0.19499993324279785,    // PostLowShelfFrequency
+    0.72000008821487427,    // PostHighShelfGain
+    0.520000159740448,      // PostHighShelfFrequency
+    0.79999983310699463,    // PostCutoffFrequency
+    0.13499999046325684,    // EarlyDiffusionModAmount
+    0.26000010967254639,    // EarlyDiffusionModRate
+    0.054999928921461105,   // LineModAmount
+    0.21499986946582794,    // LineModRate
+    0.17999963462352753,    // LateDiffusionModAmount
+    0.38000011444091797,    // LateDiffusionModRate
+    0.0003009999927598983,  // TapSeed
+    0.00018899999849963933, // DiffusionSeed
+    0.0001610000035725534,  // DelaySeed
+    0.00050099997315555811, // PostDiffusionSeed
+    0.7850000262260437,     // CrossSeed
+    1.0,                    // DryOut
+    0.0,                    // PredelayOut
+    0.699999988079071,      // EarlyOut
+    0.84499984979629517,    // MainOut
+    0.0,                    // HiPassEnabled
+    1.0,                    // LowPassEnabled
+    1.0,                    // LowShelfEnabled
+    0.0,                    // HighShelfEnabled
+    1.0,                    // CutoffEnabled
+    1.0,                    // LateStageTap
+    1.0                     // Interpolation
+};
 
-const static preset MediumSpace = {0.0,
-                                   0.0,
-                                   0.0,
-                                   0.63999992609024048,
-                                   0.51999980211257935,
-                                   0.26499992609024048,
-                                   0.69499999284744263,
-                                   1.0,
-                                   1.0,
-                                   0.8571428656578064,
-                                   0.5700000524520874,
-                                   0.76000010967254639,
-                                   0.18181818723678589,
-                                   0.585000216960907,
-                                   0.29499980807304382,
-                                   1.0,
-                                   0.57142859697341919,
-                                   0.69499951601028442,
-                                   0.71499985456466675,
-                                   0.87999987602233887,
-                                   0.19499993324279785,
-                                   0.72000008821487427,
-                                   0.520000159740448,
-                                   0.79999983310699463,
-                                   0.13499999046325684,
-                                   0.26000010967254639,
-                                   0.054999928921461105,
-                                   0.21499986946582794,
-                                   0.17999963462352753,
-                                   0.38000011444091797,
-                                   0.0003009999927598983,
-                                   0.00018899999849963933,
-                                   0.0001610000035725534,
-                                   0.00050099997315555811,
-                                   0.7850000262260437,
-                                   1.0,
-                                   0.0,
-                                   0.699999988079071,
-                                   0.84499984979629517,
-                                   0.0,
-                                   1.0,
-                                   1.0,
-                                   0.0,
-                                   1.0,
-                                   1.0,
-                                   1.0};
-
-const static preset NoiseInTheHallway = {0.0,
-                                         0.0,
-                                         0.0,
-                                         0.60999995470047,
-                                         1.0,
-                                         1.0,
-                                         0.0,
-                                         0.830000102519989,
-                                         1.0,
-                                         0.28571429848670959,
-                                         0.35499998927116394,
-                                         0.62500005960464478,
-                                         0.63636362552642822,
-                                         0.36000004410743713,
-                                         0.51000005006790161,
-                                         1.0,
-                                         0.0,
-                                         0.62999987602233887,
-                                         0.49000000953674316,
-                                         0.0,
-                                         0.0,
-                                         0.77499985694885254,
-                                         0.58000004291534424,
-                                         0.0,
-                                         0.0,
-                                         0.0,
-                                         0.0,
-                                         0.0,
-                                         0.0,
-                                         0.0,
-                                         0.0001140000022132881,
-                                         0.000155999994603917,
-                                         0.00018099999579135329,
-                                         8.4999999671708792E-05,
-                                         1.0,
-                                         0.0,
-                                         0.0,
-                                         0.64500010013580322,
-                                         0.63000005483627319,
-                                         0.0,
-                                         1.0,
-                                         0.0,
-                                         1.0,
-                                         0.0,
-                                         0.0,
-                                         1.0};
+const static preset NoiseInTheHallway = {
+    0.0,                    // InputMix
+    0.0,                    // PreDelay
+    0.0,                    // HighPass
+    0.60999995470047,       // LowPass
+    1.0,                    // TapCount
+    1.0,                    // TapLength
+    0.0,                    // TapGain
+    0.830000102519989,      // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.28571429848670959,    // DiffusionStages
+    0.35499998927116394,    // DiffusionDelay
+    0.62500005960464478,    // DiffusionFeedback
+    0.63636362552642822,    // LineCount
+    0.36000004410743713,    // LineDelay
+    0.51000005006790161,    // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    0.0,                    // LateDiffusionStages
+    0.62999987602233887,    // LateDiffusionDelay
+    0.49000000953674316,    // LateDiffusionFeedback
+    0.0,                    // PostLowShelfGain
+    0.0,                    // PostLowShelfFrequency
+    0.77499985694885254,    // PostHighShelfGain
+    0.58000004291534424,    // PostHighShelfFrequency
+    0.0,                    // PostCutoffFrequency
+    0.0,                    // EarlyDiffusionModAmount
+    0.0,                    // EarlyDiffusionModRate
+    0.0,                    // LineModAmount
+    0.0,                    // LineModRate
+    0.0,                    // LateDiffusionModAmount
+    0.0,                    // LateDiffusionModRate
+    0.0001140000022132881,  // TapSeed
+    0.000155999994603917,   // DiffusionSeed
+    0.00018099999579135329, // DelaySeed
+    8.4999999671708792E-05, // PostDiffusionSeed
+    1.0,                    // CrossSeed
+    0.0,                    // DryOut
+    0.0,                    // PredelayOut
+    0.64500010013580322,    // EarlyOut
+    0.63000005483627319,    // MainOut
+    0.0,                    // HiPassEnabled
+    1.0,                    // LowPassEnabled
+    0.0,                    // LowShelfEnabled
+    1.0,                    // HighShelfEnabled
+    0.0,                    // CutoffEnabled
+    0.0,                    // LateStageTap
+    1.0                     // Interpolation
+};
 const static preset RubiKaFields = {
+    0.32499998807907104,    // InputMix
+    0.0,                    // PreDelay
+    0.0,                    // HighPass
+    0.8899998664855957,     // LowPass
+    0.51999980211257935,    // TapCount
+    1.0,                    // TapLength
+    0.90000003576278687,    // TapGain
+    1.0,                    // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.8571428656578064,     // DiffusionStages
+    0.5700000524520874,     // DiffusionDelay
+    0.76000010967254639,    // DiffusionFeedback
+    0.27272728085517883,    // LineCount
+    0.68500018119812012,    // LineDelay
+    0.82999974489212036,    // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    0.71428573131561279,    // LateDiffusionStages
+    0.69499951601028442,    // LateDiffusionDelay
+    0.71499985456466675,    // LateDiffusionFeedback
+    0.87999987602233887,    // PostLowShelfGain
+    0.19499993324279785,    // PostLowShelfFrequency
+    0.72000008821487427,    // PostHighShelfGain
+    0.520000159740448,      // PostHighShelfFrequency
+    0.79999983310699463,    // PostCutoffFrequency
+    0.13499999046325684,    // EarlyDiffusionModAmount
+    0.26000010967254639,    // EarlyDiffusionModRate
+    0.054999928921461105,   // LineModAmount
+    0.21499986946582794,    // LineModRate
+    0.32499963045120239,    // LateDiffusionModAmount
+    0.35500010848045349,    // LateDiffusionModRate
+    0.0003009999927598983,  // TapSeed
+    0.00018899999849963933, // DiffusionSeed
+    0.0001610000035725534,  // DelaySeed
+    0.00050099997315555811, // PostDiffusionSeed
+    0.43000003695487976,    // CrossSeed
+    0.88499999046325684,    // DryOut
+    0.0,                    // PredelayOut
+    0.0,                    // EarlyOut
+    0.90999990701675415,    // MainOut
+    0.0,                    // HiPassEnabled
+    0.0,                    // LowPassEnabled
+    0.0,                    // LowShelfEnabled
+    0.0,                    // HighShelfEnabled
+    1.0,                    // CutoffEnabled
+    1.0,                    // LateStageTap
+    0.0                     // Interpolation
+};
 
-    0.32499998807907104,
-    0.0,
-    0.0,
-    0.8899998664855957,
-    0.51999980211257935,
-    1.0,
-    0.90000003576278687,
-    1.0,
-    1.0,
-    0.8571428656578064,
-    0.5700000524520874,
-    0.76000010967254639,
-    0.27272728085517883,
-    0.68500018119812012,
-    0.82999974489212036,
-    1.0,
-    0.71428573131561279,
-    0.69499951601028442,
-    0.71499985456466675,
-    0.87999987602233887,
-    0.19499993324279785,
-    0.72000008821487427,
-    0.520000159740448,
-    0.79999983310699463,
-    0.13499999046325684,
-    0.26000010967254639,
-    0.054999928921461105,
-    0.21499986946582794,
-    0.32499963045120239,
-    0.35500010848045349,
-    0.0003009999927598983,
-    0.00018899999849963933,
-    0.0001610000035725534,
-    0.00050099997315555811,
-    0.43000003695487976,
-    0.88499999046325684,
-    0.0,
-    0.0,
-    0.90999990701675415,
-    0.0,
-    0.0,
-    0.0,
-    0.0,
-    1.0,
-    1.0,
-    0.0};
+const static preset SmallRoom = {
+    0.0,                    // InputMix
+    0.0,                    // PreDelay
+    0.0,                    // HighPass
+    0.755000114440918,      // LowPass
+    0.41499990224838257,    // TapCount
+    0.43999996781349182,    // TapLength
+    0.87999999523162842,    // TapGain
+    1.0,                    // TapDecay
+    1.0,                    // DiffusionEnabled
+    0.71428573131561279,    // DiffusionStages
+    0.335000216960907,      // DiffusionDelay
+    0.660000205039978,      // DiffusionFeedback
+    0.18181818723678589,    // LineCount
+    0.51000016927719116,    // LineDelay
+    0.29999998211860657,    // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    0.4285714328289032,     // LateDiffusionStages
+    0.22999951243400574,    // LateDiffusionDelay
+    0.59499990940093994,    // LateDiffusionFeedback
+    0.87999987602233887,    // PostLowShelfGain
+    0.19499993324279785,    // PostLowShelfFrequency
+    0.875,                  // PostHighShelfGain
+    0.59000009298324585,    // PostHighShelfFrequency
+    0.79999983310699463,    // PostCutoffFrequency
+    0.13499999046325684,    // EarlyDiffusionModAmount
+    0.29000008106231689,    // EarlyDiffusionModRate
+    0.18999995291233063,    // LineModAmount
+    0.22999987006187439,    // LineModRate
+    0.1249999925494194,     // LateDiffusionModAmount
+    0.28500008583068848,    // LateDiffusionModRate
+    0.00048499999684281647, // TapSeed
+    0.00020799999765586108, // DiffusionSeed
+    0.00033499998971819878, // DelaySeed
+    0.00037200000951997936, // PostDiffusionSeed
+    0.42500001192092896,    // CrossSeed
+    1.0,                    // DryOut
+    0.0,                    // PredelayOut
+    0.8599998950958252,     // EarlyOut
+    0.90500003099441528,    // MainOut
+    0.0,                    // HiPassEnabled
+    1.0,                    // LowPassEnabled
+    0.0,                    // LowShelfEnabled
+    0.0,                    // HighShelfEnabled
+    0.0,                    // CutoffEnabled
+    1.0,                    // LateStageTap
+    1.0                     // Interpolation
+};
 
-const static preset SmallRoom = {0.0,
-                                 0.0,
-                                 0.0,
-                                 0.755000114440918,
-                                 0.41499990224838257,
-                                 0.43999996781349182,
-                                 0.87999999523162842,
-                                 1.0,
-                                 1.0,
-                                 0.71428573131561279,
-                                 0.335000216960907,
-                                 0.660000205039978,
-                                 0.18181818723678589,
-                                 0.51000016927719116,
-                                 0.29999998211860657,
-                                 1.0,
-                                 0.4285714328289032,
-                                 0.22999951243400574,
-                                 0.59499990940093994,
-                                 0.87999987602233887,
-                                 0.19499993324279785,
-                                 0.875,
-                                 0.59000009298324585,
-                                 0.79999983310699463,
-                                 0.13499999046325684,
-                                 0.29000008106231689,
-                                 0.18999995291233063,
-                                 0.22999987006187439,
-                                 0.1249999925494194,
-                                 0.28500008583068848,
-                                 0.00048499999684281647,
-                                 0.00020799999765586108,
-                                 0.00033499998971819878,
-                                 0.00037200000951997936,
-                                 0.42500001192092896,
-                                 1.0,
-                                 0.0,
-                                 0.8599998950958252,
-                                 0.90500003099441528,
-                                 0.0,
-                                 1.0,
-                                 0.0,
-                                 0.0,
-                                 0.0,
-                                 1.0,
-                                 1.0};
+const static preset The90sAreBack{
+    0,                      // InputMix
+    0,                      // PreDelay
+    0,                      // HighPass
+    0.6750001311302185,     // LowPass
+    0,                      // TapCount
+    1,                      // TapLength
+    0,                      // TapGain
+    0.8650001287460327,     // TapDecay
+    1,                      // DiffusionEnabled
+    0.5714285969734192,     // DiffusionStages
+    0.7100000381469727,     // DiffusionDelay
+    0.5450003147125244,     // DiffusionFeedback
+    0.7272727489471436,     // LineCount
+    0.6849998831748962,     // LineDelay
+    0.6300000548362732,     // LineDecay
+    0,                      // LateDiffusionEnabled
+    0.2857142984867096,     // LateDiffusionStages
+    0.5449999570846558,     // LateDiffusionDelay
+    0.6599999666213989,     // LateDiffusionFeedback
+    0.5199999213218689,     // PostLowShelfGain
+    0.31499990820884705,    // PostLowShelfFrequency
+    0.8349999189376831,     // PostHighShelfGain
+    0.705000102519989,      // PostHighShelfFrequency
+    0.7349998354911804,     // PostCutoffFrequency
+    0.824999988079071,      // EarlyDiffusionModAmount
+    0.4050004780292511,     // EarlyDiffusionModRate
+    0.6300000548362732,     // LineModAmount
+    0.3199999928474426,     // LineModRate
+    0.619999885559082,      // LateDiffusionModAmount
+    0.30000022053718567,    // LateDiffusionModRate
+    0.0011500000255182385,  // TapSeed
+    0.00018899999849963933, // DiffusionSeed
+    0.0003370000049471855,  // DelaySeed
+    0.0005009999731555581,  // PostDiffusionSeed
+    0.7950000166893005,     // CrossSeed
+    0.9449997544288635,     // DryOut
+    0,                      // PredelayOut
+    0.7250000238418579,     // EarlyOut
+    0.6050001382827759,     // MainOut
+    0,                      // HiPassEnabled
+    1,                      // LowPassEnabled
+    0,                      // LowShelfEnabled
+    1,                      // HighShelfEnabled
+    0,                      // CutoffEnabled
+    1,                      // LateStageTap
+    1                       // Interpolation
+};
 
-const static preset The90sAreBack{0,
-                                  0,
-                                  0,
-                                  0.6750001311302185,
-                                  0,
-                                  1,
-                                  0,
-                                  0.8650001287460327,
-                                  1,
-                                  0.5714285969734192,
-                                  0.7100000381469727,
-                                  0.5450003147125244,
-                                  0.7272727489471436,
-                                  0.6849998831748962,
-                                  0.6300000548362732,
-                                  0,
-                                  0.2857142984867096,
-                                  0.5449999570846558,
-                                  0.6599999666213989,
-                                  0.5199999213218689,
-                                  0.31499990820884705,
-                                  0.8349999189376831,
-                                  0.705000102519989,
-                                  0.7349998354911804,
-                                  0.824999988079071,
-                                  0.4050004780292511,
-                                  0.6300000548362732,
-                                  0.3199999928474426,
-                                  0.619999885559082,
-                                  0.30000022053718567,
-                                  0.0011500000255182385,
-                                  0.00018899999849963933,
-                                  0.0003370000049471855,
-                                  0.0005009999731555581,
-                                  0.7950000166893005,
-                                  0.9449997544288635,
-                                  0,
-                                  0.7250000238418579,
-                                  0.6050001382827759,
-                                  0,
-                                  1,
-                                  0,
-                                  1,
-                                  0,
-                                  1,
-                                  1};
-
-const static preset ThroughTheLookingGlass = {0.0,
-                                              0.0,
-                                              0.0,
-                                              0.74000012874603271,
-                                              1.0,
-                                              1.0,
-                                              1.0,
-                                              0.71000003814697266,
-                                              1.0,
-                                              1.0,
-                                              0.65999996662139893,
-                                              0.76000010967254639,
-                                              1.0,
-                                              0.9100002646446228,
-                                              0.80999958515167236,
-                                              1.0,
-                                              1.0,
-                                              0.71499955654144287,
-                                              0.71999979019165039,
-                                              0.87999987602233887,
-                                              0.19499993324279785,
-                                              0.72000008821487427,
-                                              0.520000159740448,
-                                              0.7150002121925354,
-                                              0.41999998688697815,
-                                              0.30500012636184692,
-                                              0.4649999737739563,
-                                              0.3199998140335083,
-                                              0.40999993681907654,
-                                              0.31500011682510376,
-                                              0.0003009999927598983,
-                                              0.00018899999849963933,
-                                              0.0001610000035725534,
-                                              0.00050099997315555811,
-                                              1.0,
-                                              0.0,
-                                              0.0,
-                                              0.0,
-                                              0.95499974489212036,
-                                              0.0,
-                                              1.0,
-                                              0.0,
-                                              0.0,
-                                              1.0,
-                                              1.0,
-                                              1.0};
+const static preset ThroughTheLookingGlass = {
+    0.0,                    // InputMix
+    0.0,                    // PreDelay
+    0.0,                    // HighPass
+    0.74000012874603271,    // LowPass
+    1.0,                    // TapCount
+    1.0,                    // TapLength
+    1.0,                    // TapGain
+    0.71000003814697266,    // TapDecay
+    1.0,                    // DiffusionEnabled
+    1.0,                    // DiffusionStages
+    0.65999996662139893,    // DiffusionDelay
+    0.76000010967254639,    // DiffusionFeedback
+    1.0,                    // LineCount
+    0.9100002646446228,     // LineDelay
+    0.80999958515167236,    // LineDecay
+    1.0,                    // LateDiffusionEnabled
+    1.0,                    // LateDiffusionStages
+    0.71499955654144287,    // LateDiffusionDelay
+    0.71999979019165039,    // LateDiffusionFeedback
+    0.87999987602233887,    // PostLowShelfGain
+    0.19499993324279785,    // PostLowShelfFrequency
+    0.72000008821487427,    // PostHighShelfGain
+    0.520000159740448,      // PostHighShelfFrequency
+    0.7150002121925354,     // PostCutoffFrequency
+    0.41999998688697815,    // EarlyDiffusionModAmount
+    0.30500012636184692,    // EarlyDiffusionModRate
+    0.4649999737739563,     // LineModAmount
+    0.3199998140335083,     // LineModRate
+    0.40999993681907654,    // LateDiffusionModAmount
+    0.31500011682510376,    // LateDiffusionModRate
+    0.0003009999927598983,  // TapSeed
+    0.00018899999849963933, // DiffusionSeed
+    0.0001610000035725534,  // DelaySeed
+    0.00050099997315555811, // PostDiffusionSeed
+    1.0,                    // CrossSeed
+    0.0,                    // DryOut
+    0.0,                    // PredelayOut
+    0.0,                    // EarlyOut
+    0.95499974489212036,    // MainOut
+    0.0,                    // HiPassEnabled
+    1.0,                    // LowPassEnabled
+    0.0,                    // LowShelfEnabled
+    0.0,                    // HighShelfEnabled
+    1.0,                    // CutoffEnabled
+    1.0,                    // LateStageTap
+    1.0                     // Interpolation
+};
 
 const static struct preset presets[9] = {ChorusDelay, DullEchoes,        Hyperplane,
                                          MediumSpace, NoiseInTheHallway, RubiKaFields,
