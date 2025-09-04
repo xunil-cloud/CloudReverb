@@ -18,12 +18,13 @@ jobs:
         include:
           - name: Linux
             os: ubuntu-22.04
-            # extra-flags: -G Ninja
+            extra-config-flags:
           - name: macOS
             os: macos-14
-            # extra-flags: -G Ninja
+            extra-config-flags: -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
           - name: Windows
             os: windows-latest
+            extra-config-flags:
       fail-fast: false
 
     steps:
