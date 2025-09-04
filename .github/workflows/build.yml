@@ -19,12 +19,15 @@ jobs:
           - name: Linux
             os: ubuntu-22.04
             extra-config-flags:
+            pluginval-binary: ./pluginval
           - name: macOS
             os: macos-14
             extra-config-flags: -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+            pluginval-binary: pluginval.app/Contents/MacOS/pluginval
           - name: Windows
             os: windows-latest
             extra-config-flags:
+            pluginval-binary: ./pluginval.exe
       fail-fast: false
 
     steps:
@@ -58,6 +61,17 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE -j$(nproc --all)
 
+    - name: Set additional env vars for next steps
+      run: |
+        ARTIFACTS_PATH=${{ runner.worksapce }}/build/CloudReverb_artefacts/${{ env.BUILD_TYPE }}
+        echo "ARTIFACTS_PATH=$ARTIFACTS_PATH" >> $GITHUB_ENV
+        echo "VST3_PATH=$ARTIFACTS_PATH/VST3/CloudReverb.vst3" >> $GITHUB_ENV
+
+    - name: Run Pluginval
+      run: |
+        curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_${{ matrix.name }}.zip"
+        7z x pluginval_${{ matrix.name }}.zip
+        ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
     # - name: Test
     #   working-directory: ${{runner.workspace}}/build
     #   shell: bash
