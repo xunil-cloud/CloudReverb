@@ -63,7 +63,7 @@ jobs:
 
     - name: Set additional env vars for next steps
       run: |
-        ARTIFACTS_PATH=${{ runner.worksapce }}/build/CloudReverb_artefacts/${{ env.BUILD_TYPE }}
+        ARTIFACTS_PATH=${{ runner.workspace }}/build/CloudReverb_artefacts/${{ env.BUILD_TYPE }}
         echo "ARTIFACTS_PATH=$ARTIFACTS_PATH" >> $GITHUB_ENV
         echo "VST3_PATH=$ARTIFACTS_PATH/VST3/CloudReverb.vst3" >> $GITHUB_ENV
 
