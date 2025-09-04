@@ -62,6 +62,7 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE -j$(nproc --all)
 
     - name: Set additional env vars for next steps
+      shell: bash
       run: |
         ARTIFACTS_PATH=${{ runner.workspace }}/build/CloudReverb_artefacts/${{ env.BUILD_TYPE }}
         echo "ARTIFACTS_PATH=$ARTIFACTS_PATH" >> $GITHUB_ENV
