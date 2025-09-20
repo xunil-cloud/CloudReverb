@@ -23,7 +23,7 @@ jobs:
             os: macos-14
             # extra-flags: -G Ninja
           - name: Windows
-            os: windows-latest
+            os: windows-2022
       fail-fast: false
 
     steps:
