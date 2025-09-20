@@ -69,6 +69,7 @@ jobs:
         echo "VST3_PATH=$ARTIFACTS_PATH/VST3/CloudReverb.vst3" >> $GITHUB_ENV
 
     - name: Run Pluginval
+      shell: bash
       run: |
         curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_${{ matrix.name }}.zip"
         7z x pluginval_${{ matrix.name }}.zip
