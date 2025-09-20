@@ -37,7 +37,9 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: install packages
-      run: sudo apt-get install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libasound2-dev libfreetype-dev
+      run: |
+        sudo apt-get install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libasound2-dev libfreetype-dev xvfb
+        sudo /usr/bin/Xvfb $DISPLAY &
       if: matrix.os == 'ubuntu-22.04'
 
     - name: Create Build Environment
