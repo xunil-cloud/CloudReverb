@@ -24,6 +24,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Link to the MSVC runtime statically
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+# https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
+# Specify the minimum version of the target platform (e.g. macOS or iOS)
+# on which the target binaries are to be deployed.
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11 CACHE STRING "Build for MacOS 10.11")
+
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
 # included JUCE directly in your source tree (perhaps as a submodule), you'll need to tell CMake to
