@@ -82,9 +82,9 @@ const static preset ChorusDelay = {
     0.46999993920326233,    // LineModRate
     0.619999885559082,      // LateDiffusionModAmount
     0.42500019073486328,    // LateDiffusionModRate
-    0.0011500000255182385,  // TapSeed
-    0.00018899999849963933, // DiffusionSeed
-    0.00033700000494718552, // DelaySeed
+    0.001149,               // TapSeed
+    0.000188,               // DiffusionSeed
+    0.000336,               // DelaySeed
                             // 0.00050099997315555811,
     0.0005,                 // PostDiffusionSeed
     0.0,                    // CrossSeed
@@ -109,7 +109,7 @@ const static preset DullEchoes = {
     0.070000000298023224,   // PreDelay
     0.0,                    // HighPass
     0.29000008106231689,    // LowPass
-    0.36499997973442078,    // TapCount
+    0.346939,               // TapCount
     1.0,                    // TapLength
     0.83499991893768311,    // TapGain
     0.86500012874603271,    // TapDecay
@@ -135,15 +135,15 @@ const static preset DullEchoes = {
     0.26999998092651367,    // LineModRate
     0.13499975204467773,    // LateDiffusionModAmount
     0.27500006556510925,    // LateDiffusionModRate
-    0.0011500000255182385,  // TapSeed
-    0.00018899999849963933, // DiffusionSeed
-    0.0002730000123847276,  // DelaySeed
-    0.00050099997315555811, // PostDiffusionSeed
+    (1150 - 1) * 0.000'001,  // TapSeed
+    (189 - 1) * 0.000'001, // DiffusionSeed
+    (273 - 1) * 0.000'001,  // DelaySeed
+    (501 - 1) * 0.000'001, // PostDiffusionSeed
     0.5,                    // CrossSeed
     1.0,                    // DryOut
     0.0,                    // PredelayOut
-    0.77999997138977051,    // EarlyOut
-    0.74500006437301636,    // MainOut
+    0.624262,    // EarlyOut
+    0.570362,    // MainOut
     0.0,                    // HiPassEnabled
     1.0,                    // LowPassEnabled
     0.0,                    // LowShelfEnabled
@@ -184,15 +184,15 @@ const static preset Hyperplane = {
     0.44999989867210388,    // LineModRate
     0.15999998152256012,    // LateDiffusionModAmount
     0.56000012159347534,    // LateDiffusionModRate
-    0.00048499999684281647, // TapSeed
-    0.00020799999765586108, // DiffusionSeed
-    0.00034699999378062785, // DelaySeed
-    0.00037200000951997936, // PostDiffusionSeed
+    (485 - 1) * 0.000'001,  // TapSeed
+    (208 - 1) * 0.000'001, // DiffusionSeed
+    (347 - 1) * 0.000'001,  // DelaySeed
+    (372 - 1) * 0.000'001, // PostDiffusionSeed
     0.800000011920929,      // CrossSeed
     0.86500018835067749,    // DryOut
     0.0,                    // PredelayOut
-    0.8200000524520874,     // EarlyOut
-    0.79500007629394531,    // MainOut
+    0.688190,     // EarlyOut
+    0.647956,    // MainOut
     1.0,                    // HiPassEnabled
     1.0,                    // LowPassEnabled
     1.0,                    // LowShelfEnabled
@@ -233,15 +233,15 @@ const static preset MediumSpace = {
     0.21499986946582794,    // LineModRate
     0.17999963462352753,    // LateDiffusionModAmount
     0.38000011444091797,    // LateDiffusionModRate
-    0.0003009999927598983,  // TapSeed
-    0.00018899999849963933, // DiffusionSeed
-    0.0001610000035725534,  // DelaySeed
-    0.00050099997315555811, // PostDiffusionSeed
+    (301 - 1) * 0.000'001,  // TapSeed
+    (189 - 1) * 0.000'001, // DiffusionSeed
+    (161 - 1) * 0.000'001,  // DelaySeed
+    (501 - 1) * 0.000'001, // PostDiffusionSeed
     0.7850000262260437,     // CrossSeed
     1.0,                    // DryOut
     0.0,                    // PredelayOut
-    0.699999988079071,      // EarlyOut
-    0.84499984979629517,    // MainOut
+    0.504148,      // EarlyOut
+    0.729296,    // MainOut
     0.0,                    // HiPassEnabled
     1.0,                    // LowPassEnabled
     1.0,                    // LowShelfEnabled
@@ -282,15 +282,15 @@ const static preset NoiseInTheHallway = {
     0.0,                    // LineModRate
     0.0,                    // LateDiffusionModAmount
     0.0,                    // LateDiffusionModRate
-    0.0001140000022132881,  // TapSeed
-    0.000155999994603917,   // DiffusionSeed
-    0.00018099999579135329, // DelaySeed
-    8.4999999671708792E-05, // PostDiffusionSeed
+    (114 - 1) * 0.000'001,  // TapSeed
+    (156 - 1) * 0.000'001, // DiffusionSeed
+    (181 - 1) * 0.000'001,  // DelaySeed
+    (85 - 1) * 0.000'001, // PostDiffusionSeed
     1.0,                    // CrossSeed
     0.0,                    // DryOut
     0.0,                    // PredelayOut
-    0.64500010013580322,    // EarlyOut
-    0.63000005483627319,    // MainOut
+    0.428406,    // EarlyOut
+    0.408810,    // MainOut
     0.0,                    // HiPassEnabled
     1.0,                    // LowPassEnabled
     0.0,                    // LowShelfEnabled
@@ -330,15 +330,15 @@ const static preset RubiKaFields = {
     0.21499986946582794,    // LineModRate
     0.32499963045120239,    // LateDiffusionModAmount
     0.35500010848045349,    // LateDiffusionModRate
-    0.0003009999927598983,  // TapSeed
-    0.00018899999849963933, // DiffusionSeed
-    0.0001610000035725534,  // DelaySeed
-    0.00050099997315555811, // PostDiffusionSeed
+    (301 - 1) * 0.000'001,  // TapSeed
+    (189 - 1) * 0.000'001, // DiffusionSeed
+    (161 - 1) * 0.000'001,  // DelaySeed
+    (501 - 1) * 0.000'001, // PostDiffusionSeed
     0.43000003695487976,    // CrossSeed
-    0.88499999046325684,    // DryOut
+    0.796728,    // DryOut
     0.0,                    // PredelayOut
     0.0,                    // EarlyOut
-    0.90999990701675415,    // MainOut
+    0.839817,    // MainOut
     0.0,                    // HiPassEnabled
     0.0,                    // LowPassEnabled
     0.0,                    // LowShelfEnabled
@@ -379,15 +379,15 @@ const static preset SmallRoom = {
     0.22999987006187439,    // LineModRate
     0.1249999925494194,     // LateDiffusionModAmount
     0.28500008583068848,    // LateDiffusionModRate
-    0.00048499999684281647, // TapSeed
-    0.00020799999765586108, // DiffusionSeed
-    0.00033499998971819878, // DelaySeed
-    0.00037200000951997936, // PostDiffusionSeed
+    (485 - 1) * 0.000'001,  // TapSeed
+    (208 - 1) * 0.000'001, // DiffusionSeed
+    (335 - 1) * 0.000'001,  // DelaySeed
+    (372 - 1) * 0.000'001, // PostDiffusionSeed
     0.42500001192092896,    // CrossSeed
     1.0,                    // DryOut
     0.0,                    // PredelayOut
-    0.8599998950958252,     // EarlyOut
-    0.90500003099441528,    // MainOut
+    0.754354,     // EarlyOut
+    0.831145,    // MainOut
     0.0,                    // HiPassEnabled
     1.0,                    // LowPassEnabled
     0.0,                    // LowShelfEnabled
@@ -428,15 +428,15 @@ const static preset The90sAreBack{
     0.3199999928474426,     // LineModRate
     0.619999885559082,      // LateDiffusionModAmount
     0.30000022053718567,    // LateDiffusionModRate
-    0.0011500000255182385,  // TapSeed
-    0.00018899999849963933, // DiffusionSeed
-    0.0003370000049471855,  // DelaySeed
-    0.0005009999731555581,  // PostDiffusionSeed
+    (1150 - 1) * 0.000'001,  // TapSeed
+    (189 - 1) * 0.000'001, // DiffusionSeed
+    (337 - 1) * 0.000'001,  // DelaySeed
+    (501 - 1) * 0.000'001, // PostDiffusionSeed
     0.7950000166893005,     // CrossSeed
-    0.9449997544288635,     // DryOut
+    0.901234,     // DryOut
     0,                      // PredelayOut
-    0.7250000238418579,     // EarlyOut
-    0.6050001382827759,     // MainOut
+    0.540487,     // EarlyOut
+    0.377209,     // MainOut
     0,                      // HiPassEnabled
     1,                      // LowPassEnabled
     0,                      // LowShelfEnabled
@@ -477,15 +477,15 @@ const static preset ThroughTheLookingGlass = {
     0.3199998140335083,     // LineModRate
     0.40999993681907654,    // LateDiffusionModAmount
     0.31500011682510376,    // LateDiffusionModRate
-    0.0003009999927598983,  // TapSeed
-    0.00018899999849963933, // DiffusionSeed
-    0.0001610000035725534,  // DelaySeed
-    0.00050099997315555811, // PostDiffusionSeed
+    (301 - 1) * 0.000'001,  // TapSeed
+    (189 - 1) * 0.000'001, // DiffusionSeed
+    (161 - 1) * 0.000'001,  // DelaySeed
+    (501 - 1) * 0.000'001, // PostDiffusionSeed
     1.0,                    // CrossSeed
     0.0,                    // DryOut
     0.0,                    // PredelayOut
     0.0,                    // EarlyOut
-    0.95499974489212036,    // MainOut
+    0.918997,    // MainOut
     0.0,                    // HiPassEnabled
     1.0,                    // LowPassEnabled
     0.0,                    // LowShelfEnabled
