@@ -65,7 +65,7 @@ const static preset ChorusDelay = {
     0.43500006198883057,    // DiffusionDelay
     0.725000262260437,      // DiffusionFeedback
     1.0,                    // LineCount
-    0.68499988317489624,    // LineDelay
+    0.684854,    // LineDelay
     0.68000012636184692,    // LineDecay
     1.0,                    // LateDiffusionEnabled
     0.28571429848670959,    // LateDiffusionStages
@@ -118,11 +118,11 @@ const static preset DullEchoes = {
     0.43500006198883057,    // DiffusionDelay
     0.725000262260437,      // DiffusionFeedback
     1.0,                    // LineCount
-    0.34500002861022949,    // LineDelay
+    0.342368,    // LineDelay
     0.41500008106231689,    // LineDecay
     0.0,                    // LateDiffusionEnabled
     0.57142859697341919,    // LateDiffusionStages
-    0.66499996185302734,    // LateDiffusionDelay
+    (70 - 10) /  90.f,    // LateDiffusionDelay
     0.61000001430511475,    // LateDiffusionFeedback
     0.5199999213218689,     // PostLowShelfGain
     0.31499990820884705,    // PostLowShelfFrequency
@@ -159,19 +159,19 @@ const static preset Hyperplane = {
     0.57999998331069946,    // HighPass
     0.9100000262260437,     // LowPass
     0.41499990224838257,    // TapCount
-    0.43999996781349182,    // TapLength
+    219 / 500.f,    // TapLength
     1.0,                    // TapGain
     1.0,                    // TapDecay
     1.0,                    // DiffusionEnabled
     0.4285714328289032,     // DiffusionStages
-    0.27500024437904358,    // DiffusionDelay
+    (34 - 10) /  90.f,    // DiffusionDelay
     0.660000205039978,      // DiffusionFeedback
     0.72727274894714355,    // LineCount
-    0.22500017285346985,    // LineDelay
+    0.224999,    // LineDelay
     0.794999897480011,      // LineDecay
     1.0,                    // LateDiffusionEnabled
     1.0,                    // LateDiffusionStages
-    0.22999951243400574,    // LateDiffusionDelay
+    (30 - 10) /  90.f,    // LateDiffusionDelay
     0.59499990940093994,    // LateDiffusionFeedback
     0.95999979972839355,    // PostLowShelfGain
     0.23999994993209839,    // PostLowShelfFrequency
@@ -189,7 +189,7 @@ const static preset Hyperplane = {
     (347 - 1) * 0.000'001,  // DelaySeed
     (372 - 1) * 0.000'001, // PostDiffusionSeed
     0.800000011920929,      // CrossSeed
-    0.86500018835067749,    // DryOut
+    0.762768,    // DryOut
     0.0,                    // PredelayOut
     0.688190,     // EarlyOut
     0.647956,    // MainOut
@@ -216,11 +216,11 @@ const static preset MediumSpace = {
     0.5700000524520874,     // DiffusionDelay
     0.76000010967254639,    // DiffusionFeedback
     0.18181818723678589,    // LineCount
-    0.585000216960907,      // LineDelay
+    0.584231,      // LineDelay
     0.29499980807304382,    // LineDecay
     1.0,                    // LateDiffusionEnabled
     0.57142859697341919,    // LateDiffusionStages
-    0.69499951601028442,    // LateDiffusionDelay
+    (72 - 10) / 90.f, // LateDiffusionDelay
     0.71499985456466675,    // LateDiffusionFeedback
     0.87999987602233887,    // PostLowShelfGain
     0.19499993324279785,    // PostLowShelfFrequency
@@ -262,14 +262,14 @@ const static preset NoiseInTheHallway = {
     0.830000102519989,      // TapDecay
     1.0,                    // DiffusionEnabled
     0.28571429848670959,    // DiffusionStages
-    0.35499998927116394,    // DiffusionDelay
+    (41 - 10) / 90.f,    // DiffusionDelay
     0.62500005960464478,    // DiffusionFeedback
     0.63636362552642822,    // LineCount
-    0.36000004410743713,    // LineDelay
+    0.359784,    // LineDelay
     0.51000005006790161,    // LineDecay
     1.0,                    // LateDiffusionEnabled
     0.0,                    // LateDiffusionStages
-    0.62999987602233887,    // LateDiffusionDelay
+    (66 - 10) / 90.f,    // LateDiffusionDelay
     0.49000000953674316,    // LateDiffusionFeedback
     0.0,                    // PostLowShelfGain
     0.0,                    // PostLowShelfFrequency
@@ -313,11 +313,11 @@ const static preset RubiKaFields = {
     0.5700000524520874,     // DiffusionDelay
     0.76000010967254639,    // DiffusionFeedback
     0.27272728085517883,    // LineCount
-    0.68500018119812012,    // LineDelay
+    0.684854,    // LineDelay
     0.82999974489212036,    // LineDecay
     1.0,                    // LateDiffusionEnabled
     0.71428573131561279,    // LateDiffusionStages
-    0.69499951601028442,    // LateDiffusionDelay
+    (72 - 10) / 90.f,    // LateDiffusionDelay
     0.71499985456466675,    // LateDiffusionFeedback
     0.87999987602233887,    // PostLowShelfGain
     0.19499993324279785,    // PostLowShelfFrequency
@@ -354,7 +354,7 @@ const static preset SmallRoom = {
     0.0,                    // HighPass
     0.755000114440918,      // LowPass
     0.41499990224838257,    // TapCount
-    0.43999996781349182,    // TapLength
+    219 / 500.f,    // TapLength
     0.87999999523162842,    // TapGain
     1.0,                    // TapDecay
     1.0,                    // DiffusionEnabled
@@ -362,11 +362,11 @@ const static preset SmallRoom = {
     0.335000216960907,      // DiffusionDelay
     0.660000205039978,      // DiffusionFeedback
     0.18181818723678589,    // LineCount
-    0.51000016927719116,    // LineDelay
+    0.508410,    // LineDelay
     0.29999998211860657,    // LineDecay
     1.0,                    // LateDiffusionEnabled
     0.4285714328289032,     // LateDiffusionStages
-    0.22999951243400574,    // LateDiffusionDelay
+    (30 - 10) / 90.f,    // LateDiffusionDelay
     0.59499990940093994,    // LateDiffusionFeedback
     0.87999987602233887,    // PostLowShelfGain
     0.19499993324279785,    // PostLowShelfFrequency
@@ -408,10 +408,10 @@ const static preset The90sAreBack{
     0.8650001287460327,     // TapDecay
     1,                      // DiffusionEnabled
     0.5714285969734192,     // DiffusionStages
-    0.7100000381469727,     // DiffusionDelay
+    (73 - 10) / 90.f,     // DiffusionDelay
     0.5450003147125244,     // DiffusionFeedback
     0.7272727489471436,     // LineCount
-    0.6849998831748962,     // LineDelay
+    0.684854,     // LineDelay
     0.6300000548362732,     // LineDecay
     0,                      // LateDiffusionEnabled
     0.2857142984867096,     // LateDiffusionStages
@@ -460,7 +460,7 @@ const static preset ThroughTheLookingGlass = {
     0.65999996662139893,    // DiffusionDelay
     0.76000010967254639,    // DiffusionFeedback
     1.0,                    // LineCount
-    0.9100002646446228,     // LineDelay
+    0.909960,     // LineDelay
     0.80999958515167236,    // LineDecay
     1.0,                    // LateDiffusionEnabled
     1.0,                    // LateDiffusionStages
