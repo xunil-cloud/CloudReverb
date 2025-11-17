@@ -20,14 +20,17 @@ jobs:
             os: ubuntu-22.04
             extra-config-flags:
             pluginval-binary: ./pluginval
+            arch: -x86_64
           - name: macOS
             os: macos-14
             extra-config-flags: -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
             pluginval-binary: pluginval.app/Contents/MacOS/pluginval
+            arch: ''
           - name: Windows
             os: windows-latest
             extra-config-flags:
             pluginval-binary: ./pluginval.exe
+            arch: -x86_64
       fail-fast: false
 
     steps:
@@ -87,7 +90,7 @@ jobs:
     - name: Archive all artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: CloudReverb-${{github.ref_name}}-${{matrix.name}}-x86_64
+        name: CloudReverb-${{github.ref_name}}-${{matrix.name}}${{matrix.arch}}
         path: |
           ${{runner.workspace}}/build/CloudReverb_artefacts/${{env.BUILD_TYPE}}
           !${{runner.workspace}}/build/CloudReverb_artefacts/${{env.BUILD_TYPE}}/*CloudReverb_SharedCode*
