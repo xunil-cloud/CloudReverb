@@ -91,6 +91,8 @@ public:
     bool isBusesLayoutSupported(const BusesLayout &layouts) const override;
 
     void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
+    void processBlockBypassed(juce::AudioBuffer<float> &buffer,
+                              juce::MidiBuffer &midiMessages) override;
 
     //==============================================================================
     juce::AudioProcessorEditor *createEditor() override;
@@ -129,6 +131,7 @@ public:
 
 private:
     CloudSeed::ReverbController reverb;
+    bool is_bypassed{false};
 
     moodycamel::ConcurrentQueue<Message> queue;
 

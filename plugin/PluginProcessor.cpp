@@ -177,6 +177,12 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 {
     juce::ignoreUnused(midiMessages);
 
+    if (is_bypassed)
+    {
+        DBG("Processing resumed");
+        is_bypassed = false;
+    }
+
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -194,6 +200,17 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     const float *const *in_sig = buffer.getArrayOfReadPointers();
     float *const *out_sig = buffer.getArrayOfWritePointers();
     reverb.Process(in_sig, out_sig, buffer.getNumSamples());
+}
+
+void AudioPluginAudioProcessor::processBlockBypassed(juce::AudioBuffer<float> &buffer,
+                                                     juce::MidiBuffer &midiMessages)
+{
+    if (!is_bypassed)
+    {
+        DBG("Processing bypassed");
+        is_bypassed = true;
+    }
+    juce::AudioProcessor::processBlockBypassed(buffer, midiMessages);
 }
 
 //==============================================================================
