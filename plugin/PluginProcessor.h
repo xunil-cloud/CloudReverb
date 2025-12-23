@@ -66,10 +66,7 @@ public:
 
 private:
     std::atomic<uint32_t> counter{0};
-    struct ui_state m_state
-    {
-        0, 0, 1
-    };
+    struct ui_state m_state{0, 0, 1};
 };
 class AudioPluginAudioProcessorEditor;
 

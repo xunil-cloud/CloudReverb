@@ -297,7 +297,7 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new AudioPlugi
 #define TO_TEXT_IN_DB(numberOfDecimalPlaces)                                                       \
     [](float value, int) {                                                                         \
         return value == 0 ? "0"                                                                    \
-                          : juce::String(20 * log10(value), numberOfDecimalPlaces) + " " + "dB";     \
+                          : juce::String(20 * log10(value), numberOfDecimalPlaces) + " " + "dB";   \
     }
 
 #define MAKE_NORMALISABLE_RANGE_FLOAT(START, END, P)                                               \
