@@ -124,8 +124,8 @@ public:
 
     void ClearBuffers()
     {
-        Utils::ZeroBuffer(buffer, bufferSize);
-        Utils::ZeroBuffer(output, maxDelaySamples);
+        Utils::ZeroBuffer(buffer, maxDelaySamples);
+        Utils::ZeroBuffer(output, bufferSize);
     }
     void prepare(int sampleRate, int bufferSize)
     {
