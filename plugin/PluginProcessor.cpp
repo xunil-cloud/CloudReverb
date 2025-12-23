@@ -191,6 +191,9 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     for (auto i = 2; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
+    if (totalNumInputChannels == 1 && totalNumOutputChannels == 2)
+        buffer.clear(1, 0, buffer.getNumSamples());
+
     Message message;
     while (queue.try_dequeue(message))
     {
@@ -199,7 +202,14 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     // real dsp
     const float *const *in_sig = buffer.getArrayOfReadPointers();
     float *const *out_sig = buffer.getArrayOfWritePointers();
-    reverb.Process(in_sig, out_sig, buffer.getNumSamples());
+    if (totalNumInputChannels == 2 && totalNumOutputChannels == 2)
+    {
+        reverb.Process(in_sig, out_sig, buffer.getNumSamples());
+    }
+    else if (totalNumInputChannels >= 1 && totalNumOutputChannels >= 1)
+    {
+        reverb.ProcessMono(in_sig, out_sig, buffer.getNumSamples());
+    }
 }
 
 void AudioPluginAudioProcessor::processBlockBypassed(juce::AudioBuffer<float> &buffer,

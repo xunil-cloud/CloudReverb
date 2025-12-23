@@ -239,6 +239,25 @@ public:
             output[1][i] = rightOut[i];
         }
     }
+
+    void ProcessMono(const float *const *input, float *const *output, int bufferSize)
+    {
+        auto len = bufferSize;
+
+        for (int i = 0; i < len; i++)
+        {
+            leftChannelIn[i] = input[0][i];
+        }
+
+        channelL.Process(leftChannelIn, len);
+        channelR.ClearBuffers();
+        auto leftOut = channelL.GetOutput();
+
+        for (int i = 0; i < len; i++)
+        {
+            output[0][i] = leftOut[i];
+        }
+    }
     void prepare(int sampleRate, int bufferSize)
     {
         this->bufferSize = bufferSize;
