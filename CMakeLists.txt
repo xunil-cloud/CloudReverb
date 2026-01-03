@@ -19,7 +19,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11 CACHE STRING "Build for MacOS 10.11")
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(CloudReverb VERSION 0.4)
+project(CloudReverb VERSION 0.4.1)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
