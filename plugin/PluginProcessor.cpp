@@ -219,6 +219,7 @@ void AudioPluginAudioProcessor::processBlockBypassed(juce::AudioBuffer<float> &b
     {
         DBG("Processing bypassed");
         is_bypassed = true;
+        reverb.ClearBuffers();
     }
     juce::AudioProcessor::processBlockBypassed(buffer, midiMessages);
 }
