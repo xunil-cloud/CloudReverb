@@ -115,6 +115,7 @@ public:
     void setStateInformation(const void *data, int sizeInBytes) override;
     void setPreset(cloudPresets::preset preset) const;
     void handleAsyncUpdate() override;
+    void reset() override;
     juce::AudioProcessorValueTreeState treeState;
 
     std::unordered_map<juce::String, Parameter> map;

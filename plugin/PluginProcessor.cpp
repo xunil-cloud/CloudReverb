@@ -566,6 +566,11 @@ void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset) const
     treeState.getParameter("Interpolation")->setValueNotifyingHost(preset.Interpolation);
 }
 
+void AudioPluginAudioProcessor::reset()
+{
+    DBG("Reset CloudReverb plugin");
+    reverb.ClearBuffers();
+}
 void AudioPluginAudioProcessor::handleAsyncUpdate()
 {
     AudioPluginAudioProcessorEditor *editor =
