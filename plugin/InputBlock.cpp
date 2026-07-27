@@ -23,7 +23,7 @@ InputBlock::InputBlock(const juce::String &name, const juce::AudioProcessorValue
 
 void InputBlock::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colour(0xff343434));
+    Block::paint(g);
     layout.drawTitle(g, getName(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());

@@ -11,6 +11,10 @@
 class Header : public Block
 {
 public:
+    static constexpr int commandInitPreset = 1001;
+    static constexpr int commandSavePreset = 1002;
+    static constexpr int commandLoadPreset = 1003;
+
     Header(const juce::String &, const juce::AudioProcessorValueTreeState &);
     void resized() override;
     void paint(juce::Graphics &) override;

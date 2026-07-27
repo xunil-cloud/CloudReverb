@@ -1,9 +1,145 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4702 4244 4305 4458 4100)
+#endif
+
 #include "PluginProcessor.h"
 
 #include "../audio_engine/AudioLib/ValueTables.h"
 #include "../audio_engine/FastSin.h"
 #include "PluginEditor.h"
+#include <cmath>
+#include <cstdint>
+
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
+namespace
+{
+    bool shouldSmoothParameter(Parameter parameter)
+    {
+        switch (parameter)
+        {
+        case Parameter::InputMix:
+        case Parameter::PreDelay:
+        case Parameter::TapLength:
+        case Parameter::TapGain:
+        case Parameter::TapDecay:
+        case Parameter::DiffusionDelay:
+        case Parameter::DiffusionFeedback:
+        case Parameter::LineDelay:
+        case Parameter::LineDecay:
+        case Parameter::LateDiffusionDelay:
+        case Parameter::LateDiffusionFeedback:
+        case Parameter::PostLowShelfGain:
+        case Parameter::PostLowShelfFrequency:
+        case Parameter::PostHighShelfGain:
+        case Parameter::PostHighShelfFrequency:
+        case Parameter::PostCutoffFrequency:
+        case Parameter::EarlyDiffusionModAmount:
+        case Parameter::EarlyDiffusionModRate:
+        case Parameter::LineModAmount:
+        case Parameter::LineModRate:
+        case Parameter::LateDiffusionModAmount:
+        case Parameter::LateDiffusionModRate:
+        case Parameter::CrossSeed:
+        case Parameter::DryOut:
+        case Parameter::PredelayOut:
+        case Parameter::EarlyOut:
+        case Parameter::MainOut:
+        case Parameter::WidthOut:
+            return true;
+
+        default:
+            return false;
+        }
+    }
+
+    double getSmoothingTimeSeconds(Parameter parameter)
+    {
+        switch (parameter)
+        {
+        case Parameter::PreDelay:
+        case Parameter::TapLength:
+        case Parameter::DiffusionDelay:
+        case Parameter::LineDelay:
+        case Parameter::LateDiffusionDelay:
+            return 0.045; // delay-time moves are the highest click risk
+
+        case Parameter::LineDecay:
+        case Parameter::DiffusionFeedback:
+        case Parameter::LateDiffusionFeedback:
+            return 0.035;
+
+        case Parameter::DryOut:
+        case Parameter::PredelayOut:
+        case Parameter::EarlyOut:
+        case Parameter::MainOut:
+        case Parameter::WidthOut:
+        case Parameter::InputMix:
+            return 0.020;
+
+        default:
+            return 0.025;
+        }
+    }
+}
+
+AudioPluginAudioProcessor::CpuPath AudioPluginAudioProcessor::detectCpuPath()
+{
+#if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_IX86))
+    int regs[4] = {0, 0, 0, 0};
+    __cpuidex(regs, 0, 0);
+    const int maxLeaf = regs[0];
+
+    if (maxLeaf >= 1)
+    {
+        __cpuidex(regs, 1, 0);
+        const bool hasSSE2 = (regs[3] & (1 << 26)) != 0;
+        const bool hasOSXSAVE = (regs[2] & (1 << 27)) != 0;
+        const bool hasAVX = (regs[2] & (1 << 28)) != 0;
+
+        if (hasOSXSAVE && hasAVX && maxLeaf >= 7)
+        {
+            const auto xcr0 = _xgetbv(0);
+            const bool osSavesYMM = (xcr0 & 0x6) == 0x6;
+
+            if (osSavesYMM)
+            {
+                __cpuidex(regs, 7, 0);
+                const bool hasAVX2 = (regs[1] & (1 << 5)) != 0;
+                if (hasAVX2)
+                    return CpuPath::AVX2;
+            }
+        }
+
+        if (hasSSE2)
+            return CpuPath::SSE2;
+    }
+#elif defined(__GNUC__) && (defined(__x86_64__) || defined(__i386__))
+    __builtin_cpu_init();
+    if (__builtin_cpu_supports("avx2"))
+        return CpuPath::AVX2;
+    if (__builtin_cpu_supports("sse2"))
+        return CpuPath::SSE2;
+#endif
+
+    return CpuPath::Scalar;
+}
+
+const char *AudioPluginAudioProcessor::getCpuPathName(CpuPath path)
+{
+    switch (path)
+    {
+    case CpuPath::AVX2:
+        return "AVX2";
+    case CpuPath::SSE2:
+        return "SSE2";
+    default:
+        return "Scalar";
+    }
+}
 
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
@@ -15,23 +151,34 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
                          ),
-      treeState(*this, nullptr, juce::Identifier("CloudReverb"), createParameterLayout()),
+      treeState(*this, &undoManager, juce::Identifier("CloudReverb"), createParameterLayout()),
       reverb(48000)
 {
     AudioLib::ValueTables::Init();
     CloudSeed::FastSin::Init();
+
+    cpuPath = detectCpuPath();
+    DBG("CloudReverb CPU path detected: " << getCpuPathName(cpuPath));
+
     reverb.ClearBuffers(); // clear buffers before we start do dsp stuff.
 
     for (auto param : getParameters())
     {
-        auto paramWithID = dynamic_cast<juce::AudioProcessorParameterWithID *>(param);
-        treeState.addParameterListener(paramWithID->paramID, this);
+        if (auto paramWithID = dynamic_cast<juce::AudioProcessorParameterWithID *>(param))
+        {
+            treeState.addParameterListener(paramWithID->paramID, this);
+            if (auto rangedParam = dynamic_cast<juce::RangedAudioParameter *>(param))
+            {
+                paramCache[paramWithID->paramID] = rangedParam;
+            }
+        }
     }
 
     map.insert({"InputMix", Parameter::InputMix});
     map.insert({"PreDelay", Parameter::PreDelay});
     map.insert({"HighPass", Parameter::HighPass});
     map.insert({"LowPass", Parameter::LowPass});
+    map.insert({"TapEnabled", Parameter::TapEnabled});
     map.insert({"TapCount", Parameter::TapCount});
     map.insert({"TapLength", Parameter::TapLength});
     map.insert({"TapGain", Parameter::TapGain});
@@ -40,6 +187,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     map.insert({"DiffusionStages", Parameter::DiffusionStages});
     map.insert({"DiffusionDelay", Parameter::DiffusionDelay});
     map.insert({"DiffusionFeedback", Parameter::DiffusionFeedback});
+    map.insert({"LateDelayEnabled", Parameter::LateDelayEnabled});
     map.insert({"LineCount", Parameter::LineCount});
     map.insert({"LineDelay", Parameter::LineDelay});
     map.insert({"LineDecay", Parameter::LineDecay});
@@ -67,6 +215,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     map.insert({"PredelayOut", Parameter::PredelayOut});
     map.insert({"EarlyOut", Parameter::EarlyOut});
     map.insert({"MainOut", Parameter::MainOut});
+    map.insert({"Width", Parameter::WidthOut});
     map.insert({"HiPassEnabled", Parameter::HiPassEnabled});
     map.insert({"LowPassEnabled", Parameter::LowPassEnabled});
     map.insert({"LowShelfEnabled", Parameter::LowShelfEnabled});
@@ -77,6 +226,11 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 
     // https://github.com/ValdemarOrn/CloudSeed/blob/master/Factory%20Programs/Chorus%20Delay.json
     setPreset(cloudPresets::ChorusDelay);
+
+    for (auto &pair : paramCache)
+    {
+        parameterChanged(pair.first, pair.second->convertFrom0to1(pair.second->getValue()));
+    }
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor() {}
@@ -142,6 +296,11 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     juce::ignoreUnused(samplesPerBlock);
     reverb.prepare(sampleRate, samplesPerBlock);
     reverb.SetSamplerate(sampleRate);
+    presetTransitionRequested.store(false, std::memory_order_release);
+    presetFadeInSamplesRemaining = 0;
+    presetFadeInSamplesTotal = 0;
+    smartIdleActive = false;
+    smartIdleSilentSamples = 0;
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -194,21 +353,160 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     if (totalNumInputChannels == 1 && totalNumOutputChannels == 2)
         buffer.clear(1, 0, buffer.getNumSamples());
 
+    const auto numSamples = buffer.getNumSamples();
+    constexpr float sleepInputThreshold = 1.0e-7f;
+    constexpr float sleepOutputThreshold = 1.0e-6f; // about -120 dBFS, faster tail-safe sleep
+    constexpr float wakeInputThreshold = 3.0e-7f;
+    constexpr double smartIdleHoldSeconds = 0.75;   // shorter hold after tail is inaudible
+
+    float inputPeak = 0.0f;
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+        inputPeak = juce::jmax(inputPeak, buffer.getMagnitude(channel, 0, numSamples));
+
+    if (presetTransitionRequested.exchange(false, std::memory_order_acq_rel))
+    {
+        reverb.ClearBuffers();
+        const auto fadeMs = juce::jlimit(5, 100, presetTransitionFadeMs.exchange(50, std::memory_order_acq_rel));
+        presetFadeInSamplesTotal = juce::jmax(32, (int)(getSampleRate() * (fadeMs / 1000.0)));
+        presetFadeInSamplesRemaining = presetFadeInSamplesTotal;
+    }
+
+    bool immediateDirty[parameterCount] = { false };
+    Message immediateParams[parameterCount];
+
     Message message;
     while (queue.try_dequeue(message))
     {
-        reverb.updateParameter(message.param, message.newScaledValue, message.newNormalisedValue);
+        const int pIndex = static_cast<int>(message.param);
+        if (pIndex < 0 || pIndex >= parameterCount)
+            continue;
+
+        targetParams[pIndex] = message;
+
+        if (!shouldSmoothParameter(message.param))
+        {
+            smoothedParams[pIndex] = message;
+            smootherInitialised[pIndex] = true;
+            smoothingSamplesRemaining[pIndex] = 0;
+            immediateParams[pIndex] = message;
+            immediateDirty[pIndex] = true;
+            continue;
+        }
+
+        if (!smootherInitialised[pIndex])
+        {
+            // First boot/restore value: apply immediately so the default preset is exact.
+            smoothedParams[pIndex] = message;
+            smootherInitialised[pIndex] = true;
+            smoothingSamplesRemaining[pIndex] = 0;
+            immediateParams[pIndex] = message;
+            immediateDirty[pIndex] = true;
+        }
+        else
+        {
+            const auto smoothingSamples = juce::jmax(1, (int)std::round(getSampleRate() * getSmoothingTimeSeconds(message.param)));
+            smoothingSamplesRemaining[pIndex] = smoothingSamples;
+        }
     }
+
+    for (int i = 0; i < parameterCount; ++i)
+    {
+        if (immediateDirty[i])
+            reverb.updateParameter(immediateParams[i].param,
+                                   immediateParams[i].newScaledValue,
+                                   immediateParams[i].newNormalisedValue);
+    }
+
+    const auto blockSamples = buffer.getNumSamples();
+    bool parameterSmoothingActive = false;
+    for (int i = 0; i < parameterCount; ++i)
+    {
+        auto remaining = smoothingSamplesRemaining[i];
+        if (remaining <= 0)
+            continue;
+
+        parameterSmoothingActive = true;
+        const auto samplesThisStep = juce::jmin(blockSamples, remaining);
+        const auto alpha = (float)samplesThisStep / (float)remaining;
+
+        auto &current = smoothedParams[i];
+        const auto &target = targetParams[i];
+        current.param = target.param;
+        current.newScaledValue += (target.newScaledValue - current.newScaledValue) * alpha;
+        current.newNormalisedValue += (target.newNormalisedValue - current.newNormalisedValue) * alpha;
+
+        remaining -= samplesThisStep;
+        if (remaining <= 0)
+        {
+            current = target; // exact final value, preserving the original settled reverb tone
+            remaining = 0;
+        }
+
+        smoothingSamplesRemaining[i] = remaining;
+        reverb.updateParameter(current.param, current.newScaledValue, current.newNormalisedValue);
+    }
+
+    if (smartIdleActive)
+    {
+        if (inputPeak < wakeInputThreshold)
+        {
+            buffer.clear();
+            return;
+        }
+
+        smartIdleActive = false;
+        smartIdleSilentSamples = 0;
+    }
+
     // real dsp
     const float *const *in_sig = buffer.getArrayOfReadPointers();
     float *const *out_sig = buffer.getArrayOfWritePointers();
     if (totalNumInputChannels == 2 && totalNumOutputChannels == 2)
     {
-        reverb.Process(in_sig, out_sig, buffer.getNumSamples());
+        reverb.Process(in_sig, out_sig, numSamples);
     }
     else if (totalNumInputChannels >= 1 && totalNumOutputChannels >= 1)
     {
-        reverb.ProcessMono(in_sig, out_sig, buffer.getNumSamples());
+        reverb.ProcessMono(in_sig, out_sig, numSamples);
+    }
+
+    if (presetFadeInSamplesRemaining > 0 && presetFadeInSamplesTotal > 0)
+    {
+        const auto samples = numSamples;
+        for (int sample = 0; sample < samples && presetFadeInSamplesRemaining > 0; ++sample)
+        {
+            const auto gain = 1.0f - (float)presetFadeInSamplesRemaining / (float)presetFadeInSamplesTotal;
+            for (int channel = 0; channel < totalNumOutputChannels; ++channel)
+                buffer.setSample(channel, sample, buffer.getSample(channel, sample) * gain);
+            --presetFadeInSamplesRemaining;
+        }
+    }
+
+    float outputPeak = 0.0f;
+    for (int channel = 0; channel < totalNumOutputChannels; ++channel)
+        outputPeak = juce::jmax(outputPeak, buffer.getMagnitude(channel, 0, numSamples));
+
+    if (inputPeak < sleepInputThreshold
+        && outputPeak < sleepOutputThreshold
+        && !parameterSmoothingActive
+        && presetFadeInSamplesRemaining <= 0)
+    {
+        smartIdleSilentSamples += numSamples;
+        const auto requiredSilentSamples = juce::jmax(1, (int)(getSampleRate() * smartIdleHoldSeconds));
+
+        if (smartIdleSilentSamples >= requiredSilentSamples)
+        {
+            // Safe point: both input and output tail are below the inaudible threshold
+            // for a sustained period. Clearing now should not be audible.
+            smartIdleActive = true;
+            smartIdleSilentSamples = requiredSilentSamples;
+            reverb.ClearBuffers();
+            buffer.clear();
+        }
+    }
+    else
+    {
+        smartIdleSilentSamples = 0;
     }
 }
 
@@ -255,6 +553,7 @@ void AudioPluginAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     ui_state->setAttribute("presetID", state.preset_id);
     ui_state->setAttribute("width", state.width);
     ui_state->setAttribute("height", state.height);
+    ui_state->setAttribute("presetName", currentPresetDisplayName);
     DBG("store state");
     // std::cout << xml->toString();
     copyXmlToBinary(*xml, destData);
@@ -275,6 +574,7 @@ void AudioPluginAudioProcessor::setStateInformation(const void *data, int sizeIn
             ui_state->getIntAttribute("presetID", 1),
         };
         this->state.set_state(&state);
+        currentPresetDisplayName = ui_state->getStringAttribute("presetName", {});
     }
     DBG("restore state");
     // std::cout << xmlState->toString();
@@ -342,6 +642,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto LowPass = MAKE_PARAMETER_FLOAT(LowPass, 400.0f, 20000.0f, 20000.0f, 16, Hz);
 
+    auto TapEnabled =
+        std::make_unique<juce::AudioParameterBool>("TapEnabled", "TapEnabled", true);
+
     auto TapCount = MAKE_PARAMETER_INT(TapCount, 1, 50, 1, taps);
 
     auto TapLength = MAKE_PARAMETER_INT(TapLength, 0, 500, 0, ms);
@@ -359,11 +662,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
     auto DiffusionFeedback = MAKE_PARAMETER_LINEAR_FLOAT(DiffusionFeedback, 0.f, 1.f, 0.f, );
 
+    auto LateDelayEnabled =
+        std::make_unique<juce::AudioParameterBool>("LateDelayEnabled", "LateDelayEnabled", true);
+
     auto LineCount = MAKE_PARAMETER_INT(LineCount, 1, 12, 1, parallel delay);
 
-    auto LineDelay = MAKE_PARAMETER_FLOAT(LineDelay, 20.0f, 1000.0f, 20.f, 100, ms);
+    auto LineDelay = std::make_unique<juce::AudioParameterFloat>(
+        "LineDelay", "LateDelay", MAKE_NORMALISABLE_RANGE_FLOAT(20.0f, 1000.0f, 100),
+        20.f, juce::String(), juce::AudioProcessorParameter::genericParameter,
+        FLOAT_TO_TEXT(2, ms));
 
-    auto LineDecay = MAKE_PARAMETER_FLOAT(LineDecay, 0.05f, 60.f, 1.f, 1000, s);
+    auto LineDecay = std::make_unique<juce::AudioParameterFloat>(
+        "LineDecay", "LateDecay", MAKE_NORMALISABLE_RANGE_FLOAT(0.05f, 60.f, 1000),
+        1.f, juce::String(), juce::AudioProcessorParameter::genericParameter,
+        FLOAT_TO_TEXT(2, s));
 
     auto LateDiffusionEnabled = std::make_unique<juce::AudioParameterBool>(
         "LateDiffusionEnabled", "LateDiffusionEnabled", false);
@@ -394,9 +706,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     auto EarlyDiffusionModRate =
         MAKE_PARAMETER_FLOAT(EarlyDiffusionModRate, 0.f, 5.f, 0.5f, 100, Hz);
 
-    auto LineModAmount = MAKE_PARAMETER_LINEAR_FLOAT(LineModAmount, 0.f, 2.5f, 0.f, );
+    auto LineModAmount = std::make_unique<juce::AudioParameterFloat>(
+        "LineModAmount", "LateModAmount", juce::NormalisableRange<float>(0.f, 2.5f),
+        0.f, juce::String(), juce::AudioProcessorParameter::genericParameter,
+        FLOAT_TO_TEXT(2, ));
 
-    auto LineModRate = MAKE_PARAMETER_FLOAT(LineModRate, 0.f, 5.f, 0.5f, 100, Hz);
+    auto LineModRate = std::make_unique<juce::AudioParameterFloat>(
+        "LineModRate", "LateModRate", MAKE_NORMALISABLE_RANGE_FLOAT(0.f, 5.f, 100),
+        0.5f, juce::String(), juce::AudioProcessorParameter::genericParameter,
+        FLOAT_TO_TEXT(2, Hz));
 
     auto LateDiffusionModAmount =
         MAKE_PARAMETER_LINEAR_FLOAT(LateDiffusionModAmount, 0.f, 2.5f, 0.f, );
@@ -419,6 +737,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     auto EarlyOut = MAKE_PARAMETER_DB_FLOAT(EarlyOut, 0.f, 1.f, 0.f, 10);
 
     auto MainOut = MAKE_PARAMETER_DB_FLOAT(MainOut, 0.f, 1.f, 0.f, 10);
+
+    // Stereo width: 0.0 = mono, 1.0 = full original stereo width, 2.0 = extra-wide.
+    auto Width = MAKE_PARAMETER_LINEAR_FLOAT(Width, 0.f, 2.f, 1.0f, );
 
     auto HiPassEnabled =
         std::make_unique<juce::AudioParameterBool>("HiPassEnabled", "HiPassEnabled", false);
@@ -448,6 +769,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     group->addChild(std::move(PreDelay));
     group->addChild(std::move(HighPass));
     group->addChild(std::move(LowPass));
+    group->addChild(std::move(TapEnabled));
     group->addChild(std::move(TapCount));
     group->addChild(std::move(TapLength));
     group->addChild(std::move(TapGain));
@@ -456,6 +778,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     group->addChild(std::move(DiffusionStages));
     group->addChild(std::move(DiffusionDelay));
     group->addChild(std::move(DiffusionFeedback));
+    group->addChild(std::move(LateDelayEnabled));
     group->addChild(std::move(LineCount));
     group->addChild(std::move(LineDelay));
     group->addChild(std::move(LineDecay));
@@ -483,6 +806,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     group->addChild(std::move(PredelayOut));
     group->addChild(std::move(EarlyOut));
     group->addChild(std::move(MainOut));
+    group->addChild(std::move(Width));
     group->addChild(std::move(HiPassEnabled));
     group->addChild(std::move(LowPassEnabled));
     group->addChild(std::move(LowShelfEnabled));
@@ -497,21 +821,37 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
 void AudioPluginAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
-    auto param = treeState.getParameter(parameterID);
+    auto it = paramCache.find(parameterID);
+    if (it == paramCache.end())
+        return;
+    auto param = it->second;
     auto normalised_value = param->convertTo0to1(newValue);
     auto param_enum = map.find(parameterID);
     if (param_enum == map.end())
         return;
-    queue.enqueue({normalised_value, newValue, param_enum->second});
+
+    if (parameterID == "LateDiffusionEnabled" || parameterID == "LateStageTap")
+        requestPresetTransition(20);
+
+    auto dspValue = newValue;
+
+    // Keep the UI/APVTS parameter at the full 0..1 range so the knob still reaches 100%,
+    // but cap the actual Early Diffusion allpass feedback sent to DSP at 0.92.
+    // This avoids the abrupt tonal/ringing change that happens near feedback = 1.0.
+    if (parameterID == "DiffusionFeedback")
+        dspValue = juce::jlimit(0.0f, 0.92f, newValue * 0.92f);
+
+    queue.enqueue({normalised_value, dspValue, param_enum->second});
     // DBG(parameterID << ": " << newValue);
 }
 
-void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset) const
+void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset)
 {
     treeState.getParameter("InputMix")->setValueNotifyingHost(preset.InputMix);
     treeState.getParameter("PreDelay")->setValueNotifyingHost(preset.PreDelay);
     treeState.getParameter("HighPass")->setValueNotifyingHost(preset.HighPass);
     treeState.getParameter("LowPass")->setValueNotifyingHost(preset.LowPass);
+    treeState.getParameter("TapEnabled")->setValueNotifyingHost(1.0f);
     treeState.getParameter("TapCount")->setValueNotifyingHost(preset.TapCount);
     treeState.getParameter("TapLength")->setValueNotifyingHost(preset.TapLength);
     treeState.getParameter("TapGain")->setValueNotifyingHost(preset.TapGain);
@@ -520,6 +860,7 @@ void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset) const
     treeState.getParameter("DiffusionStages")->setValueNotifyingHost(preset.DiffusionStages);
     treeState.getParameter("DiffusionDelay")->setValueNotifyingHost(preset.DiffusionDelay);
     treeState.getParameter("DiffusionFeedback")->setValueNotifyingHost(preset.DiffusionFeedback);
+    treeState.getParameter("LateDelayEnabled")->setValueNotifyingHost(1.0f);
     treeState.getParameter("LineCount")->setValueNotifyingHost(preset.LineCount);
     treeState.getParameter("LineDelay")->setValueNotifyingHost(preset.LineDelay);
     treeState.getParameter("LineDecay")->setValueNotifyingHost(preset.LineDecay);
@@ -557,6 +898,8 @@ void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset) const
     treeState.getParameter("PredelayOut")->setValueNotifyingHost(preset.PredelayOut);
     treeState.getParameter("EarlyOut")->setValueNotifyingHost(preset.EarlyOut);
     treeState.getParameter("MainOut")->setValueNotifyingHost(preset.MainOut);
+    if (auto *widthParam = treeState.getParameter("Width"))
+        widthParam->setValueNotifyingHost(widthParam->convertTo0to1(1.0f)); // actual width = 1.0
     treeState.getParameter("HiPassEnabled")->setValueNotifyingHost(preset.HiPassEnabled);
     treeState.getParameter("LowPassEnabled")->setValueNotifyingHost(preset.LowPassEnabled);
     treeState.getParameter("LowShelfEnabled")->setValueNotifyingHost(preset.LowShelfEnabled);
@@ -566,11 +909,28 @@ void AudioPluginAudioProcessor::setPreset(cloudPresets::preset preset) const
     treeState.getParameter("Interpolation")->setValueNotifyingHost(preset.Interpolation);
 }
 
+void AudioPluginAudioProcessor::setCurrentPresetDisplayName(const juce::String &name)
+{
+    currentPresetDisplayName = name;
+}
+
+juce::String AudioPluginAudioProcessor::getCurrentPresetDisplayName() const
+{
+    return currentPresetDisplayName;
+}
+
 void AudioPluginAudioProcessor::reset()
 {
     DBG("Reset CloudReverb plugin");
     reverb.ClearBuffers();
 }
+
+void AudioPluginAudioProcessor::requestPresetTransition(int fadeTimeMs)
+{
+    presetTransitionFadeMs.store(fadeTimeMs, std::memory_order_release);
+    presetTransitionRequested.store(true, std::memory_order_release);
+}
+
 void AudioPluginAudioProcessor::handleAsyncUpdate()
 {
     AudioPluginAudioProcessorEditor *editor =

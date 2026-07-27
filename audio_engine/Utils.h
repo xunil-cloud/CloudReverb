@@ -5,6 +5,13 @@
 #include <cstring>
 #include <algorithm>
 
+#if defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 2) || defined(__SSE2__)
+#include <emmintrin.h>
+#define CLOUDREVERB_USE_SSE2_UTILS 1
+#else
+#define CLOUDREVERB_USE_SSE2_UTILS 0
+#endif
+
 namespace CloudSeed
 {
 class Utils
@@ -12,21 +19,61 @@ class Utils
 public:
     static inline void ZeroBuffer(double *buffer, int len)
     {
-        for (int i = 0; i < len; i++)
+#if CLOUDREVERB_USE_SSE2_UTILS
+        const auto zero = _mm_setzero_pd();
+        int i = 0;
+        for (; i + 1 < len; i += 2)
+            _mm_storeu_pd(buffer + i, zero);
+        for (; i < len; ++i)
             buffer[i] = 0.0;
+#else
+        std::fill_n(buffer, len, 0.0);
+#endif
     }
 
-    static inline void Copy(double *source, double *dest, int len)
+    static inline void Copy(const double *source, double *dest, int len)
     {
         std::memcpy(dest, source, len * sizeof(double));
     }
 
+    static inline void Add(const double *source, double *dest, int len)
+    {
+#if CLOUDREVERB_USE_SSE2_UTILS
+        int i = 0;
+        for (; i + 1 < len; i += 2)
+        {
+            const auto a = _mm_loadu_pd(dest + i);
+            const auto b = _mm_loadu_pd(source + i);
+            _mm_storeu_pd(dest + i, _mm_add_pd(a, b));
+        }
+        for (; i < len; ++i)
+            dest[i] += source[i];
+#else
+        for (int i = 0; i < len; i++)
+        {
+            dest[i] += source[i];
+        }
+#endif
+    }
+
     static inline void Gain(double *buffer, double gain, int len)
     {
+#if CLOUDREVERB_USE_SSE2_UTILS
+        const auto gainVector = _mm_set1_pd(gain);
+        int i = 0;
+        for (; i + 1 < len; i += 2)
+        {
+            const auto x = _mm_loadu_pd(buffer + i);
+            _mm_storeu_pd(buffer + i, _mm_mul_pd(x, gainVector));
+        }
+        for (; i < len; ++i)
+            buffer[i] *= gain;
+#else
         for (int i = 0; i < len; i++)
         {
             buffer[i] *= gain;
         }
+#endif
     }
 
     // perform bit crushing and undersampling

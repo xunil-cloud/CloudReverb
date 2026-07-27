@@ -12,22 +12,22 @@ EqBlock::EqBlock(const juce::String &name, const juce::AudioProcessorValueTreeSt
 
     auto param = state.getParameter("LowShelfEnabled");
     LowButton_attachment = std::make_unique<juce::ButtonParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(param), lowButton);
+        *param, lowButton);
     addAndMakeVisible(lowButton);
 
     auto param_ = state.getParameter("HighShelfEnabled");
     HighButton_attachment = std::make_unique<juce::ButtonParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(param_), HighButton);
+        *param_, HighButton);
     addAndMakeVisible(HighButton);
 
     param_ = state.getParameter("CutoffEnabled");
     cutoffButton_attachment = std::make_unique<juce::ButtonParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(param_), cutoffButton);
+        *param_, cutoffButton);
     addAndMakeVisible(cutoffButton);
 }
 void EqBlock::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colour(0xff343434));
+    Block::paint(g);
     layout.drawTitle(g, getName(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds(), 7);
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds(), 7);

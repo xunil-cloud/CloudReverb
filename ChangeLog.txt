@@ -1,0 +1,90 @@
+CloudReverb v1.0 - ChangeLog and Fixes
+
+Major UI/UX changes
+-------------------
+- Complete visual redesign of the plugin interface.
+- Added Dark Navy theme and Icy/Sleek Light theme.
+- Added live dark/light theme switching with Day/Night SVG icons.
+- Added fade animation for theme switching.
+- Improved knob, fader, label, card, and route-diagram styling.
+- Added custom Presets dropdown behavior.
+- Added Zoom selector with values: 70%, 80%, 90%, 100%, 110%, 120%, 130%, 150%, 200%.
+- Added live zoom-percentage display when the plugin window is manually resized.
+- Improved zoom scaling for the overall layout, margins, gaps, dropdown list, knobs, and Mixer faders.
+- Cleaned theme resources: standard icons are now Day.svg and Night.svg.
+
+Preset system changes
+---------------------
+- Moved init/save/load workflow into the Presets area.
+- Added custom preset display name persistence for saved/loaded user presets.
+- Added an Airy Clear Space preset for a brighter and more open reverb tone.
+- Added 20 new factory presets covering small rooms, studios, chambers, halls, cinematic spaces, and large/cosmic spaces.
+- Factory preset list increased to 30 presets total.
+
+Mixer and parameter changes
+---------------------------
+- Added Width fader to the Mixer section.
+- Width range is 0.0 to 2.0:
+  - 0.0 = mono
+  - 1.0 = original/default stereo width
+  - 2.0 = extra-wide stereo
+- Width default is 1.0 for init and factory presets, preserving original stereo tone by default.
+- Added Shift-drag fine adjustment for knobs and faders.
+- Added a custom fine-adjust behavior for linear faders so Mixer faders respond more precisely while Shift is held.
+- Init now resets Input PreDelay to 0.
+- Early Diffusion Feedback UI still reaches 100%, but the actual DSP feedback sent to the engine is capped at 0.92 to avoid harsh/ringing behavior near 1.0.
+
+Module changes
+--------------
+- Added Enable controls for Multitap Delay and Late Delay modules.
+- Added bypass parameters:
+  - TapEnabled
+  - LateDelayEnabled
+- Factory presets and init enable these modules by default to preserve the expected original sound.
+
+Route section changes
+---------------------
+- Improved Route diagram drawing.
+- Added visual fade/crossfade for route diagram transitions.
+- Pre/Post route behavior was reviewed. The stable release keeps the accepted route behavior and avoids experimental changes that altered the tone.
+
+Performance and hardware acceleration
+-------------------------------------
+- Added allocation cleanup to avoid unnecessary buffer reallocations in prepare paths.
+- Added buffer utility cleanup and safer const-correct copying.
+- Added SSE2 utility optimizations for safe buffer-level operations:
+  - ZeroBuffer
+  - Add
+  - Gain
+- Added SSE2 input-mix processing in safe areas.
+- Added CPU feature detection for Scalar, SSE2, and AVX2 capability reporting.
+- AVX2 processing path is not enabled by default. AVX2 compile option exists for audio_engine but is OFF by default for compatibility.
+
+Smart Idle
+----------
+- Added tail-aware Smart Idle logic so DSP processing can stop after input and reverb tail are both below a very low threshold for a short hold time.
+- The implementation is designed to avoid cutting audible tails.
+- DSP core algorithms remain untouched.
+
+Build/system changes
+--------------------
+- Plugin formats are enabled as:
+  FORMATS AU VST3 LV2 Standalone
+- Important Windows note: LV2 may still trigger juce_lv2_helper issues on some Windows/JUCE/MSVC setups. If that happens, build only VST3/Standalone targets or temporarily remove LV2 from FORMATS.
+- AU is primarily intended for macOS builds.
+- Added a complete audio_engine/CMakeLists.txt to restore buildability when the audio_engine folder lacks one.
+- Added missing plugin/audio_engine support files that were required for a complete source package.
+- Included concurrentqueue/concurrentqueue.h.
+- Included required resources: ZenDots-Regular.ttf, ShareTech-Regular.ttf, Day.svg, Night.svg.
+
+Fixes compared with original upstream version
+---------------------------------------------
+- Fixed/modernized preset save/load workflow.
+- Fixed display of saved/loaded preset name in the Presets field.
+- Fixed repeated save/load command usability from the Presets menu.
+- Fixed missing/fragile resource handling for theme icons and fonts.
+- Fixed build instability caused by LV2 target on Windows by disabling LV2 in the final Windows-safe release.
+- Fixed several missing source/dependency file issues in reconstructed source packages.
+- Fixed visual consistency issues in the light theme.
+- Fixed route diagram rendering and visual feedback behavior.
+- Fixed fader/knob fine adjustment workflow with Shift-drag.

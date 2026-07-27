@@ -53,13 +53,15 @@ private:
     int lineCount;
 
     bool highPassEnabled;
-    bool lowPassEnabled;
-    bool diffuserEnabled;
-    double dryOut;
-    double predelayOut;
-    double earlyOut;
-    double lineOut;
-    double crossSeed;
+    bool lowPassEnabled{false};
+    bool tapEnabled{true};
+    bool diffuserEnabled{true};
+    bool lateDelayEnabled{true};
+    double dryOut{1.0};
+    double predelayOut{0.0};
+    double earlyOut{0.5};
+    double lineOut{0.5};
+    double crossSeed{0.0};
     ChannelLR channelLr;
 
 public:
@@ -73,6 +75,7 @@ public:
     {
         this->channelLr = leftOrRight;
 
+        lines.reserve(TotalLineCount);
         for (int i = 0; i < TotalLineCount; i++)
             lines.push_back(new DelayLine(bufferSize, samplerate));
 
@@ -147,6 +150,11 @@ public:
             lowPass.SetCutoffHz(value);
             break;
 
+        case Parameter::TapEnabled:
+            tapEnabled = value >= 0.5;
+            if (!tapEnabled)
+                multitap.ClearBuffers();
+            break;
         case Parameter::TapCount:
             multitap.SetTapCount((int)value);
             break;
@@ -178,6 +186,12 @@ public:
             diffuser.SetFeedback(value);
             break;
 
+        case Parameter::LateDelayEnabled:
+            lateDelayEnabled = value >= 0.5;
+            if (!lateDelayEnabled)
+                for (auto line : lines)
+                    line->ClearBuffers();
+            break;
         case Parameter::LineCount:
             lineCount = (int)value;
             break;
@@ -343,45 +357,54 @@ public:
         }
 
         preDelay.Process(tempBuffer, len);
-        multitap.Process(preDelay.GetOutput(), len);
 
-        auto earlyOutStage = diffuserEnabled ? diffuser.GetOutput() : multitap.GetOutput();
+        auto tapOutput = preDelay.GetOutput();
+        if (tapEnabled)
+        {
+            multitap.Process(preDelay.GetOutput(), len);
+            tapOutput = multitap.GetOutput();
+        }
+
+        auto earlyOutStage = diffuserEnabled ? diffuser.GetOutput() : tapOutput;
 
         if (diffuserEnabled)
         {
-            diffuser.Process(multitap.GetOutput(), len);
+            diffuser.Process(tapOutput, len);
             Utils::Copy(diffuser.GetOutput(), tempBuffer, len);
         }
         else
         {
-            Utils::Copy(multitap.GetOutput(), tempBuffer, len);
+            Utils::Copy(tapOutput, tempBuffer, len);
         }
 
         // mix in the feedback from the other channel
         // for (int i = 0; i < len; i++)
         //	tempBuffer[i] += crossMix[i];
 
-        for (int i = 0; i < lineCount; i++)
-            lines[i]->Process(tempBuffer, len);
-
-        for (int i = 0; i < lineCount; i++)
+        if (lateDelayEnabled)
         {
-            auto buf = lines[i]->GetOutput();
+            for (int i = 0; i < lineCount; i++)
+                lines[i]->Process(tempBuffer, len);
 
-            if (i == 0)
+            for (int i = 0; i < lineCount; i++)
             {
-                for (int j = 0; j < len; j++)
-                    tempBuffer[j] = buf[j];
+                auto buf = lines[i]->GetOutput();
+
+                if (i == 0)
+                {
+                    for (int j = 0; j < len; j++)
+                        tempBuffer[j] = buf[j];
+                }
+                else
+                {
+                    for (int j = 0; j < len; j++)
+                        tempBuffer[j] += buf[j];
+                }
             }
-            else
-            {
-                for (int j = 0; j < len; j++)
-                    tempBuffer[j] += buf[j];
-            }
+
+            auto perLineGain = GetPerLineGain();
+            Utils::Gain(tempBuffer, perLineGain, len);
         }
-
-        auto perLineGain = GetPerLineGain();
-        Utils::Gain(tempBuffer, perLineGain, len);
 
         for (int i = 0; i < len; i++)
         {
@@ -409,7 +432,9 @@ public:
     }
     void prepare(int sampleRate, int bufferSize)
     {
+        const auto bufferSizeChanged = this->bufferSize != bufferSize;
         this->bufferSize = bufferSize;
+
         preDelay.prepare(sampleRate, bufferSize);
         diffuser.prepare(sampleRate, bufferSize);
         for (auto *line : lines)
@@ -418,10 +443,14 @@ public:
         }
         multitap.prepare(sampleRate, bufferSize);
 
-        delete[] tempBuffer;
-        delete[] outBuffer;
-        tempBuffer = new double[bufferSize];
-        outBuffer = new double[bufferSize];
+        if (bufferSizeChanged)
+        {
+            delete[] tempBuffer;
+            delete[] outBuffer;
+            tempBuffer = new double[bufferSize];
+            outBuffer = new double[bufferSize];
+        }
+
         Utils::ZeroBuffer(tempBuffer, bufferSize);
         Utils::ZeroBuffer(outBuffer, bufferSize);
         lowPass.Output = 0;

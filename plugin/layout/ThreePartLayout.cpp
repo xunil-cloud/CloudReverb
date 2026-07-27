@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4702 4244 4305 4458 4100)
+#endif
+
 #include "ThreePartLayout.h"
 void ThreePartLayout::placeUIs(juce::Slider *numbox_1, juce::Slider *numbox_2,
                                juce::Slider *slider_1, juce::Slider *slider_2,
@@ -29,7 +33,7 @@ void ThreePartLayout::placeUIs(juce::Slider *numbox_1, juce::Slider *numbox_2,
 
     if (button != nullptr)
     {
-        button->setBounds(slider_2->getRight() - 25 * ratio, Y_PADDING * ratio, 25 * ratio,
+        button->setBounds(bound.getWidth() - X_PADDING * ratio - 25 * ratio, Y_PADDING * ratio, 25 * ratio,
                           25 * ratio);
     }
 }

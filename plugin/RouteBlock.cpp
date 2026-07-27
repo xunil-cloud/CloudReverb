@@ -4,51 +4,76 @@
 RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
     : Block(name)
 {
-
-    std::unique_ptr<juce::XmlElement> svg_xml(juce::XmlDocument::parse(BinaryData::diagram_svg));
-    diagram = juce::Drawable::createFromSVG(*svg_xml);
-
     mode_switch.setButtonText("pre/post");
     mode_switch.setName("pre / post");
     auto param = state.getParameter("LateStageTap");
     attachment_mode_switch = std::make_unique<juce::ButtonParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(param), mode_switch);
+        *param, mode_switch);
+
+    const bool isPost = param != nullptr && param->getValue() >= 0.5f;
+    mode_switch.setToggleState(isPost, juce::NotificationType::dontSendNotification);
+    mode = isPost ? RouteBlock::Mode::POST : RouteBlock::Mode::PRE;
+
     addAndMakeVisible(&mode_switch);
-    if (diagram)
-    {
-        addAndMakeVisible(diagram.get());
-    }
+
     setupNumberBoxSlider(lineCount, state.getParameter("LineCount"));
     lineCount_attachment = std::make_unique<juce::SliderParameterAttachment>(
-        *dynamic_cast<juce::RangedAudioParameter *>(state.getParameter("LineCount")), lineCount);
+        *state.getParameter("LineCount"), lineCount);
 
     mode_switch.onStateChange = [this]() {
-        this->mode = mode_switch.getToggleState() ? RouteBlock::Mode::POST : RouteBlock::Mode::PRE;
+        const auto newMode = mode_switch.getToggleState() ? RouteBlock::Mode::POST : RouteBlock::Mode::PRE;
+        if (newMode != mode)
+        {
+            previousMode = mode;
+            mode = newMode;
+            diagramTransition = 0.0f;
+            diagramTransitionActive = true;
+            startTimerHz(60);
+        }
         repaint();
     };
 }
 
 void RouteBlock::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colour(0xff343434));
-    layout.drawTextRightToSlider(g, &mode_switch, getLocalBounds());
+    Block::paint(g);
     layout.drawTitle(g, "Route", getLocalBounds());
-}
+    layout.drawNumberBoxTitle(g, &lineCount, "PARALLEL LINES", getLocalBounds());
+    layout.drawTextRightToSlider(g, &mode_switch, getLocalBounds());
 
-void RouteBlock::paintOverChildren(juce::Graphics &g)
-{
-
-    if (mode == RouteBlock::Mode::PRE)
+    if (diagramTransitionActive)
     {
-        layout.drawTextOndiagram(g, "late delay", "late diffusion", getLocalBounds());
+        g.beginTransparencyLayer(1.0f - diagramTransition);
+        layout.drawCustomDiagram(g, previousMode == RouteBlock::Mode::PRE, getLocalBounds());
+        g.endTransparencyLayer();
+
+        g.beginTransparencyLayer(diagramTransition);
+        layout.drawCustomDiagram(g, mode == RouteBlock::Mode::PRE, getLocalBounds());
+        g.endTransparencyLayer();
     }
     else
     {
-        layout.drawTextOndiagram(g, "late diffusion", "late delay", getLocalBounds());
+        layout.drawCustomDiagram(g, mode == RouteBlock::Mode::PRE, getLocalBounds());
     }
+}
+
+void RouteBlock::timerCallback()
+{
+    diagramTransition += 0.12f;
+    if (diagramTransition >= 1.0f)
+    {
+        diagramTransition = 1.0f;
+        diagramTransitionActive = false;
+        stopTimer();
+    }
+    repaint();
+}
+
+void RouteBlock::paintOverChildren(juce::Graphics &)
+{
 }
 
 void RouteBlock::resized()
 {
-    layout.placeUIs(diagram.get(), &lineCount, &mode_switch, getLocalBounds());
+    layout.placeUIs(nullptr, &lineCount, &mode_switch, getLocalBounds());
 }

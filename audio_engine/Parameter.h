@@ -13,6 +13,7 @@ enum class Parameter
 
     // Early
 
+    TapEnabled,
     TapCount,
     TapLength,
     TapGain,
@@ -25,6 +26,7 @@ enum class Parameter
 
     // Late
 
+    LateDelayEnabled,
     LineCount,
     LineDelay,
     LineDecay,
@@ -68,6 +70,7 @@ enum class Parameter
     PredelayOut,
     EarlyOut,
     MainOut,
+    WidthOut,
 
     // Switches
     HiPassEnabled,
