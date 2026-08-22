@@ -69,3 +69,4 @@ justfile
 # gdb
 .gdbinit
 gdb.txt
+.gdb_history
