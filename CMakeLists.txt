@@ -36,13 +36,16 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 # include that subdirectory as part of the build.
 
 add_compile_definitions(_USE_MATH_DEFINES)
+option(BUILD_TOOLS "Build the Tools" OFF) # require nlohmann json
 
 # find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
 # or
 add_subdirectory(JUCE)                    # If you've put JUCE in a subdirectory called JUCE
 
 add_subdirectory(audio_engine)
-add_subdirectory(tools)
+if(BUILD_TOOLS)
+    add_subdirectory(tools)
+endif()
 
 # If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
 # system. This setup should be done before calling `juce_add_plugin`.
