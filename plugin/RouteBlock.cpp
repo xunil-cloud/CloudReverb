@@ -1,12 +1,14 @@
 #include "RouteBlock.h"
 #include "BinaryData.h"
+#include <memory>
 
 RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValueTreeState &state)
     : Block(name)
 {
 
     std::unique_ptr<juce::XmlElement> svg_xml(juce::XmlDocument::parse(BinaryData::diagram_svg));
-    diagram = juce::Drawable::createFromSVG(*svg_xml);
+    diagram = juce::Drawable::createFromImageData(BinaryData::diagram_svg, BinaryData::diagram_svgSize);
+    diagram_component = std::make_unique<juce::DrawableComponent>(*diagram);
 
     mode_switch.setButtonText("pre/post");
     mode_switch.setName("pre / post");
@@ -16,7 +18,7 @@ RouteBlock::RouteBlock(const juce::String &name, const juce::AudioProcessorValue
     addAndMakeVisible(&mode_switch);
     if (diagram)
     {
-        addAndMakeVisible(diagram.get());
+        addAndMakeVisible(diagram_component.get());
     }
     setupNumberBoxSlider(lineCount, state.getParameter("LineCount"));
     lineCount_attachment = std::make_unique<juce::SliderParameterAttachment>(
@@ -50,5 +52,5 @@ void RouteBlock::paintOverChildren(juce::Graphics &g)
 
 void RouteBlock::resized()
 {
-    layout.placeUIs(diagram.get(), &lineCount, &mode_switch, getLocalBounds());
+    layout.placeUIs(diagram_component.get(), &lineCount, &mode_switch, getLocalBounds());
 }

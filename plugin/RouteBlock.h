@@ -1,5 +1,6 @@
 #include "Block.h"
 #include "CustomToggleButton.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 #include "layout/Layout.h"
 
 class RouteBlock : public Block
@@ -22,6 +23,7 @@ private:
     juce::Slider lineCount;
     std::unique_ptr<juce::SliderParameterAttachment> lineCount_attachment;
     std::unique_ptr<juce::Drawable> diagram;
+    std::unique_ptr<juce::DrawableComponent> diagram_component;
     RouteLayout layout;
     Mode mode;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RouteBlock)

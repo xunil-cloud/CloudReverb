@@ -1,5 +1,6 @@
 #include "Layout.h"
 #include "../MyLookAndFeel.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 void Layout::drawTextUnderSlider(juce::Graphics &g, ReverbSlider *slider,
                                  const juce::Rectangle<int> &bound, int gap)
@@ -166,8 +167,8 @@ void EqLayout::drawLines(juce::Graphics &g, const juce::Rectangle<int> &bound)
     g.drawRect(x2, y2, width, thinkness);
     g.drawRect(x2 + width - 1, y1, thinkness, height);
 }
-void RouteLayout::placeUIs(juce::Drawable *diagram, juce::Slider *slider, juce::Button *button,
-                           const juce::Rectangle<int> &bound)
+void RouteLayout::placeUIs(juce::DrawableComponent *component, juce::Slider *slider,
+                           juce::Button *button, const juce::Rectangle<int> &bound)
 {
     const float ratio = bound.getWidth() / WIDTH > bound.getHeight() / HEIGHT
                             ? bound.getHeight() / HEIGHT
@@ -177,8 +178,7 @@ void RouteLayout::placeUIs(juce::Drawable *diagram, juce::Slider *slider, juce::
     const auto width = 440 * ratio;
     const auto height = 119 * ratio;
 
-    diagram->setTransform(juce::AffineTransform::scale(ratio, ratio, x, y));
-    diagram->setBounds(x, y, width, height);
+    component->setTransformToFit({x, y, width, height}, juce::RectanglePlacement::stretchToFit);
     slider->setBounds(20 * ratio, 158 * ratio, 148 * ratio, 40 * ratio);
     button->setBounds(470 * ratio, Y_PADDING * ratio, 50 * ratio, 25 * ratio);
 }

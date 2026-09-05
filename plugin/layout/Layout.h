@@ -66,7 +66,7 @@ class RouteBlock;
 class RouteLayout : public Layout
 {
 public:
-    void placeUIs(juce::Drawable *diagram, juce::Slider *slider, juce::Button *button,
+    void placeUIs(juce::DrawableComponent *component, juce::Slider *slider, juce::Button *button,
                   const juce::Rectangle<int> &bound);
     void drawTextOndiagram(juce::Graphics &g, const juce::String &fist_block,
                            const juce::String &second_block, const juce::Rectangle<int> &bound);
