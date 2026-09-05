@@ -42,6 +42,7 @@ add_compile_definitions(_USE_MATH_DEFINES)
 add_subdirectory(JUCE)                    # If you've put JUCE in a subdirectory called JUCE
 
 add_subdirectory(audio_engine)
+add_subdirectory(tools)
 
 # If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
 # system. This setup should be done before calling `juce_add_plugin`.
