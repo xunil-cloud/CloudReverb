@@ -18,7 +18,7 @@ jobs:
         include:
           - name: Linux
             os: ubuntu-22.04
-            extra-config-flags:
+            extra-config-flags: -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
             pluginval-binary: ./pluginval
             arch: -x86_64
           - name: macOS
@@ -41,8 +41,17 @@ jobs:
 
     - name: install packages
       run: |
-        sudo apt-get install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libasound2-dev libfreetype-dev xvfb
+        sudo apt-get install libx11-dev ccache libxrandr-dev libxinerama-dev libxcursor-dev libasound2-dev libfreetype-dev xvfb
         sudo /usr/bin/Xvfb $DISPLAY &
+      if: matrix.os == 'ubuntu-22.04'
+
+    - name: cache ccache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.ccache
+          ~/.cache/ccache
+        key: ${{ runner.os }}-${{ matrix.name }}
       if: matrix.os == 'ubuntu-22.04'
 
     - name: Create Build Environment
@@ -65,6 +74,11 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE -j$(nproc --all)
+
+    - name: ccache statistics
+      run: |
+        ccache -s
+      if: matrix.os == 'ubuntu-22.04'
 
     - name: Set additional env vars for next steps
       shell: bash
