@@ -24,8 +24,11 @@ LateDiffusionBlock::LateDiffusionBlock(const juce::String &name,
 
 void LateDiffusionBlock::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colour(0xff343434));
+    Block::paint(g);
     layout.drawTitle(g, getName(), getLocalBounds());
+    layout.drawButtonTitle(g, &button, "ENABLE", getLocalBounds());
+    layout.drawNumberBoxTitle(g, &stages, "STAGES", getLocalBounds());
+    layout.drawNumberBoxTitle(g, &seedSlider, "LATE SEED", getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[0].get(), getLocalBounds());
     layout.drawTextUnderSlider(g, sliders[1].get(), getLocalBounds());
     layout.drawTextRightToSlider(g, sliders[2].get(), getLocalBounds());

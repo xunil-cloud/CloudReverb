@@ -140,17 +140,12 @@ public:
 
     double *GetOutput()
     {
-        if (LateStageTap)
-        {
-            if (DiffuserEnabled)
-                return diffuser.GetOutput();
-            else
-                return mixedBuffer;
-        }
-        else
-        {
-            return delay.GetOutput();
-        }
+        // Always expose the final audible output of this delay line.
+        // Process() writes the end of the selected Pre/Post route into filterOutputBuffer.
+        // This keeps the audible path aligned with the Route diagram:
+        // - LateStageTap == true  : Late Diffusion -> Late Delay -> EQ -> Output
+        // - LateStageTap == false : EQ -> Late Diffusion -> Late Delay -> Output
+        return filterOutputBuffer;
     }
 
     void Process(double *input, int sampleCount)
@@ -158,7 +153,7 @@ public:
         for (int i = 0; i < sampleCount; i++)
             mixedBuffer[i] = input[i] + filterOutputBuffer[i] * feedback;
 
-        if (LateStageTap)
+        if (LateStageTap) // POST-PROCESS ROUTING (EQ After FX: Late Diffusion -> Late Delay -> EQ)
         {
             if (DiffuserEnabled)
             {
@@ -169,33 +164,37 @@ public:
             {
                 delay.Process(mixedBuffer, sampleCount);
             }
+            Utils::Copy(delay.GetOutput(), filterOutputBuffer, sampleCount);
 
-            Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
+            if (LowShelfEnabled)
+                lowShelf.Process(filterOutputBuffer, filterOutputBuffer, sampleCount);
+            if (HighShelfEnabled)
+                highShelf.Process(filterOutputBuffer, filterOutputBuffer, sampleCount);
+            if (CutoffEnabled)
+                lowPass.Process(filterOutputBuffer, filterOutputBuffer, sampleCount);
         }
-        else
+        else // PRE-PROCESS ROUTING (EQ Before FX: EQ -> Late Diffusion -> Late Delay)
         {
+            Utils::Copy(mixedBuffer, filterOutputBuffer, sampleCount);
+
+            if (LowShelfEnabled)
+                lowShelf.Process(filterOutputBuffer, filterOutputBuffer, sampleCount);
+            if (HighShelfEnabled)
+                highShelf.Process(filterOutputBuffer, filterOutputBuffer, sampleCount);
+            if (CutoffEnabled)
+                lowPass.Process(filterOutputBuffer, filterOutputBuffer, sampleCount);
 
             if (DiffuserEnabled)
             {
-                delay.Process(mixedBuffer, sampleCount);
-                diffuser.Process(delay.GetOutput(), sampleCount);
-                Utils::Copy(diffuser.GetOutput(), tempBuffer, sampleCount);
+                diffuser.Process(filterOutputBuffer, sampleCount);
+                delay.Process(diffuser.GetOutput(), sampleCount);
             }
             else
             {
-                delay.Process(mixedBuffer, sampleCount);
-                Utils::Copy(delay.GetOutput(), tempBuffer, sampleCount);
+                delay.Process(filterOutputBuffer, sampleCount);
             }
+            Utils::Copy(delay.GetOutput(), filterOutputBuffer, sampleCount);
         }
-
-        if (LowShelfEnabled)
-            lowShelf.Process(tempBuffer, tempBuffer, sampleCount);
-        if (HighShelfEnabled)
-            highShelf.Process(tempBuffer, tempBuffer, sampleCount);
-        if (CutoffEnabled)
-            lowPass.Process(tempBuffer, tempBuffer, sampleCount);
-
-        Utils::Copy(tempBuffer, filterOutputBuffer, sampleCount);
     }
 
     void ClearDiffuserBuffer() { diffuser.ClearBuffers(); }
@@ -220,13 +219,19 @@ public:
         delay.prepare(sampleRate, bufferSize);
         diffuser.prepare(sampleRate, bufferSize);
 
+        const auto bufferSizeChanged = this->bufferSize != bufferSize;
         this->bufferSize = bufferSize;
-        delete[] tempBuffer;
-        delete[] mixedBuffer;
-        delete[] filterOutputBuffer;
-        tempBuffer = new double[bufferSize];
-        mixedBuffer = new double[bufferSize];
-        filterOutputBuffer = new double[bufferSize];
+
+        if (bufferSizeChanged)
+        {
+            delete[] tempBuffer;
+            delete[] mixedBuffer;
+            delete[] filterOutputBuffer;
+            tempBuffer = new double[bufferSize];
+            mixedBuffer = new double[bufferSize];
+            filterOutputBuffer = new double[bufferSize];
+        }
+
         Utils::ZeroBuffer(tempBuffer, bufferSize);
         Utils::ZeroBuffer(mixedBuffer, bufferSize);
         Utils::ZeroBuffer(filterOutputBuffer, bufferSize);

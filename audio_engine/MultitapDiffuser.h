@@ -129,12 +129,23 @@ public:
     }
     void prepare(int sampleRate, int bufferSize)
     {
-        this->bufferSize = bufferSize;
-        maxDelaySamples = sampleRate; // 1 second delay
-        delete[] output;
-        delete[] buffer;
-        output = new double[bufferSize];
-        buffer = new double[maxDelaySamples];
+        const auto newMaxDelaySamples = sampleRate; // 1 second delay
+
+        if (this->bufferSize != bufferSize)
+        {
+            delete[] output;
+            output = new double[bufferSize];
+            this->bufferSize = bufferSize;
+        }
+
+        if (maxDelaySamples != newMaxDelaySamples)
+        {
+            delete[] buffer;
+            maxDelaySamples = newMaxDelaySamples;
+            buffer = new double[maxDelaySamples];
+            index = 0;
+        }
+
         Utils::ZeroBuffer(output, bufferSize);
         Utils::ZeroBuffer(buffer, maxDelaySamples);
         index = 0;
@@ -171,7 +182,6 @@ private:
             tapPosition[i] = tapPosition[i - 1] + (int)(tapData[i] * scaleLength);
         }
 
-        double sumGains = 0.0;
         double lastTapPos = tapPosition[count - 1];
         for (int i = 0; i < count; i++)
         {

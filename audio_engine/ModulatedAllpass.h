@@ -4,6 +4,8 @@
 #include "FastSin.h"
 #include "Utils.h"
 #include <cassert>
+#include <algorithm>
+#include <cmath>
 
 namespace CloudSeed
 {
@@ -74,6 +76,26 @@ public:
     {
         this->bufferSize = bufferSize;
         DelayBufferSamples = sampleRate * 2; // 2 second delay
+        delete[] output;
+        delete[] delayBuffer;
+        output = new double[bufferSize];
+        delayBuffer = new double[DelayBufferSamples];
+        Utils::ZeroBuffer(output, bufferSize);
+        Utils::ZeroBuffer(delayBuffer, DelayBufferSamples);
+        index = 0;
+        samplesProcessed = ModulationUpdateRate;
+    }
+
+    // Optimised overload for AllpassDiffuser: use the intended delay-buffer
+    // length in milliseconds instead of always allocating a 2-second buffer.
+    // This preserves the algorithm and output for valid diffuser delay ranges,
+    // while reducing memory/cache pressure at high sample rates such as 192 kHz.
+    void prepare(int sampleRate, int bufferSize, int delayBufferLengthMillis)
+    {
+        this->bufferSize = bufferSize;
+        const auto requestedSamples = (int)std::ceil(sampleRate * (delayBufferLengthMillis / 1000.0));
+        DelayBufferSamples = std::max(1, requestedSamples + 64); // small safety margin for interpolation
+
         delete[] output;
         delete[] delayBuffer;
         output = new double[bufferSize];

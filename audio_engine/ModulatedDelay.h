@@ -84,12 +84,23 @@ public:
     }
     void prepare(int sampleRate, int bufferSize)
     {
-        this->bufferSize = bufferSize;
-        delayBufferSizeSamples = sampleRate * 2; // 2 second delay
-        delete[] output;
-        delete[] delayBuffer;
-        output = new double[bufferSize];
-        delayBuffer = new double[delayBufferSizeSamples];
+        const auto newDelayBufferSizeSamples = sampleRate * 2; // 2 second delay
+
+        if (this->bufferSize != bufferSize)
+        {
+            delete[] output;
+            output = new double[bufferSize];
+            this->bufferSize = bufferSize;
+        }
+
+        if (delayBufferSizeSamples != newDelayBufferSizeSamples)
+        {
+            delete[] delayBuffer;
+            delayBufferSizeSamples = newDelayBufferSizeSamples;
+            delayBuffer = new double[delayBufferSizeSamples];
+            writeIndex = 0;
+        }
+
         Utils::ZeroBuffer(output, bufferSize);
         Utils::ZeroBuffer(delayBuffer, delayBufferSizeSamples);
         samplesProcessed = ModulationUpdateRate;

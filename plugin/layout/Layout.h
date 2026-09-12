@@ -15,6 +15,10 @@ public:
                                const juce::Rectangle<int> &bound);
     virtual void drawTitle(juce::Graphics &g, const ::juce::String &,
                            const juce::Rectangle<int> &bound);
+    void drawNumberBoxTitle(juce::Graphics &g, juce::Slider *slider, const juce::String &title,
+                            const juce::Rectangle<int> &bound);
+    void drawButtonTitle(juce::Graphics &g, juce::Button *button, const juce::String &title,
+                         const juce::Rectangle<int> &bound);
 
     // const int computeRatio()
     // {
@@ -50,7 +54,7 @@ class MixerLayout : public Layout
 public:
     MixerLayout() : Layout(330, 220) {}
     void placeUIs(juce::Slider *slider_1, juce::Slider *slider_2, juce::Slider *slider_3,
-                  juce::Slider *slider_4, const juce::Rectangle<int> &bound);
+                  juce::Slider *slider_4, juce::Slider *slider_5, const juce::Rectangle<int> &bound);
 };
 class EqLayout : public Layout
 {
@@ -70,6 +74,7 @@ public:
                   const juce::Rectangle<int> &bound);
     void drawTextOndiagram(juce::Graphics &g, const juce::String &fist_block,
                            const juce::String &second_block, const juce::Rectangle<int> &bound);
+    void drawCustomDiagram(juce::Graphics &g, bool isPre, const juce::Rectangle<int> &bound);
 };
 class HeaderLayout : public Layout
 {
@@ -77,6 +82,8 @@ public:
     HeaderLayout() : Layout(1418, 110) {}
     void drawTitle(juce::Graphics &g, const ::juce::String &,
                    const juce::Rectangle<int> &bound) override;
+    void drawPresetTitle(juce::Graphics &g, juce::ComboBox *comboBox,
+                         const juce::Rectangle<int> &bound);
     void placeUIs(juce::Slider *cross_seed, juce::Button *interpolation, juce::ComboBox *comboBox,
                   const juce::Rectangle<int> &bound);
 };

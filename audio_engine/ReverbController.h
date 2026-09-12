@@ -2,6 +2,10 @@
 #ifndef REVERBCONTROLLER
 #define REVERBCONTROLLER
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4702 4244 4305 4458 4100)
+#endif
+
 #include <vector>
 #include "Parameter.h"
 #include "ReverbChannel.h"
@@ -10,6 +14,11 @@
 #include "AllpassDiffuser.h"
 #include "MultitapDiffuser.h"
 #include "Utils.h"
+
+#if CLOUDREVERB_USE_SSE2_UTILS
+#include <xmmintrin.h>
+#include <emmintrin.h>
+#endif
 
 namespace CloudSeed
 {
@@ -26,6 +35,7 @@ private:
     // double leftLineBuffer[bufferSize];
     // double rightLineBuffer[bufferSize];
     double parameters[(int)Parameter::Count];
+    double stereoWidth{1.0};
 
 public:
     ReverbController(int samplerate)
@@ -72,6 +82,8 @@ public:
             return 400 + ValueTables::Get(P(Parameter::LowPass), ValueTables::Response4Oct) * 19600;
 
             // Early
+        case Parameter::TapEnabled:
+            return P(Parameter::TapEnabled) < 0.5 ? 0.0 : 1.0;
         case Parameter::TapCount:
             return 1 + (int)(P(Parameter::TapCount) * (MultitapDiffuser::MaxTaps - 1));
         case Parameter::TapLength:
@@ -92,6 +104,8 @@ public:
             return P(Parameter::DiffusionFeedback);
 
             // Late
+        case Parameter::LateDelayEnabled:
+            return P(Parameter::LateDelayEnabled) < 0.5 ? 0.0 : 1.0;
         case Parameter::LineCount:
             return 1 + (int)(P(Parameter::LineCount) * 11.999);
         case Parameter::LineDelay:
@@ -169,6 +183,8 @@ public:
             return ValueTables::Get(P(Parameter::EarlyOut), ValueTables::Response2Dec);
         case Parameter::MainOut:
             return ValueTables::Get(P(Parameter::MainOut), ValueTables::Response2Dec);
+        case Parameter::WidthOut:
+            return P(Parameter::WidthOut);
 
             // Switches
         case Parameter::HiPassEnabled:
@@ -200,12 +216,25 @@ public:
         parameters[(int)param] = value;
         auto scaled = GetScaledParameter(param);
 
+        if (param == Parameter::WidthOut)
+        {
+            stereoWidth = scaled;
+            return;
+        }
+
         channelL.SetParameter(param, scaled);
         channelR.SetParameter(param, scaled);
     }
     void updateParameter(Parameter param, double scaled_value, float normalized_value)
     {
         parameters[(int)param] = normalized_value;
+
+        if (param == Parameter::WidthOut)
+        {
+            stereoWidth = scaled_value;
+            return;
+        }
+
         channelL.SetParameter(param, scaled_value);
         channelR.SetParameter(param, scaled_value);
     }
@@ -222,21 +251,59 @@ public:
         auto cm = GetScaledParameter(Parameter::InputMix) * 0.5;
         auto cmi = (1 - cm);
 
+#if CLOUDREVERB_USE_SSE2_UTILS
+        const auto cmv = _mm_set1_pd(cm);
+        const auto cmiv = _mm_set1_pd(cmi);
+        int i = 0;
+
+        for (; i + 3 < len; i += 4)
+        {
+            const auto l4 = _mm_loadu_ps(input[0] + i);
+            const auto r4 = _mm_loadu_ps(input[1] + i);
+
+            const auto l01 = _mm_cvtps_pd(l4);
+            const auto r01 = _mm_cvtps_pd(r4);
+            const auto l23 = _mm_cvtps_pd(_mm_movehl_ps(l4, l4));
+            const auto r23 = _mm_cvtps_pd(_mm_movehl_ps(r4, r4));
+
+            const auto left01 = _mm_add_pd(_mm_mul_pd(l01, cmiv), _mm_mul_pd(r01, cmv));
+            const auto right01 = _mm_add_pd(_mm_mul_pd(r01, cmiv), _mm_mul_pd(l01, cmv));
+            const auto left23 = _mm_add_pd(_mm_mul_pd(l23, cmiv), _mm_mul_pd(r23, cmv));
+            const auto right23 = _mm_add_pd(_mm_mul_pd(r23, cmiv), _mm_mul_pd(l23, cmv));
+
+            _mm_storeu_pd(leftChannelIn + i, left01);
+            _mm_storeu_pd(rightChannelIn + i, right01);
+            _mm_storeu_pd(leftChannelIn + i + 2, left23);
+            _mm_storeu_pd(rightChannelIn + i + 2, right23);
+        }
+
+        for (; i < len; ++i)
+        {
+            leftChannelIn[i] = input[0][i] * cmi + input[1][i] * cm;
+            rightChannelIn[i] = input[1][i] * cmi + input[0][i] * cm;
+        }
+#else
         for (int i = 0; i < len; i++)
         {
             leftChannelIn[i] = input[0][i] * cmi + input[1][i] * cm;
             rightChannelIn[i] = input[1][i] * cmi + input[0][i] * cm;
         }
+#endif
 
         channelL.Process(leftChannelIn, len);
         channelR.Process(rightChannelIn, len);
         auto leftOut = channelL.GetOutput();
         auto rightOut = channelR.GetOutput();
 
+        const auto width = stereoWidth;
         for (int i = 0; i < len; i++)
         {
-            output[0][i] = leftOut[i];
-            output[1][i] = rightOut[i];
+            const auto left = leftOut[i];
+            const auto right = rightOut[i];
+            const auto mid = (left + right) * 0.5;
+            const auto side = (left - right) * 0.5 * width;
+            output[0][i] = (float)(mid + side);
+            output[1][i] = (float)(mid - side);
         }
     }
 
@@ -260,13 +327,20 @@ public:
     }
     void prepare(int sampleRate, int bufferSize)
     {
+        const auto bufferSizeChanged = this->bufferSize != bufferSize;
         this->bufferSize = bufferSize;
+
         channelL.prepare(sampleRate, bufferSize);
         channelR.prepare(sampleRate, bufferSize);
-        delete[] leftChannelIn;
-        delete[] rightChannelIn;
-        leftChannelIn = new double[bufferSize];
-        rightChannelIn = new double[bufferSize];
+
+        if (bufferSizeChanged)
+        {
+            delete[] leftChannelIn;
+            delete[] rightChannelIn;
+            leftChannelIn = new double[bufferSize];
+            rightChannelIn = new double[bufferSize];
+        }
+
         Utils::ZeroBuffer(leftChannelIn, bufferSize);
         Utils::ZeroBuffer(rightChannelIn, bufferSize);
     }

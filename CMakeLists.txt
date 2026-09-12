@@ -19,7 +19,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11 CACHE STRING "Build for MacOS 10.11")
 # `project()` command. `project()` sets up some helpful variables that describe source/binary
 # directories, and the current project version. This is a standard CMake command.
 
-project(CloudReverb VERSION 0.5)
+project(CloudReverb VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -40,7 +40,9 @@ option(BUILD_TOOLS "Build the Tools" OFF) # require nlohmann json
 
 # find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
 # or
-add_subdirectory(JUCE)                    # If you've put JUCE in a subdirectory called JUCE
+# Configure this path to point to your JUCE installation:
+set(JUCE_PATH "X:/.../JUCE" CACHE PATH "Path to JUCE framework")
+add_subdirectory(${JUCE_PATH} juce_build)   # If you've put JUCE in a subdirectory called JUCE
 
 add_subdirectory(audio_engine)
 if(BUILD_TOOLS)
@@ -56,7 +58,7 @@ endif()
 # `juce_add_plugin` adds a static library target with the name passed as the first argument
 # (AudioPluginExample here). This target is a normal CMake target, but has a lot of extra properties set
 # up by default. As well as this shared code static library, this function adds targets for each of
-# the formats specified by the FORMATS arguments. This function accepts many optional arguments.
+# the formats specified by the FORMATS AU VST3 LV2 Standalone                  
 # Check the readme at `docs/CMake API.md` in the JUCE repo for the full list.
 
 juce_add_plugin(CloudReverb
@@ -72,7 +74,7 @@ juce_add_plugin(CloudReverb
     COPY_PLUGIN_AFTER_BUILD FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE ODUT               # A four-character manufacturer id with at least one upper-case character
     PLUGIN_CODE Pm4e                            # A unique four-character plugin id with at least one upper-case character
-    LV2URI "http://github.com/xunil-cloud/CloudReverb"
+    
     FORMATS AU VST3 LV2 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST2_CATEGORY kPlugCategEffect
     VST3_CATEGORIES Fx Reverb
@@ -117,6 +119,54 @@ target_sources(CloudReverb PRIVATE
 # definitions will be visible both to your code, and also the JUCE module code, so for new
 # definitions, pick unique names that are unlikely to collide! This is a standard CMake command.
 
+# If your target needs extra binary assets, you can add them here. The first argument is the name of
+# a new static library target that will include all the binary resources. There is an optional
+# `NAMESPACE` argument that can specify the namespace of the generated binary data class. Finally,
+# the SOURCES argument should be followed by a list of source files that should be built into the
+# static library. These source files can be of any kind (wav data, images, fonts, icons etc.).
+# Conversion to binary-data will happen when your target is built.
+
+# Binary resources
+set(BINARY_DATA_SOURCES "")
+
+# Required embedded fonts
+foreach(RES_FILE
+    resources/ZenDots-Regular.ttf
+    resources/ShareTech-Regular.ttf
+)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${RES_FILE}")
+        list(APPEND BINARY_DATA_SOURCES ${RES_FILE})
+    else()
+        message(FATAL_ERROR "Required resource file not found: ${RES_FILE}\nPlease make sure all required font files are in the resources/ folder.")
+    endif()
+endforeach()
+
+# Optional theme SVG icons
+# Light theme  → use Night.svg dark icon
+# Dark theme   → use Day.svg light icon
+set(HAS_DAY_SVG FALSE)
+set(HAS_NIGHT_SVG FALSE)
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources/Day.svg")
+    list(APPEND BINARY_DATA_SOURCES resources/Day.svg)
+    set(HAS_DAY_SVG TRUE)
+    message(STATUS "✓ Found Day.svg icon for dark theme")
+else()
+    message(STATUS "✗ resources/Day.svg not found — theme icon will use fallback")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources/Night.svg")
+    list(APPEND BINARY_DATA_SOURCES resources/Night.svg)
+    set(HAS_NIGHT_SVG TRUE)
+    message(STATUS "✓ Found Night.svg icon for light theme")
+else()
+    message(STATUS "✗ resources/Night.svg not found — theme icon will use fallback")
+endif()
+
+juce_add_binary_data(AudioPluginData
+    SOURCES ${BINARY_DATA_SOURCES}
+)
+
 target_compile_definitions(CloudReverb
     PUBLIC
     # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
@@ -126,17 +176,9 @@ target_compile_definitions(CloudReverb
     JUCE_USE_FLAC=0
     JUCE_USE_OGGVORBIS=0
     JUCE_USE_MP3AUDIOFORMAT=0
-    JUCE_VST3_CAN_REPLACE_VST2=0)
-
-
-# If your target needs extra binary assets, you can add them here. The first argument is the name of
-# a new static library target that will include all the binary resources. There is an optional
-# `NAMESPACE` argument that can specify the namespace of the generated binary data class. Finally,
-# the SOURCES argument should be followed by a list of source files that should be built into the
-# static library. These source files can be of any kind (wav data, images, fonts, icons etc.).
-# Conversion to binary-data will happen when your target is built.
-
-juce_add_binary_data(AudioPluginData SOURCES resources/diagram.svg resources/PragatiNarrow-Regular.ttf)
+    JUCE_VST3_CAN_REPLACE_VST2=0
+    HAS_DAY_SVG=$<BOOL:${HAS_DAY_SVG}>
+    HAS_NIGHT_SVG=$<BOOL:${HAS_NIGHT_SVG}>)
 
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module
